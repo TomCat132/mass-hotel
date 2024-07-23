@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/mass-account/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mass-activity/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mass-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mass-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mass-gateway/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mass-order/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mass-rabbitmq/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mass-recharge-plan/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mass-user/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mass-user/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

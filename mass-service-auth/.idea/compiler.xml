@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="mass-common" />
+        <module name="mass-recharge-plan" />
+        <module name="mass-api" />
+        <module name="mass-order" />
+        <module name="mass-rabbitmq" />
+        <module name="mass-account" />
+        <module name="mass-gateway" />
+        <module name="mass-activity" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="17">
+      <module name="mass-user" target="21" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="mass-account" options="-parameters" />
+      <module name="mass-activity" options="-parameters" />
+      <module name="mass-api" options="-parameters" />
+      <module name="mass-common" options="-parameters" />
+      <module name="mass-gateway" options="-parameters" />
+      <module name="mass-library-version" options="" />
+      <module name="mass-order" options="-parameters" />
+      <module name="mass-rabbitmq" options="-parameters" />
+      <module name="mass-recharge-plan" options="-parameters" />
+      <module name="mass-user" options="-parameters" />
+    </option>
+  </component>
+</project>

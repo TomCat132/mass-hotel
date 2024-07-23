@@ -1,0 +1,17 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: mass-user-service
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.64.100:8848
+        service: ${spring.application.name}
+        config:
+          file-extension: yaml
+          shared-configs: # 读取 共享配置 文件
+            - data-id: shared-log.yaml

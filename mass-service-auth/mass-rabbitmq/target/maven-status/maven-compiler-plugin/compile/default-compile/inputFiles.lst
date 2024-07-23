@@ -1,0 +1,8 @@
+D:\A02-Work\mass-service-auth\mass-rabbitmq\src\main\java\cn\finetool\rabbitmq\configuration\RabbitMqConfig.java
+D:\A02-Work\mass-service-auth\mass-rabbitmq\src\main\java\cn\finetool\rabbitmq\configuration\RabbitTemplateConfig.java
+D:\A02-Work\mass-service-auth\mass-rabbitmq\src\main\java\cn\finetool\rabbitmq\domain\MessageDo.java
+D:\A02-Work\mass-service-auth\mass-rabbitmq\src\main\java\cn\finetool\rabbitmq\MqApplication.java
+D:\A02-Work\mass-service-auth\mass-rabbitmq\src\main\java\cn\finetool\rabbitmq\configuration\GlobalExceptionHandler.java
+D:\A02-Work\mass-service-auth\mass-rabbitmq\src\main\java\cn\finetool\rabbitmq\configuration\TrustedClassMapper.java
+D:\A02-Work\mass-service-auth\mass-rabbitmq\src\main\java\cn\finetool\rabbitmq\listener\RechargeOrderConsumer.java
+D:\A02-Work\mass-service-auth\mass-rabbitmq\src\main\java\cn\finetool\rabbitmq\listener\RechargePlanConsumer.java

@@ -1,0 +1,8 @@
+cn\finetool\rabbitmq\configuration\TrustedClassMapper.class
+cn\finetool\rabbitmq\listener\RechargeOrderConsumer.class
+cn\finetool\rabbitmq\configuration\GlobalExceptionHandler.class
+cn\finetool\rabbitmq\configuration\RabbitMqConfig.class
+cn\finetool\rabbitmq\listener\RechargePlanConsumer.class
+cn\finetool\rabbitmq\MqApplication.class
+cn\finetool\rabbitmq\configuration\RabbitTemplateConfig.class
+cn\finetool\rabbitmq\domain\MessageDo.class

@@ -1,0 +1,78 @@
+server:
+  port: 8080
+
+#logging:
+#  level:
+#      org.hibernate.SQL: DEBUG
+#      org.hibernate.type: TRACE
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.64.100:3306/mass_hotel
+    username: root
+    password: root
+#  jpa:
+#    #jpa使用方言
+#    database-platform: org.hibernate.dialect.MySQL8Dialect
+#    #是否显示sql
+#    show-sql: true
+#    database: MYSQL
+#    hibernate:
+#      ddl-auto: update
+#      naming:
+#        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+#        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  application:
+    name: mass-account-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.64.100:8848 # Nacos 服务地址
+        service: ${spring.application.name}
+  rabbitmq:
+    deserialization:
+      trust-all: true
+    host: 192.168.64.100
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    connection:
+      max-inbound-message-size: 1000000  # 最大消息大小
+    publisher-confirm-type: correlated  # 开启消息确认模式
+    publisher-returns: true  # 消息发送失败后返回
+    listener:
+      type: simple  # 默认配置是simple
+      simple:
+        default-requeue-rejected: false
+        acknowledge-mode: manual  # 手动ack Acknowledge mode of container. auto none
+        prefetch: 3  # 每个消费者最多可处理3条未确认的消息
+      direct:
+        default-requeue-rejected: false  # 默认不重回 rejected 消息
+    template: # 发送消息配置
+      mandatory: true  # mandatory 设置为 true, 否则找不到路由规则的消息会被 broker直接抛弃
+      retry:
+        enabled: true # 开启消息重试功能
+        initial-interval: 1000  # 第一次重试的间隔时间
+        max-attempts: 3  # 最大重试次数
+        multiplier: 2  # 间隔时间乘数
+        max-interval: 10000  # 最大重试间隔时间
+    consumer:
+      retry:
+        enabled: true
+    message-converter:
+      trusted-packages: cn.finetool.api.Do  # 确保包路径正确
+  main:
+    allow-circular-references: true
+  data:
+    redis:
+      host: 192.168.64.100
+      port: 6379
+      database: 0
+
+
+
+
+
+

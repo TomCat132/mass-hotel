@@ -1,0 +1,40 @@
+server:
+  port: 8079
+
+#logging:
+#  level:
+#      org.hibernate.SQL: DEBUG
+#      org.hibernate.type: TRACE
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.64.100:3306/mass_hotel
+    username: root
+    password: root
+  #  jpa:
+  #    #jpa使用方言
+  #    database-platform: org.hibernate.dialect.MySQL8Dialect
+  #    #是否显示sql
+  #    show-sql: true
+  #    database: MYSQL
+  #    hibernate:
+  #      ddl-auto: update
+  #      naming:
+  #        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+  #        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  application:
+    name: mass-activity-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.64.100:8848 # Nacos 服务地址
+        service: ${spring.application.name}
+  main:
+    allow-circular-references: true
+  data:
+    redis:
+      host: 192.168.64.100
+      port: 6379
+      database: 0
+

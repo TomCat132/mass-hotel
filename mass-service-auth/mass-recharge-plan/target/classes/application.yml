@@ -1,0 +1,73 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: mass-recharge-plan-service
+  datasource:
+    url: jdbc:mysql://192.168.64.100:3306/mass_hotel
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.64.100:8848
+        service: ${spring.application.name}
+  data:
+    redis:
+      host: 192.168.64.100
+      port: 6379
+      database: 0
+  main:
+    allow-circular-references: true
+  rabbitmq:
+    host: 192.168.64.100
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    publisher-confirm-type: correlated  # 开启消息确认模式
+    publisher-returns: true  # 消息发送失败后返回
+    listener:
+      type: simple  # 默认配置是simple
+      simple:
+        acknowledge-mode: manual  # 手动ack Acknowledge mode of container. auto none
+        prefetch: 3  # 每个消费者最多可处理3条未确认的消息
+    template:
+      mandatory: true  # mandatory 设置为 true, 否则找不到路由规则的消息会被 broker直接抛弃
+      retry:
+        enabled: true  # 开启消息重试功能
+        initial-interval: 1000  # 第一次重试的间隔时间
+        max-attempts: 3  # 最大重试次数
+        multiplier: 2  # 间隔时间乘数
+        max-interval: 10000  # 最大重试间隔时间
+
+#mybatis-plus配置
+mybatis-plus:
+  configuration:
+    #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: ASSIGN_ID
+
+
+############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
+sa-token:
+  # token 名称（同时也是 cookie 名称）
+  token-name: satoken
+  # token 有效期（单位：秒） 默认30天，-1 代表永久有效
+  timeout: 2592000
+  # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
+  active-timeout: -1
+  # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
+  is-concurrent: false
+  # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
+  is-share: true
+  # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）
+  token-style: random-32
+  # 是否输出操作日志
+  is-log: true
+

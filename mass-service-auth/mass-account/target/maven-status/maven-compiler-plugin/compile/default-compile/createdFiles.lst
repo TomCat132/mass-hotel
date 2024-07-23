@@ -1,0 +1,17 @@
+cn\finetool\account\config\StpInterfaceImpl.class
+cn\finetool\account\controller\RoleController.class
+cn\finetool\account\api\RoleAPIService.class
+cn\finetool\account\mapper\UserRolesMapper.class
+cn\finetool\account\service\UserRolesService.class
+cn\finetool\account\config\GlobalExceptionHandler.class
+cn\finetool\account\controller\UserController.class
+cn\finetool\account\mapper\UserMapper.class
+cn\finetool\account\service\RoleService.class
+cn\finetool\account\AccountApplication.class
+cn\finetool\account\config\SaTokenConfigure.class
+cn\finetool\account\service\impl\RoleServiceImpl.class
+cn\finetool\account\service\impl\UserRolesServiceImpl.class
+cn\finetool\account\service\UserService.class
+cn\finetool\account\mapper\RoleMapper.class
+cn\finetool\account\controller\UserRolesController.class
+cn\finetool\account\service\impl\UserServiceImpl.class
