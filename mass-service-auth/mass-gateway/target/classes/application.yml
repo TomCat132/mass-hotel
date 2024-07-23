@@ -34,6 +34,11 @@ spring:
           uri: lb://mass-order-service
           predicates:
             - Path=/rechargeOrder/**
+        # 活动服务路由
+        - id: mass-activity-service
+          uri: lb://mass-activity-service
+          predicates:
+            - Path=/usersign/**
 
 
 

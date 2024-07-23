@@ -6,4 +6,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 public interface UserSignService extends IService<UserSign> {
     Response userSign();
+
+    boolean isUserSign();
 }
