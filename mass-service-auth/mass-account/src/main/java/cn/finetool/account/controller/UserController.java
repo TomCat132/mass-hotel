@@ -34,9 +34,6 @@ public class UserController {
         return userService.getUserInfo();
     }
 
-
-
-
     @PutMapping("/payorder/{orderId}")
     public Response payOrder(@PathVariable("orderId") String orderId){
         return userService.payOrder(orderId);

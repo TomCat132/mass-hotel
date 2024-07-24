@@ -6,5 +6,8 @@ public class RedisCache {
     public static final String RECHARGE_ORDER_ORDER_TAG = "recharge_order_tag_order_id:";
 
     /** =========== 用户签到表缓存标记 ========== */
-    public static final String USER_SIGN_TABLE = " - user_sign_table_userId:";
+    public static final String USER_SIGN_TABLE = "||user_sign_table_userId:";
+
+    /** =========== 用户签到表队列 ========== */
+    public static final String USER_SIGN_KEY_PREFIX = "user_sign_key_userId:";
 }

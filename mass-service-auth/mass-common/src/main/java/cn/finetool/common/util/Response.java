@@ -18,7 +18,6 @@ public class Response<T> implements Serializable {
     public static Response build(ResponseState state) {
         Response response = new Response();
         response.setCode(state.getCode());
-        response.setMessage(state.getErrorMsg());
         return response;
     }
 
