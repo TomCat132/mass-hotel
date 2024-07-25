@@ -34,10 +34,18 @@ public class UserController {
         return userService.getUserInfo();
     }
 
+    @PostMapping("/logout")
+    public Response logout(){
+        return userService.logout();
+    }
+
+
     @PutMapping("/payorder/{orderId}")
     public Response payOrder(@PathVariable("orderId") String orderId){
         return userService.payOrder(orderId);
     }
+    
+
 
 
 

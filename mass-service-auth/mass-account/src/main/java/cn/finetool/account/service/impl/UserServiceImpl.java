@@ -139,7 +139,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return Response.success(userInfo);
     }
 
-
+    @Override
+    public Response logout() {
+        try {
+            StpUtil.logout();
+            return Response.success("已退出");
+        }catch (BusinessRuntimeException e){
+            throw new BusinessRuntimeException(BusinessErrors.TOKEN_IS_INVALID,"未登录");
+        }
+    }
 
 
 }
