@@ -17,6 +17,7 @@
         <module>mass-recharge-plan</module>
         <module>mass-rabbitmq</module>
         <module>mass-activity</module>
+        <module>mass-oss</module>
     </modules>
 
 

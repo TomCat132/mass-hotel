@@ -7,6 +7,7 @@
     <file url="file://$PROJECT_DIR$/mass-common/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mass-gateway/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mass-order/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mass-oss/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mass-rabbitmq/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mass-recharge-plan/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mass-user/src/main/java" charset="UTF-8" />
