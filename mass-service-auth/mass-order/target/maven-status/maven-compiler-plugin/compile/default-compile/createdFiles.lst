@@ -1,11 +1,11 @@
-cn\finetool\order\configuration\StpInterfaceImpl.class
 cn\finetool\order\mapper\RechargeOrderMapper.class
 cn\finetool\order\OrderApplication.class
-cn\finetool\order\configuration\TrustedClassMapper.class
-cn\finetool\order\configuration\GlobalExceptionHandler.class
 cn\finetool\order\service\impl\RechargeOrderServiceImpl.class
-cn\finetool\order\api\OrderAPIService.class
 cn\finetool\order\controller\RechargeOrderController.class
 cn\finetool\order\service\RechargeOrderService.class
 cn\finetool\order\configuration\RabbitTemplateConfig.class
+cn\finetool\order\configuration\StpInterfaceImpl.class
+cn\finetool\order\configuration\TrustedClassMapper.class
+cn\finetool\order\configuration\GlobalExceptionHandler.class
+cn\finetool\order\api\OrderAPIService.class
 cn\finetool\order\configuration\SaTokenConfigure.class

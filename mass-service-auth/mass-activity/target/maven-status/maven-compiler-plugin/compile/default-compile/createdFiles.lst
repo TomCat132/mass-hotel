@@ -1,0 +1,6 @@
+cn\finetool\activity\contoller\UserSignController.class
+cn\finetool\activity\service\impl\UserSignServiceImpl.class
+cn\finetool\activity\service\UserSignService.class
+cn\finetool\activity\ActivityApplication.class
+cn\finetool\activity\mapper\UserSignMapper.class
+cn\finetool\activity\configuration\GlobalExceptionHandler.class

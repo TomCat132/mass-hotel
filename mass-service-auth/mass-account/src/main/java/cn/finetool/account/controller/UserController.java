@@ -34,10 +34,13 @@ public class UserController {
         return userService.getUserInfo();
     }
 
+    @ApiOperation(value = "用户退出登录", notes = "用户退出登录")
     @PostMapping("/logout")
     public Response logout(){
         return userService.logout();
     }
+
+    
 
 
     @PutMapping("/payorder/{orderId}")

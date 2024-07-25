@@ -1,17 +1,18 @@
-server:
-  port: 8080
-
 spring:
+  main:
+    allow-circular-references: true
   application:
-    name: mass-user-service
+    name: mass-account-service
   profiles:
     active: dev
   cloud:
     nacos:
+      server-addr: 192.168.64.100:8848
       discovery:
-        server-addr: 192.168.64.100:8848
         service: ${spring.application.name}
-        config:
-          file-extension: yaml
-          shared-configs: # 读取 共享配置 文件
-            - data-id: shared-log.yaml
+      config:
+        file-extension: yaml
+        shared-configs: # 读取共享配置文件
+          - data-id: shared-log.yaml
+          - data-id: shared-common.yaml
+          - data-id: shared-rabbitmq.yaml
