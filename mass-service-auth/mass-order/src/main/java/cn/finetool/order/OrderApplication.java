@@ -7,6 +7,8 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 
+
+
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients(basePackages = "cn.finetool")
@@ -16,4 +18,6 @@ public class OrderApplication {
         SpringApplication.run(OrderApplication.class, args);
         log.info("OrderApplication started! 端口号: 8090");
     }
+
 }
+ 
