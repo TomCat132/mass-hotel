@@ -3,6 +3,7 @@ package cn.finetool.recharge.service.impl;
 import cn.finetool.common.Do.MessageDo;
 import cn.finetool.common.constant.MqExchange;
 import cn.finetool.common.constant.MqRoutingKey;
+import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.enums.BusinessErrors;
 import cn.finetool.common.enums.OrderType;
 import cn.finetool.common.enums.RechargePlanType;
@@ -14,6 +15,7 @@ import cn.finetool.common.po.RechargePlans;
 import cn.finetool.common.util.Response;
 import cn.finetool.recharge.mapper.RechargePlanMapper;
 import cn.finetool.recharge.service.RechargePlanService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,6 +24,7 @@ import jakarta.annotation.Resource;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +34,7 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -45,6 +49,9 @@ public class RechargePlanServiceImpl extends ServiceImpl<RechargePlanMapper, Rec
 
     @Resource
     private RabbitTemplate rabbitTemplate;
+
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -113,5 +120,20 @@ public class RechargePlanServiceImpl extends ServiceImpl<RechargePlanMapper, Rec
         }catch (Exception e){
             return false;
         }
+    }
+
+    @Override
+    public Response validRechargePlanList() {
+
+        List<RechargePlans> rechargePlansList = (List<RechargePlans>) redisTemplate.opsForValue().get(RedisCache.VALID_RECHARGE_PLAN_LIST);
+
+        if (rechargePlansList == null){
+            rechargePlansList = rechargePlanService.list(new LambdaQueryWrapper<RechargePlans>()
+                    .eq(RechargePlans::getStatus, Status.RECHARGE_PLAN_UP.getCode()));
+        }
+
+        redisTemplate.opsForValue().set(RedisCache.VALID_RECHARGE_PLAN_LIST, rechargePlansList);
+
+        return Response.success(rechargePlansList);
     }
 }

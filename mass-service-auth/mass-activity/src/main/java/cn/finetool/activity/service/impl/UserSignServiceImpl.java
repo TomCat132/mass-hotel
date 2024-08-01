@@ -39,7 +39,7 @@ public class UserSignServiceImpl extends ServiceImpl<UserSignMapper, UserSign> i
         String userId = StpUtil.getLoginIdAsString();
         log.info("签到时间:{}", LocalDate.now().getDayOfYear());
         if (userSignService.isUserSign()){
-            return Response.error(BusinessErrors.DATA_DUPLICATION.getCode(),"今日已签到");
+            return Response.error(BusinessErrors.DATA_DUPLICATION.getCode(),"今日已签到,明天再来哦~");
         }
         LocalDateTime nowTime = LocalDateTime.now();
         LocalDate clickTime = nowTime.toLocalDate();

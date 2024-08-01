@@ -1,12 +1,15 @@
 package cn.finetool.account.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.finetool.account.service.UserService;
+import cn.finetool.common.dto.PasswordDto;
 import cn.finetool.common.po.User;
 import cn.finetool.common.util.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/user")
@@ -40,15 +43,17 @@ public class UserController {
         return userService.logout();
     }
 
-    
-
-
-    @PutMapping("/payorder/{orderId}")
-    public Response payOrder(@PathVariable("orderId") String orderId){
-        return userService.payOrder(orderId);
+    @ApiOperation(value = "修改头像", notes = "修改头像")
+    @PostMapping("/editavatar")
+    public Response editAvatar(@RequestParam("file") MultipartFile file){
+        return userService.editAvatar(file);
     }
-    
 
+    @ApiOperation(value = "修改密码", notes = "修改密码")
+    @PutMapping("/updatepwd")
+    public Response editPassword(@RequestBody PasswordDto passwordDto){
+        return userService.editPassword(passwordDto);
+    }
 
 
 

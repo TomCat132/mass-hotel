@@ -2,6 +2,10 @@ spring:
   main:
     web-application-type: reactive
     allow-circular-references: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
   application:
     name: mass-gateway-service
   profiles:
@@ -39,6 +43,11 @@ spring:
           uri: lb://mass-activity-service
           predicates:
             - Path=/usersign/**
+        # 文件存储服务路由
+        - id: mass-oss-service
+          uri: lb://mass-oss-service
+          predicates:
+            - Path=/oss/**
 
 ############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
 sa-token:

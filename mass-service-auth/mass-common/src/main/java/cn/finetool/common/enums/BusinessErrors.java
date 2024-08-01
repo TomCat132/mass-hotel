@@ -18,6 +18,8 @@ public enum BusinessErrors {
     WS_SEND_FAILED(-6001, "websocket发送消息失败"),
 
     ORDER_CREATE_REQUEST_FAIL(-7001, "订单创建请求失败"),
+    DATA_NOT_MATCH(-7002, "数据不匹配"),
+    IMAGE_CONVERT_ERROR(-8001, "图片转换失败"),
     ;
 
     //错误码

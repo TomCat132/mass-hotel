@@ -27,9 +27,10 @@ public class RechargePlanController {
         return rechargePlanService.addChargePlan(rechargePlans);
     }
 
-    @GetMapping("/test")
-    public Response test(){
-        return Response.success(StpUtil.getLoginIdAsString());
+    @ApiOperation(value = "查询有效充值方案列表", notes = "查询有效充值方案列表")
+    @GetMapping("/validRechargePlanList")
+    public Response validRechargePlanList(){
+        return rechargePlanService.validRechargePlanList();
     }
 
 }

@@ -5,9 +5,11 @@ import cn.finetool.account.mapper.UserMapper;
 import cn.finetool.account.service.UserRolesService;
 import cn.finetool.account.service.UserService;
 import cn.finetool.api.service.OrderAPIService;
+import cn.finetool.api.service.OssAPIService;
 import cn.finetool.common.configuration.ChannelManager;
 import cn.finetool.common.constant.MqQueue;
 import cn.finetool.common.constant.RedisCache;
+import cn.finetool.common.dto.PasswordDto;
 import cn.finetool.common.enums.BusinessErrors;
 import cn.finetool.common.enums.RoleType;
 import cn.finetool.common.enums.Status;
@@ -36,6 +38,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -59,8 +62,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     private OrderAPIService orderAPIService;
 
-    @Value("${spring.rabbitmq.host}")
-    private String RabbitMqHost;
+    @Resource
+    OssAPIService ossAPIService;
 
     @Override
     public Response register(User user) {
@@ -114,21 +117,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return Response.success("登录成功");
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Response payOrder(String orderId) {
 
-        // 支付成功后，修改订单状态
-        orderAPIService.updateOrderStatus(orderId, Status.ORDER_SUCCESS.getCode());
-        // 手动消费消息
-
-
-
-        redisTemplate.delete(RedisCache.RECHARGE_ORDER_ORDER_TAG + orderId);
-
-
-        return Response.success("支付成功");
-    }
 
     @Override
     public Response<User> getUserInfo() {
@@ -147,6 +136,48 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }catch (BusinessRuntimeException e){
             throw new BusinessRuntimeException(BusinessErrors.TOKEN_IS_INVALID,"未登录");
         }
+    }
+
+    @Override
+    public Response editAvatar(MultipartFile file) {
+        String fileUrl = ossAPIService.uploadFileToMinio(file);
+
+        userService.update()
+                .set("avatar_key",fileUrl)
+                .eq("user_id",StpUtil.getLoginIdAsString())
+                .update();
+        return Response.success("修改成功");
+    }
+
+    @Override
+    public Response editPassword(PasswordDto passwordDto) {
+
+        if (StringUtils.isAnyEmpty(passwordDto.getOldPassword(),passwordDto.getNewPassword(),passwordDto.getConfirmPassword())){
+            throw new BusinessRuntimeException(BusinessErrors.PARAM_CANNOT_EMPTY,"数据不能为空~");
+        }
+        if (!passwordDto.getNewPassword().equals(passwordDto.getConfirmPassword())){
+            throw new BusinessRuntimeException(BusinessErrors.DATA_NOT_MATCH,"两次新密码输入不一致~");
+        }
+
+        User user = userService.getOne(new LambdaQueryWrapper<User>()
+                .eq(User::getUserId, StpUtil.getLoginIdAsString()));
+        if (!CommonsUtils.encodeMD5(passwordDto.getOldPassword() + user.getSalty()).equals(user.getPassword())){
+            throw new BusinessRuntimeException(BusinessErrors.AUTHENTICATION_ERROR,"旧密码输入错误");
+        }
+
+        if (CommonsUtils.encodeMD5(passwordDto.getNewPassword() + user.getSalty()).equals(user.getPassword())){
+            throw new BusinessRuntimeException(BusinessErrors.DATA_DUPLICATION,"新密码不能与旧密码相同");
+        }
+
+
+        userService.update()
+                .set("password", CommonsUtils.encodeMD5(passwordDto.getNewPassword() + user.getSalty()))
+                .eq("user_id", StpUtil.getLoginIdAsString())
+                .update();
+
+        StpUtil.logout();;
+
+        return Response.success("密码修改成功，请重新登陆");
     }
 
 

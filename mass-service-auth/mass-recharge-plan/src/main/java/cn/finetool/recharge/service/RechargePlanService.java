@@ -11,5 +11,5 @@ public interface RechargePlanService extends IService<RechargePlans> {
 
     boolean updateRechargePlanStatus(Integer planId);
 
-
+    Response validRechargePlanList();
 }

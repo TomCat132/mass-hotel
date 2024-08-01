@@ -2,6 +2,7 @@ package cn.finetool.order.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.finetool.common.dto.RechargeDto;
 import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.util.Response;
 import cn.finetool.order.service.RechargeOrderService;
@@ -21,13 +22,13 @@ public class RechargeOrderController {
     @SaCheckRole("user")
     @ApiOperation(value = "创建充值订单", notes = "创建充值订单")
     @PostMapping("/createOrder")
-    public Response createOrder(@RequestBody RechargeOrder rechargeOrder){
-        return rechargeOrderService.createOrder(rechargeOrder);
+    public Response createOrder(@RequestBody RechargeDto rechargeDto){
+        return rechargeOrderService.createOrder(rechargeDto);
     }
 
-
-
-
-
-
+    @ApiOperation(value = "查询订单订单详情", notes = "查询订单详情")
+    @GetMapping("/queryOrder/{orderId}")
+    public Response queryOrder(@PathVariable("orderId") String orderId){
+        return rechargeOrderService.queryOrder(orderId);
+    }
 }

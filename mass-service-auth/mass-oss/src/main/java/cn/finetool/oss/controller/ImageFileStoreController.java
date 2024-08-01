@@ -1,25 +1,26 @@
-package cn.finetool.common.util;
+package cn.finetool.oss.controller;
 
-
-
+import cn.finetool.common.enums.BusinessErrors;
+import cn.finetool.common.exception.BusinessRuntimeException;
+import cn.finetool.oss.util.FileConvertUtil;
 import io.minio.MinioClient;
-
 import jakarta.annotation.Resource;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Base64;
+@RestController
+@RequestMapping("/oss/api")
+public class ImageFileStoreController {
 
-@Component
-public class FileConvertUtil {
+    @Resource
+    FileConvertUtil fileConvertUtil;
 
     @Resource
     private  Environment config;
@@ -27,7 +28,8 @@ public class FileConvertUtil {
     @Autowired
     private  MinioClient minioClient;
 
-
+    /** ========== 图片文件上传接口 ========== */
+    @PostMapping("/upload")
     public String putMinioFile(@RequestParam("file") MultipartFile file){
         try {
             minioClient.putObject(config.getProperty("minio.bucket"),
@@ -41,16 +43,13 @@ public class FileConvertUtil {
         }
     }
 
-    public String convertFile(String file) throws MalformedURLException {
-        URL url = new URL(file);
-        String path = url.getPath();
-        String fileName = path.substring(path.lastIndexOf("/") + 1);
-        try (InputStream inputStream = minioClient.getObject(config.getProperty("minio.bucket"), fileName)) {
-            byte[] fileData = IOUtils.toByteArray(inputStream);
-            return "data:jpg;base64," + Base64.getEncoder().encodeToString(fileData);
-        } catch (Exception e) {
-            e.printStackTrace();
+    /** ========== 图片转换接口 ========== */
+    @PostMapping("/convert")
+    private String urlToBase64(@RequestParam("url") String url){
+        try {
+            return fileConvertUtil.convertFile(url);
+        }catch (Exception e) {
+            throw new BusinessRuntimeException(BusinessErrors.IMAGE_CONVERT_ERROR, "图片转换失败");
         }
-        return null;
     }
 }
