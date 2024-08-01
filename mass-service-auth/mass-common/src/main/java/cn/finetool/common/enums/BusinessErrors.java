@@ -20,6 +20,10 @@ public enum BusinessErrors {
     ORDER_CREATE_REQUEST_FAIL(-7001, "订单创建请求失败"),
     DATA_NOT_MATCH(-7002, "数据不匹配"),
     IMAGE_CONVERT_ERROR(-8001, "图片转换失败"),
+
+    ALI_PAY_ERROR( -9001, "支付宝支付失败"),
+
+    ALI_PAY_VERIFY_ERROR( -9002, "支付宝支付异步验证失败"),
     ;
 
     //错误码

@@ -8,6 +8,7 @@ import cn.finetool.common.constant.MqTTL;
 import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.dto.RechargeDto;
 import cn.finetool.common.enums.BusinessErrors;
+import cn.finetool.common.enums.PayType;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.RechargeOrder;
@@ -97,11 +98,6 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
 
     @Override
     public void updateOrderStatus(String orderId, Integer orderStatus) {
-//        rechargeOrderService.update()
-//                .set("order_status",orderStatus)
-//                .eq("order_id",orderId)
-//                .update();
-
 
         rechargeOrderMapper.updateOrderStatus(orderId,orderStatus,LocalDateTime.now());
     }
@@ -109,8 +105,20 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
     @Override
     public Response queryOrder(String orderId) {
 
-        RechargeOrder rechargeOrder = rechargeOrderMapper.queryOrder(orderId);
+        RechargeOrder rechargeOrder = getOrderById(orderId);
 
         return Response.success(rechargeOrder);
+    }
+
+    @Override
+    public void handleRechargeOrder(String orderId) {
+        rechargeOrderMapper.handleRechargeOrder(orderId,
+                LocalDateTime.now(),
+                PayType.ALI_PAY.getCode(),
+                Status.ORDER_SUCCESS.getCode());
+    }
+
+    public RechargeOrder getOrderById(String orderId){
+         return rechargeOrderMapper.queryOrder(orderId);
     }
 }

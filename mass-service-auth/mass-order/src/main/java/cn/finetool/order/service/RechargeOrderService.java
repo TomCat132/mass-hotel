@@ -12,4 +12,6 @@ public interface RechargeOrderService extends IService<RechargeOrder> {
     void updateOrderStatus(String orderId, Integer orderStatus);
 
     Response queryOrder(String orderId);
+
+    void handleRechargeOrder(String orderId);
 }

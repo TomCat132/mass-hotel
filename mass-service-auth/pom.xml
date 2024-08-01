@@ -18,6 +18,7 @@
         <module>mass-rabbitmq</module>
         <module>mass-activity</module>
         <module>mass-oss</module>
+        <module>mass-pay</module>
     </modules>
 
 
@@ -36,6 +37,7 @@
         <mybatis-plus.version>3.5.7</mybatis-plus.version>
         <sa-token.version>1.38.0</sa-token.version>
         <hibernate.version>6.2.7.Final</hibernate.version>
+        <alipay-sdk.version>4.34.8.ALL</alipay-sdk.version>
     </properties>
 
     <parent>

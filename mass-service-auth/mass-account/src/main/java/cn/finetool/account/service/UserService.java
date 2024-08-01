@@ -6,6 +6,8 @@ import cn.finetool.common.util.Response;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+
 public interface UserService extends IService<User> {
 
     Response<User> register(User user);
@@ -19,4 +21,6 @@ public interface UserService extends IService<User> {
     Response editAvatar(MultipartFile file);
 
     Response editPassword(PasswordDto passwordDto);
+
+    void updateUserInfo(String userId, BigDecimal totalAmount);
 }

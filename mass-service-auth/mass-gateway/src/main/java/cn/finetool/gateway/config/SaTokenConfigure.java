@@ -21,6 +21,8 @@ public class SaTokenConfigure{
                 .addInclude("/**")
                 .addExclude("/user/register")
                 .addExclude("/user/login")
+                // 支付宝异步通知接口放行
+                .addExclude("/alipay/notify")
 //                .addExclude("/role/**")
 //                .addExclude("/userRoles/**")
 //                .addExclude("/rechargePlan/**")

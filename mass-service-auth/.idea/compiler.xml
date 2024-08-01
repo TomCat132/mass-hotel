@@ -14,6 +14,7 @@
         <module name="mass-order" />
         <module name="mass-rabbitmq" />
         <module name="mass-account" />
+        <module name="mass-pay" />
         <module name="mass-gateway" />
         <module name="mass-activity" />
       </profile>
@@ -32,6 +33,7 @@
       <module name="mass-library-version" options="" />
       <module name="mass-order" options="-parameters" />
       <module name="mass-oss" options="-parameters" />
+      <module name="mass-pay" options="-parameters" />
       <module name="mass-rabbitmq" options="-parameters" />
       <module name="mass-recharge-plan" options="-parameters" />
       <module name="mass-user" options="-parameters" />

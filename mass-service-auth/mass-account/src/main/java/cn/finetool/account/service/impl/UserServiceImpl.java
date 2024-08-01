@@ -41,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
@@ -64,6 +65,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     OssAPIService ossAPIService;
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public Response register(User user) {
@@ -178,6 +181,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         StpUtil.logout();;
 
         return Response.success("密码修改成功，请重新登陆");
+    }
+
+    @Override
+    public void updateUserInfo(String userId, BigDecimal totalAmount) {
+        userMapper.updateUserInfo(userId, totalAmount,totalAmount.intValue(),totalAmount.intValue());
     }
 
 

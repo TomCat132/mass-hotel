@@ -14,4 +14,9 @@ public interface RechargeOrderMapper extends BaseMapper<RechargeOrder> {
                            @Param("cancelTime") LocalDateTime cancelTime);
 
     RechargeOrder queryOrder(@Param(("orderId")) String orderId);
+
+    void handleRechargeOrder(@Param(("orderId")) String orderId,
+                             @Param("nowTime") LocalDateTime now,
+                             @Param("payType") int payType,
+                             @Param("orderStatus") int orderStatus);
 }

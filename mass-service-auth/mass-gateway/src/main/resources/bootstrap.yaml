@@ -48,6 +48,11 @@ spring:
           uri: lb://mass-oss-service
           predicates:
             - Path=/oss/**
+        # 支付服务路由
+        - id: mass-pay-service
+          uri: lb://mass-pay-service
+          predicates:
+            - Path=/alipay/**
 
 ############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
 sa-token:
