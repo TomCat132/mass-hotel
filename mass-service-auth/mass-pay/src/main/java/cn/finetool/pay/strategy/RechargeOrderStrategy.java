@@ -52,7 +52,7 @@ public class RechargeOrderStrategy implements OrderTypeStrategy{
     public void handleOrder(String orderId) {
         // 处理充值订单
         orderAPIService.handleRechargeOrder(orderId);
-
+        
         RechargeOrder rechargeOrder = rechargeOrderMap.get(orderId);
         // 更新用户信息
         userAPIService.updateUserInfo(rechargeOrder.getUserId(),rechargeOrder.getTotalAmount());

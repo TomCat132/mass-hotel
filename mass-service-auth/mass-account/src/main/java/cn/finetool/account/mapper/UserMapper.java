@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 public interface UserMapper extends BaseMapper<User> {
 
     void updateUserInfo(@Param("userId") String userId,
-                        @Param(("totalAmount")) BigDecimal totalAmount,
+                        @Param("account") BigDecimal totalAmount,
                         @Param("points") int points,
                         @Param("usePoints") int usePoints);
 }

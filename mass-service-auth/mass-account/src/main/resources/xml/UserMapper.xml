@@ -11,7 +11,7 @@
         SET
             points = COALESCE(points, 0) + #{points},
             account = COALESCE(account, 0) + #{account},
-            user_points = COALESCE(user_points, 0) + #{userPoints},
+            use_points = COALESCE(use_points, 0) + #{usePoints}
         WHERE user_id = #{userId}
     </update>
 </mapper>

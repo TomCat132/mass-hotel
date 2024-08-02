@@ -12,4 +12,6 @@ public interface UserAPIService {
     @PutMapping("/updateUserInfo")
     void updateUserInfo(@RequestParam("userId") String userId,
                         @RequestParam("totalAmount") BigDecimal totalAmount);
+
+    
 }

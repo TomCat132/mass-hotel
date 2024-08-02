@@ -1,5 +1,6 @@
 package cn.finetool.pay.service.impl;
 
+import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.dto.OrderPayDto;
 import cn.finetool.pay.service.AliPayService;
 import cn.finetool.pay.strategy.OrderTypeStrategy;
@@ -12,6 +13,7 @@ import com.alipay.api.response.AlipayTradeWapPayResponse;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -30,6 +32,9 @@ public class AliPayServiceImpl implements AliPayService {
 
     @Resource
     private OrderTypeStrategyFactory orderTypeStrategyFactory;
+
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
 
     @Override
     public String tradePay(OrderPayDto orderPayDto) {
@@ -124,6 +129,8 @@ public class AliPayServiceImpl implements AliPayService {
         // 订单未支付，处理订单
         strategy.handleOrder(orderId);
 
+        // 订单支付成功，删除标记
+        redisTemplate.delete(RedisCache.RECHARGE_ORDER_IS_TIMEOUT + orderId);
 
         return "success";
     }

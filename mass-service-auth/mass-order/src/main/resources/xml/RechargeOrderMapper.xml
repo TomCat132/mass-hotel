@@ -27,7 +27,7 @@
     </update>
 
     <select id="queryOrder" resultType="cn.finetool.common.po.RechargeOrder">
-        SELECT plan_id,user_pay_amount,total_amount,order_status,create_time FROM tb_recharge_order
+        SELECT plan_id,user_pay_amount,total_amount,order_status,create_time,user_id FROM tb_recharge_order
         WHERE order_id = #{orderId}
     </select>
 

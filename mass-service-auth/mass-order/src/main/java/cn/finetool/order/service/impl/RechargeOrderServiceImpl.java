@@ -112,8 +112,9 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
 
     @Override
     public void handleRechargeOrder(String orderId) {
-        rechargeOrderMapper.handleRechargeOrder(orderId,
-                LocalDateTime.now(),
+        LocalDateTime payTime = LocalDateTime.now();
+        rechargeOrderMapper.handleRechargeOrder
+                (orderId, payTime,
                 PayType.ALI_PAY.getCode(),
                 Status.ORDER_SUCCESS.getCode());
     }
