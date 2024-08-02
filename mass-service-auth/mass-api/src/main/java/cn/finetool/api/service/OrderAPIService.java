@@ -2,8 +2,11 @@ package cn.finetool.api.service;
 
 
 import cn.finetool.common.po.RechargeOrder;
+import cn.finetool.common.vo.OrderVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @FeignClient(name = "mass-order-service", path = "/order/api", contextId = "rechargeOrder")
 public interface OrderAPIService {
@@ -17,5 +20,7 @@ public interface OrderAPIService {
     @PutMapping("/handleRechargeOrder")
     void handleRechargeOrder(@RequestParam("orderId") String orderId);
 
-
+    /**====== 获取 用户 充值订单列表 =====*/
+    @GetMapping("/getRechargeOrderList")
+    List<OrderVo> getRechargeOrderList(@RequestParam("userId") String userId);
 }

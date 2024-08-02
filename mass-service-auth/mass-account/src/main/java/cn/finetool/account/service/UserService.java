@@ -23,4 +23,6 @@ public interface UserService extends IService<User> {
     Response editPassword(PasswordDto passwordDto);
 
     void updateUserInfo(String userId, BigDecimal totalAmount);
+
+    Response getOrderList();
 }

@@ -31,4 +31,11 @@
         WHERE order_id = #{orderId}
     </select>
 
+    <select id="getRechargeOrderList" resultType="cn.finetool.common.vo.OrderVo">
+        SELECT  order_id,order_status,user_pay_amount,create_time
+        FROM tb_recharge_order
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
 </mapper>

@@ -55,6 +55,12 @@ public class UserController {
         return userService.editPassword(passwordDto);
     }
 
+    @ApiOperation(value = "获取所有类型的订单列表", notes = "获取所有类型的订单列表")
+    @GetMapping("/orderlist")
+    public Response getOrderList(){
+        return userService.getOrderList();
+    }
+
 
 
 }

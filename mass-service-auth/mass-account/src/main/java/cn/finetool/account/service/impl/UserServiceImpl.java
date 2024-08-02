@@ -6,6 +6,7 @@ import cn.finetool.account.service.UserRolesService;
 import cn.finetool.account.service.UserService;
 import cn.finetool.api.service.OrderAPIService;
 import cn.finetool.api.service.OssAPIService;
+import cn.finetool.api.service.RechargePlanAPIService;
 import cn.finetool.common.configuration.ChannelManager;
 import cn.finetool.common.constant.MqQueue;
 import cn.finetool.common.constant.RedisCache;
@@ -19,6 +20,7 @@ import cn.finetool.common.po.User;
 
 import cn.finetool.common.util.CommonsUtils;
 import cn.finetool.common.util.Response;
+import cn.finetool.common.vo.OrderVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -43,6 +45,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -67,6 +71,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     OssAPIService ossAPIService;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private RechargePlanAPIService rechargePlanAPIService;
 
     @Override
     public Response register(User user) {
@@ -186,6 +192,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public void updateUserInfo(String userId, BigDecimal totalAmount) {
         userMapper.updateUserInfo(userId, totalAmount,totalAmount.intValue(),totalAmount.intValue());
+    }
+
+    @Override
+    public Response getOrderList() {
+        List<OrderVo> orderList = new ArrayList<>();
+
+        //查询充值订单
+        List<OrderVo> rechargeOrderList = orderAPIService.getRechargeOrderList(StpUtil.getLoginIdAsString());
+        if (rechargeOrderList != null){
+            orderList.addAll(rechargeOrderList);
+        }
+
+        return Response.success(orderList);
     }
 
 

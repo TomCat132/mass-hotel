@@ -14,6 +14,7 @@ import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.util.CommonsUtils;
 import cn.finetool.common.util.Response;
+import cn.finetool.common.vo.OrderVo;
 import cn.finetool.order.mapper.RechargeOrderMapper;
 import cn.finetool.order.service.RechargeOrderService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -24,11 +25,10 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -90,8 +90,7 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
         log.info("订单创建成功，订单号：{}", rechargeOrder.getOrderId());
 
         // 缓存标记,决定之后是否需要取消订单
-        redisTemplate.opsForValue().set(RedisCache.RECHARGE_ORDER_IS_TIMEOUT + rechargeOrder.getOrderId(),"",
-                RedisCache.RECHARGE_ORDER_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(RedisCache.RECHARGE_ORDER_IS_TIMEOUT + rechargeOrder.getOrderId(),"");
 
         return Response.success(rechargeOrder.getOrderId());
     }
@@ -117,6 +116,11 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
                 (orderId, payTime,
                 PayType.ALI_PAY.getCode(),
                 Status.ORDER_SUCCESS.getCode());
+    }
+
+    @Override
+    public List<OrderVo> getRechargeOrderList(String userId) {
+        return rechargeOrderMapper.getRechargeOrderList(userId);
     }
 
     public RechargeOrder getOrderById(String orderId){
