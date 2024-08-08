@@ -19,6 +19,7 @@
         <module>mass-activity</module>
         <module>mass-oss</module>
         <module>mass-pay</module>
+        <module>mass-hotel</module>
     </modules>
 
 

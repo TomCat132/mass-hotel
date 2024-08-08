@@ -53,6 +53,11 @@ spring:
           uri: lb://mass-pay-service
           predicates:
             - Path=/alipay/**
+        # 酒店服务路由
+        - id: mass-hotel-service
+          uri: lb://mass-hotel-service
+          predicates:
+            - Path=/hotel/**
 
 ############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
 sa-token:

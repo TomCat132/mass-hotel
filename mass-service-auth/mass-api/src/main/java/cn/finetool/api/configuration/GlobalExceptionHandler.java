@@ -1,4 +1,4 @@
-package cn.finetool.order.configuration;
+package cn.finetool.api.configuration;
 
 import cn.dev33.satoken.exception.NotRoleException;
 import cn.finetool.common.exception.BusinessRuntimeException;
