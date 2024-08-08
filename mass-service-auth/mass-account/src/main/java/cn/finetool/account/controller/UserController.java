@@ -57,10 +57,8 @@ public class UserController {
 
     @ApiOperation(value = "获取所有类型的订单列表", notes = "获取所有类型的订单列表")
     @GetMapping("/orderlist")
-    public Response getOrderList(){
+    public Response getOrderList() {
         return userService.getOrderList();
     }
-
-
 
 }

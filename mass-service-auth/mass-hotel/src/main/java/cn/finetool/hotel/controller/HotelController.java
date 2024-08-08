@@ -7,6 +7,7 @@ import cn.finetool.hotel.service.HotelService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
+import org.apache.ibatis.javassist.CtField;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/hotel")
 @Api(tags = "酒店模块")
 public class HotelController {
+
 
     @Resource
     HotelService hotelService;

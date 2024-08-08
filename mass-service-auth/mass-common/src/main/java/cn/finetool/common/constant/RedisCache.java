@@ -16,4 +16,11 @@ public class RedisCache {
 
     /** =========== 充值订单过期时间：5分钟 ========== */
     public static final Integer RECHARGE_ORDER_EXPIRATION_TIME = 300000;
+
+    /** =========== 酒店 GEO 位置列表缓存 ========== */
+    public static final String HOTEL_LOCATION_LIST = "hotel_location_list";
+
+    /** =========== 酒店 ID 前缀 ========== */
+    public static final String HOTEL_ID_PREFIX = "hotel_id:";
+
 }

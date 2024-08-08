@@ -11,6 +11,7 @@
         <module name="mass-common" />
         <module name="mass-recharge-plan" />
         <module name="mass-api" />
+        <module name="mass-hotel" />
         <module name="mass-order" />
         <module name="mass-rabbitmq" />
         <module name="mass-account" />
@@ -30,6 +31,7 @@
       <module name="mass-api" options="-parameters" />
       <module name="mass-common" options="-parameters" />
       <module name="mass-gateway" options="-parameters" />
+      <module name="mass-hotel" options="-parameters" />
       <module name="mass-library-version" options="" />
       <module name="mass-order" options="-parameters" />
       <module name="mass-oss" options="-parameters" />
