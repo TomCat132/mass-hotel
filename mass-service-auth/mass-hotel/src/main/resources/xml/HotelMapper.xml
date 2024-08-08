@@ -9,5 +9,6 @@
     <select id="getHotelGeoList" resultType="cn.finetool.common.vo.HotelVo">
         SELECT hotel_id,hotel_name,hotel_lng,hotel_lat
         FROM tb_hotel
+        WHERE status = 0
     </select>
 </mapper>

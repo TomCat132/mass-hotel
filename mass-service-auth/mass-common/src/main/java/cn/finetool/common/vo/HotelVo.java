@@ -3,12 +3,17 @@ package cn.finetool.common.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class HotelVo implements Serializable {
+
 
     /**
      * 主键id
@@ -33,5 +38,9 @@ public class HotelVo implements Serializable {
     @TableField(value = "hotel_lat")
     private Double hotelLat;
 
+    /**
+     *  酒店地址
+     */
+    private Double distance;
 
 }

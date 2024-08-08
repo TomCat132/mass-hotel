@@ -11,5 +11,5 @@ public interface HotelService extends IService<Hotel> {
 
     Response addHotelInfo(Hotel hotel);
 
-
+    Response getNearByHotelList(Double userLng, Double userLat, Double queryRange);
 }

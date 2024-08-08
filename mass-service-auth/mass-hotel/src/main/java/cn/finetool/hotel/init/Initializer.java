@@ -6,6 +6,7 @@ import cn.finetool.hotel.mapper.HotelMapper;
 import cn.finetool.hotel.service.HotelService;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.Point;
 import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
+@Slf4j
 public class Initializer {
 
     @Resource
@@ -29,9 +31,8 @@ public class Initializer {
        List<HotelVo> hotelVoList = hotelMapper.getHotelGeoList();
 
        hotelVoList.forEach(hotelVo -> {
-           redisTemplate.opsForGeo().add(RedisCache.HOTEL_LOCATION_LIST,
-                   new RedisGeoCommands.GeoLocation<>(RedisCache.HOTEL_ID_PREFIX +hotelVo.getHotelId(),
-                           new Point(hotelVo.getHotelLng(),hotelVo.getHotelLat())));
+          redisTemplate.opsForGeo().add(RedisCache.HOTEL_LOCATION_LIST,
+                  new Point(hotelVo.getHotelLng(),hotelVo.getHotelLat()), hotelVo.getHotelId().toString());
        });
     }
 }

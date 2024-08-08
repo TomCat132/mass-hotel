@@ -8,10 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
 import org.apache.ibatis.javassist.CtField;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/hotel")
@@ -27,5 +24,13 @@ public class HotelController {
     @PostMapping("/addHotelInfo")
     public Response addHotelInfo(@RequestBody Hotel hotel){
         return hotelService.addHotelInfo(hotel);
+    }
+
+    @ApiOperation(value = "获取附近的酒店列表", notes = "获取附近的酒店列表")
+    @GetMapping("/getNearByHotelList")
+    public Response getNearByHotelList(@RequestParam("userLng") Double userLng,
+                                       @RequestParam("userLat") Double userLat,
+                                       @RequestParam("queryRange") Double queryRange){
+        return hotelService.getNearByHotelList(userLng, userLat, queryRange);
     }
 }
