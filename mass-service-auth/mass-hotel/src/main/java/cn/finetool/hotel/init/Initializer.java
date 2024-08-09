@@ -9,21 +9,19 @@ import cn.finetool.hotel.mapper.HotelMapper;
 import cn.finetool.hotel.mapper.RoomDateMapper;
 import cn.finetool.hotel.mapper.RoomInfoMapper;
 import cn.finetool.hotel.mapper.RoomMapper;
-import cn.finetool.hotel.service.HotelService;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.Point;
-import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 @Slf4j
@@ -59,10 +57,10 @@ public class Initializer {
     /** ============= 初始化缓存酒店的每日房间信息 =========== */
     @Scheduled(cron = "1 0 0 * * ?")
     public void InitRoomDateInfo(){
-        //1. 获取所有酒店每日的具体房间信息 roomId,roomInfoId,id
+        //获取所有酒店每日的具体房间信息 roomId,roomInfoId,id
         List<RoomInfo> roomInfoList =roomInfoMapper.getCanUseRoomInfoList();
 
-        //2. 添加今日的具体房间信息到信息表中 id,roomId,roomInfoId
+        //添加今日的具体房间信息到信息表中 id,roomId,date
         List<RoomDate> roomDateList = roomInfoList.stream().map(roomInfo -> {
             RoomDate roomDate = new RoomDate();
             roomDate.setRiId(roomInfo.getId());
@@ -72,20 +70,19 @@ public class Initializer {
             return roomDate;
         }).toList();
 
-        //2.1 收集房间id
-        List<String> roomIdList = roomInfoList.parallelStream()
-                .map(RoomInfo::getRoomId)
+        //收集房间id
+        List<String> roomIdList = roomDateList.parallelStream()
+                .map(RoomDate::getTempRoomId)
                 .toList();
 
-        //2.2 获取对应具体房间的基础价格  roomId,basic_price
-        List<Room> roomPriceList = roomMapper.getRoomPriceList(roomIdList);
+        //获取对应具体房间的基础价格  roomId,basic_price
+        Map<String, BigDecimal> roomPriceMap = roomMapper.getRoomPriceList(roomIdList).stream().collect(Collectors.toMap(Room::getRoomId, Room::getBasicPrice));
 
-        //2.3 批量插入具体房间当日信息数据 添加date
+        //设置 price
         roomDateList.forEach(roomDate -> {
-            roomPriceList.stream().filter(room -> room.getRoomId().equals(roomDate.getTempRoomId()))
-                    .findFirst()
-                    .ifPresent(room -> roomDate.setPrice(room.getBasicPrice()));
+            roomDate.setPrice(roomPriceMap.get(roomDate.getTempRoomId()));
         });
+        //批量插入
         roomDateMapper.insert(roomDateList);
         log.info("初始化缓存酒店的每日房间信息完成");
     }
