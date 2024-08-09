@@ -6,6 +6,7 @@ import cn.finetool.common.po.Hotel;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.vo.HotelVo;
 import cn.finetool.hotel.mapper.HotelMapper;
+import cn.finetool.hotel.mapper.RoomDateMapper;
 import cn.finetool.hotel.service.HotelService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
@@ -15,6 +16,8 @@ import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -27,9 +30,11 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
-
     @Resource
     private HotelMapper hotelMapper;
+
+    @Resource
+    private RoomDateMapper roomDateMapper;
 
     @Override
     public Response addHotelInfo(Hotel hotel) {
@@ -76,16 +81,25 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
             }
 
             // 根据id 获取酒店详细地址 、 最低价格 、 距离
-            HotelVo hotelVo = hotelMapper.queryHotelInfo(Integer.parseInt(hotelIdStr));
-            if (hotelVo == null){
+
+            // 判断是否是临时用户位置 酒店id：自增主键 用户ID: 管理员ID: 19位 开发调试账号：110
+            if (hotelIdStr.equals("110") || hotelIdStr.length() >= 19){
                 log.info("新添加的临时用户位置，不进行查询");
                 continue;
             }
+            HotelVo hotelVo = hotelMapper.queryHotelInfo(Integer.parseInt(hotelIdStr));
+
             hotelVo.setHotelLng(hotelPoint.getX());
             hotelVo.setHotelLat(hotelPoint.getY());
             hotelVo.setDistance(distance.getValue());
-
-            hotelVoList.add(hotelVo);
+            // 计算最低价格
+            Integer hotelId = hotelVo.getHotelId();
+            // 根据Id获取 roomIdList，遍历查询 roomInfo 的主键List,根据主键 List去查询 roomDate 当日最低价格
+            BigDecimal minPrice = roomDateMapper.queryHotelMinPrice(hotelId, LocalDate.now());
+            if (minPrice != null){
+                hotelVo.setMinPrice(minPrice);
+                hotelVoList.add(hotelVo);
+            }
         }
 
         // 删除临时存储的用户位置

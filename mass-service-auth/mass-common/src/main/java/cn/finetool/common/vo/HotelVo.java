@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
@@ -47,5 +48,11 @@ public class HotelVo implements Serializable {
      *  酒店地址
      */
     private Double distance;
+
+
+    /**
+     * 最低价格
+     */
+    private BigDecimal minPrice;
 
 }
