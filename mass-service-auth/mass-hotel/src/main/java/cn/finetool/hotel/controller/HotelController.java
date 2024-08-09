@@ -7,7 +7,6 @@ import cn.finetool.hotel.service.HotelService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
-import org.apache.ibatis.javassist.CtField;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,6 +25,7 @@ public class HotelController {
         return hotelService.addHotelInfo(hotel);
     }
 
+    @SaCheckRole({"user","super_admin"})
     @ApiOperation(value = "获取附近的酒店列表", notes = "获取附近的酒店列表")
     @GetMapping("/getNearByHotelList")
     public Response getNearByHotelList(@RequestParam("userLng") Double userLng,
@@ -33,4 +33,7 @@ public class HotelController {
                                        @RequestParam("queryRange") Double queryRange){
         return hotelService.getNearByHotelList(userLng, userLat, queryRange);
     }
+
+
+
 }

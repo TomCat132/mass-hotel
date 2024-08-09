@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -32,7 +33,7 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
 
     @Override
     public Response addHotelInfo(Hotel hotel) {
-
+        // TODO: 代优化 （简单添加数据）
         save(hotel);
         return Response.success("添加成功");
     }
@@ -63,10 +64,9 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
 
             String hotelIdStr = (String) result.getContent().getName();
 
-
             // 查询酒店的经纬度
             List<Point> hotelPoints = redisTemplate.opsForGeo().position(RedisCache.HOTEL_LOCATION_LIST, hotelIdStr);
-            Point hotelPoint = hotelPoints.get(0);
+            Point hotelPoint = Objects.requireNonNull(hotelPoints).getFirst();
             hotelPoint = new Point(hotelPoint.getX(), hotelPoint.getY());
 
             // 使用 GEODIST 命令计算用户和酒店之间的距离，单位为千米

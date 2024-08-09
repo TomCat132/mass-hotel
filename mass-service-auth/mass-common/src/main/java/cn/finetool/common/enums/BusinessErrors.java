@@ -9,7 +9,10 @@ public enum BusinessErrors {
     DATA_DUPLICATION(-1001, "数据重复"),
     DATA_NOT_EXIST(-1002, "数据不存在"),
     DATA_STATUS_ERROR(-1003, "数据状态错误"),
-    PARAM_CANNOT_EMPTY(-2001, "参数不能为空"),
+    PARAM_CANNOT_EMPTY(-1004, "参数不能为空"),
+
+    SYSTEM_ERROR(-2001, "系统错误"),
+
     AUTHENTICATION_ERROR(-3002, "认证错误"),
     TOKEN_IS_INVALID(-3001, "Token已经失效，重新登录"),
     PAYMENT_COMMUNICATION_FAILURE(-5004, "预支付通讯失败"),
