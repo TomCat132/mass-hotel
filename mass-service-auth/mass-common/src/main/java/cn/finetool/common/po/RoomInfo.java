@@ -17,7 +17,7 @@ public class RoomInfo {
     /**
      * 房间信息Id
      */
-    private Integer roomId;
+    private String roomId;
 
     /**
      * 具体房间Id
@@ -25,7 +25,7 @@ public class RoomInfo {
     private String roomInfoId;
 
     /**
-     * 房间状态 0-空闲 1-预约 2-使用中 3-维修中 4-空置 5-报废
+     * 房间状态 0：不可用 1：可用
      */
     private Integer status;
 }
