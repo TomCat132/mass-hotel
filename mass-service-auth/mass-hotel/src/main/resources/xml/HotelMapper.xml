@@ -11,4 +11,10 @@
         FROM tb_hotel
         WHERE status = 0
     </select>
+
+    <select id="queryHotelInfo" resultType="cn.finetool.common.vo.HotelVo">
+        SELECT hotel_id,hotel_name,address
+        FROM tb_hotel
+        WHERE hotel_id = #{hotelId}
+    </select>
 </mapper>

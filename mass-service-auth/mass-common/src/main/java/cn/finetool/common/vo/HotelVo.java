@@ -27,6 +27,11 @@ public class HotelVo implements Serializable {
     private String hotelName;
 
     /**
+     *  酒店详细地址
+     */
+    private String address;
+
+    /**
      *  酒店位置经度
      */
     @TableField(value = "hotel_lng")

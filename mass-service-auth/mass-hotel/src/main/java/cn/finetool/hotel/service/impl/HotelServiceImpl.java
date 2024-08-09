@@ -9,22 +9,26 @@ import cn.finetool.hotel.mapper.HotelMapper;
 import cn.finetool.hotel.service.HotelService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.*;
 import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.domain.geo.GeoLocation;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+
 
 @Service
+@Slf4j
 public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements HotelService {
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
+
+
+    @Resource
+    private HotelMapper hotelMapper;
 
     @Override
     public Response addHotelInfo(Hotel hotel) {
@@ -37,6 +41,8 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
     public Response getNearByHotelList(Double userLng, Double userLat, Double queryRange) {
         // 1. 用户当前位置经纬度
         Point userPoint = new Point(userLng, userLat);
+
+         queryRange = queryRange * 1000; // 转换为米
 
         // 2. 存储用户位置到 Redis
         // 临时存储用户位置，用于计算距离
@@ -54,6 +60,7 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
         // 3. 计算用户到每个酒店的距离
         List<HotelVo> hotelVoList = new ArrayList<>();
         for (GeoResult<RedisGeoCommands.GeoLocation<Object>> result : nearbyHotels) {
+
             String hotelIdStr = (String) result.getContent().getName();
 
 
@@ -65,16 +72,19 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
             // 使用 GEODIST 命令计算用户和酒店之间的距离，单位为千米
             Distance distance = redisTemplate.opsForGeo().distance(RedisCache.HOTEL_LOCATION_LIST, userKey, hotelIdStr, RedisGeoCommands.DistanceUnit.KILOMETERS);
             if (distance == null) {
-                System.out.println("Cannot calculate distance between user and hotel ID " + hotelIdStr);
                 continue; // 忽略无法计算距离的酒店
             }
 
-            // 封装酒店ID和距离
-            HotelVo hotelVo = new HotelVo();
-            hotelVo.setHotelId(Integer.parseInt(hotelIdStr));
+            // 根据id 获取酒店详细地址 、 最低价格 、 距离
+            HotelVo hotelVo = hotelMapper.queryHotelInfo(Integer.parseInt(hotelIdStr));
+            if (hotelVo == null){
+                log.info("新添加的临时用户位置，不进行查询");
+                continue;
+            }
             hotelVo.setHotelLng(hotelPoint.getX());
             hotelVo.setHotelLat(hotelPoint.getY());
             hotelVo.setDistance(distance.getValue());
+
             hotelVoList.add(hotelVo);
         }
 
