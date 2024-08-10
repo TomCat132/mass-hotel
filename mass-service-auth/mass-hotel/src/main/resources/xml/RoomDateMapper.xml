@@ -12,4 +12,6 @@
         JOIN tb_room room ON room.room_id = room_info.room_id
         WHERE room.hotel_id = #{hotelId} AND room_date.date = #{today}
     </select>
+
+
 </mapper>

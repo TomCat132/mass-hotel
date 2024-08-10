@@ -17,4 +17,16 @@
         FROM tb_hotel
         WHERE hotel_id = #{hotelId}
     </select>
+
+    <select id="queryHotelRoomTypeList" resultType="cn.finetool.common.vo.RoomInfoVo">
+        SELECT room.room_id,room.room_name,room.room_type,room.room_desc,MIN(room_date.price) AS today_price,COUNT(room_date.ri_id) AS room_count
+        FROM tb_room As room
+        JOIN tb_room_info room_info ON room.room_id = room_info.room_id
+        JOIN tb_room_date room_date ON room_info.id = room_date.ri_id
+        WHERE room.hotel_id = #{hotelId}
+        AND room_info.status = 1
+        AND room_date.status = 0
+        AND room_date.date = #{date}
+        GROUP BY room.room_id,room.room_name,room.room_desc,room.room_type
+    </select>
 </mapper>

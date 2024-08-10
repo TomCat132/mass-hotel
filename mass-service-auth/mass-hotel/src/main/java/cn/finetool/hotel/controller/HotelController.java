@@ -35,5 +35,10 @@ public class HotelController {
         return hotelService.getNearByHotelList(userLng, userLat, queryRange);
     }
 
+    @ApiOperation(value = "查看酒店所有类型的房间信息", notes = "查看酒店所有类型的房间信息")
+    @GetMapping("/getHotelRoomTypeList")
+    public Response getHotelRoomTypeList(@RequestParam("hotelId") Integer hotelId){
+        return hotelService.getHotelRoomTypeList(hotelId);
+    }
 
 }

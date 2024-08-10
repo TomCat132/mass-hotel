@@ -5,6 +5,7 @@ import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.po.Hotel;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.vo.HotelVo;
+import cn.finetool.common.vo.RoomInfoVo;
 import cn.finetool.hotel.mapper.HotelMapper;
 import cn.finetool.hotel.mapper.RoomDateMapper;
 import cn.finetool.hotel.service.HotelService;
@@ -106,5 +107,18 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
         redisTemplate.opsForGeo().remove(RedisCache.HOTEL_LOCATION_LIST, userKey);
 
         return Response.success(hotelVoList);
+    }
+
+    @Override
+    public Response getHotelRoomTypeList(Integer hotelId) {
+        // TODO: 代优化 （简单查询数据）
+        // 根据hotelId 查询 room表（room_name,room_desc,room_type,room_id）
+        // room_id -> room_info表 (id,status = 1)
+        // id -> room_date表 (count(status = 0), price(min))统计今日房间类型 剩余可用的 具体房间数量
+        // 显示字段: room_name,room_type,room_desc,today_Price(最低价格)
+        List<RoomInfoVo> roomInfoVoList = hotelMapper.queryHotelRoomTypeList(hotelId,LocalDate.now());
+
+
+        return Response.success(roomInfoVoList);
     }
 }
