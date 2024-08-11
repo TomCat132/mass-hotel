@@ -18,6 +18,23 @@
             #{roomId}
         </foreach>
     </select>
-<!--    ================================================================================================-->
+
+    <select id="queryRoomInfoByDate" resultType="cn.finetool.common.vo.RoomInfoVo">
+        SELECT room.id,room.room_id,room.room_name,room.room_desc,room.room_type,
+               room.basic_price AS old_price,
+               room_date.price AS today_price,
+               COUNT(room_date.ri_id) AS room_count
+        FROM tb_room AS room
+        JOIN tb_room_info AS room_info ON room.room_id = room_info.room_id
+                                              AND room_info.status = 1
+        JOIN tb_room_date AS room_date ON room_info.id = room_date.ri_id
+                                              AND room_date.status = 0
+                                              AND room_date.date = #{date}
+        WHERE room.room_id = #{roomId}
+        GROUP BY room.id,room.room_id,room.room_name,room.room_desc,room.room_type,room.basic_price,room_date.price
+    </select>
+    <!--    ================================================================================================-->
+
+
 
 </mapper>

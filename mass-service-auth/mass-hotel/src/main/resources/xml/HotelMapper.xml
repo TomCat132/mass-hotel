@@ -18,8 +18,11 @@
         WHERE hotel_id = #{hotelId}
     </select>
 
+    <!-- 使用 聚合函数 需要对 非聚合字段进行分组    -->
     <select id="queryHotelRoomTypeList" resultType="cn.finetool.common.vo.RoomInfoVo">
-        SELECT room.room_id,room.room_name,room.room_type,room.room_desc,MIN(room_date.price) AS today_price,COUNT(room_date.ri_id) AS room_count
+        SELECT room.room_id,room.room_name,room.room_type,room.room_desc,
+               MIN(room_date.price) AS today_price,
+               COUNT(room_date.ri_id) AS room_count
         FROM tb_room As room
         JOIN tb_room_info room_info ON room.room_id = room_info.room_id
         JOIN tb_room_date room_date ON room_info.id = room_date.ri_id
