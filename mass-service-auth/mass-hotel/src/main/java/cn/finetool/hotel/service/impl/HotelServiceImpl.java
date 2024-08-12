@@ -2,6 +2,7 @@ package cn.finetool.hotel.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.finetool.common.constant.RedisCache;
+import cn.finetool.common.dto.QueryRoomTypeDto;
 import cn.finetool.common.po.Hotel;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.vo.HotelVo;
@@ -110,13 +111,19 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
     }
 
     @Override
-    public Response getHotelRoomTypeList(Integer hotelId) {
+    public Response getHotelRoomTypeList(QueryRoomTypeDto queryRoomTypeDto) {
         // TODO: 代优化 （简单查询数据）
         // 根据hotelId 查询 room表（room_name,room_desc,room_type,room_id）
         // room_id -> room_info表 (id,status = 1)
         // id -> room_date表 (count(status = 0), price(min))统计今日房间类型 剩余可用的 具体房间数量
         // 显示字段: room_name,room_type,room_desc,today_Price(最低价格)
-        List<RoomInfoVo> roomInfoVoList = hotelMapper.queryHotelRoomTypeList(hotelId,LocalDate.now());
+
+        // 1. 将 checkOutDate 减一天，得到实际的入住日期
+        LocalDate checkOutDate = queryRoomTypeDto.getCheckOutDate().minusDays(1);
+        // TODO: SQL尚未修改
+        List<RoomInfoVo> roomInfoVoList = hotelMapper.queryHotelRoomTypeList(queryRoomTypeDto.getHotelId(),
+                queryRoomTypeDto.getCheckInDate(),
+                checkOutDate);
 
 
         return Response.success(roomInfoVoList);

@@ -8,4 +8,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/roomDate")
 @Api(tags = "房间日常价格管理")
 public class RoomDateController {
+
 }

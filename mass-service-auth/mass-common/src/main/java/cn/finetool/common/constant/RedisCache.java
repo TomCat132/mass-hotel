@@ -23,4 +23,7 @@ public class RedisCache {
     /** =========== 酒店 ID 前缀 ========== */
     public static final String HOTEL_ID_PREFIX = "hotel_id:";
 
+    /** =========== 房间订单锁 ========== */
+    public static final String ROOM_ORDER_LOCK = "room_order_lock";
+
 }

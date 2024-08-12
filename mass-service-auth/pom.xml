@@ -39,6 +39,7 @@
         <sa-token.version>1.38.0</sa-token.version>
         <hibernate.version>6.2.7.Final</hibernate.version>
         <alipay-sdk.version>4.34.8.ALL</alipay-sdk.version>
+        <redisson.version>3.16.6</redisson.version>
     </properties>
 
     <parent>
@@ -52,7 +53,11 @@
     <dependencyManagement>
         <dependencies>
 
-
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>

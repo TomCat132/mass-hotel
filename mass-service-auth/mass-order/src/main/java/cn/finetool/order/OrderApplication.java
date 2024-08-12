@@ -18,6 +18,5 @@ public class OrderApplication {
         SpringApplication.run(OrderApplication.class, args);
         log.info("OrderApplication started! 端口号: 8090");
     }
-
 }
  

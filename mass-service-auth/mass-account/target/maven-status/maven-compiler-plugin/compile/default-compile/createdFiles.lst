@@ -1,4 +1,5 @@
 cn\finetool\account\config\StpInterfaceImpl.class
+cn\finetool\account\api\UserAPIService.class
 cn\finetool\account\controller\RoleController.class
 cn\finetool\account\api\RoleAPIService.class
 cn\finetool\account\mapper\UserRolesMapper.class

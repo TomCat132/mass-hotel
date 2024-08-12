@@ -1,5 +1,7 @@
 package cn.finetool.hotel.service.impl;
 
+import cn.finetool.common.constant.RedisCache;
+import cn.finetool.common.dto.RoomBookingDto;
 import cn.finetool.common.dto.RoomDto;
 import cn.finetool.common.enums.BusinessErrors;
 import cn.finetool.common.exception.BusinessRuntimeException;
@@ -7,14 +9,25 @@ import cn.finetool.common.po.Room;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.util.SnowflakeIdWorker;
 import cn.finetool.common.vo.RoomInfoVo;
+import cn.finetool.hotel.mapper.RoomInfoMapper;
 import cn.finetool.hotel.mapper.RoomMapper;
 import cn.finetool.hotel.service.RoomService;
+import cn.finetool.hotel.strategy.discountStrategy.RoomPricingContext;
+import cn.finetool.hotel.strategy.memberLevelDiscountStrategy.MemberLevelDiscountStrategy;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.util.Value;
+import io.lettuce.core.RedisClient;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements RoomService {
@@ -23,8 +36,20 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
 
     private static final SnowflakeIdWorker idWorker = new SnowflakeIdWorker(7, 0);
 
+
+    @Resource
+    private RedissonClient redissonClient;
+
+
     @Resource
     private RoomMapper roomMapper;
+
+    @Resource
+    private RoomInfoMapper roomInfoMapper;
+
+    @Resource
+    private RoomPricingContext roomPricingContext;
+
 
     @Override
     public Response addRoomInfo(RoomDto roomDto) {
@@ -54,5 +79,26 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
         RoomInfoVo roomInfo = roomMapper.queryRoomInfoByDate(roomId, LocalDate.now());
 
         return Response.success(roomInfo);
+    }
+
+    @Override
+    public Integer queryResidualRoomInfo(String roomId, LocalDate date) {
+        return roomInfoMapper.queryResidualRoomInfo(roomId,date);
+    }
+
+    @Override
+    public Response calculatePrice(RoomBookingDto roombookingDto) {
+
+        // 计算天数
+        LocalDate checkInDate = roombookingDto.getCheckInDate();
+        LocalDate checkOutDate = roombookingDto.getCheckOutDate();
+        int liveCount = (int) checkOutDate.toEpochDay() - (int) checkInDate.toEpochDay();
+        BigDecimal price = roomInfoMapper.getRoomPrice(roombookingDto.getRoomId(),checkInDate,liveCount);
+        //设置临时价格，进行各种优惠活动计算
+        roombookingDto.setTempPrice(price);
+        // TODO: 会员折扣，优惠券 等 规则计算
+        price = roomPricingContext.calculatePrice(roombookingDto);
+        return Response.success(price);
+
     }
 }

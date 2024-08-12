@@ -6,6 +6,8 @@ package cn.finetool.common.enums;
  */
 public enum BusinessErrors {
 
+    RUNTIME_ERROR(400, "运行时错误"),
+
     DATA_DUPLICATION(-1001, "数据重复"),
     DATA_NOT_EXIST(-1002, "数据不存在"),
     DATA_STATUS_ERROR(-1003, "数据状态错误"),
@@ -25,7 +27,6 @@ public enum BusinessErrors {
     IMAGE_CONVERT_ERROR(-8001, "图片转换失败"),
 
     ALI_PAY_ERROR( -9001, "支付宝支付失败"),
-
     ALI_PAY_VERIFY_ERROR( -9002, "支付宝支付异步验证失败"),
     ;
 

@@ -16,3 +16,4 @@ spring:
           - data-id: shared-log.yaml
           - data-id: shared-common.yaml
           - data-id: shared-rabbitmq.yaml
+            refresh: true

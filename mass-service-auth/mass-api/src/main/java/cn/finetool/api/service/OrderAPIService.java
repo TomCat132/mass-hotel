@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "mass-order-service", path = "/order/api", contextId = "rechargeOrder")
+@FeignClient(name = "mass-order-service", path = "/order/api")
 public interface OrderAPIService {
 
     @PutMapping(value = "/updateOrderStatus")

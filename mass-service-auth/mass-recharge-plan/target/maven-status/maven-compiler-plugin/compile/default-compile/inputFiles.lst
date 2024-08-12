@@ -1,10 +1,7 @@
-D:\A02-Work\mass-service-auth\mass-recharge-plan\src\main\java\cn\finetool\recharge\configuration\RabbitTemplateConfig.java
-D:\A02-Work\mass-service-auth\mass-recharge-plan\src\main\java\cn\finetool\recharge\mapper\RechargePlanMapper.java
-D:\A02-Work\mass-service-auth\mass-recharge-plan\src\main\java\cn\finetool\recharge\api\RechargePlanAPIService.java
-D:\A02-Work\mass-service-auth\mass-recharge-plan\src\main\java\cn\finetool\recharge\service\RechargePlanService.java
-D:\A02-Work\mass-service-auth\mass-recharge-plan\src\main\java\cn\finetool\recharge\configuration\GlobalExceptionHandler.java
-D:\A02-Work\mass-service-auth\mass-recharge-plan\src\main\java\cn\finetool\recharge\service\impl\RechargePlanServiceImpl.java
-D:\A02-Work\mass-service-auth\mass-recharge-plan\src\main\java\cn\finetool\recharge\configuration\StpInterfaceImpl.java
-D:\A02-Work\mass-service-auth\mass-recharge-plan\src\main\java\cn\finetool\recharge\configuration\SaTokenConfigure.java
-D:\A02-Work\mass-service-auth\mass-recharge-plan\src\main\java\cn\finetool\recharge\controller\RechargePlanController.java
-D:\A02-Work\mass-service-auth\mass-recharge-plan\src\main\java\cn\finetool\recharge\RechargePlanApplication.java
+C:\Users\86173\Desktop\毕业设计-后端源码\mass-service-auth\mass-recharge-plan\src\main\java\cn\finetool\recharge\service\impl\RechargePlanServiceImpl.java
+C:\Users\86173\Desktop\毕业设计-后端源码\mass-service-auth\mass-recharge-plan\src\main\java\cn\finetool\recharge\RechargePlanApplication.java
+C:\Users\86173\Desktop\毕业设计-后端源码\mass-service-auth\mass-recharge-plan\src\main\java\cn\finetool\recharge\configuration\RabbitTemplateConfig.java
+C:\Users\86173\Desktop\毕业设计-后端源码\mass-service-auth\mass-recharge-plan\src\main\java\cn\finetool\recharge\controller\RechargePlanController.java
+C:\Users\86173\Desktop\毕业设计-后端源码\mass-service-auth\mass-recharge-plan\src\main\java\cn\finetool\recharge\mapper\RechargePlanMapper.java
+C:\Users\86173\Desktop\毕业设计-后端源码\mass-service-auth\mass-recharge-plan\src\main\java\cn\finetool\recharge\api\RechargePlanAPIService.java
+C:\Users\86173\Desktop\毕业设计-后端源码\mass-service-auth\mass-recharge-plan\src\main\java\cn\finetool\recharge\service\RechargePlanService.java
