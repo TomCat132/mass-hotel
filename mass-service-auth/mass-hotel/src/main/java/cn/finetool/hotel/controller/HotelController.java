@@ -1,6 +1,7 @@
 package cn.finetool.hotel.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.finetool.common.dto.QueryRoomTypeDto;
 import cn.finetool.common.po.Hotel;
 import cn.finetool.common.util.Response;
 import cn.finetool.hotel.service.HotelService;
@@ -37,8 +38,9 @@ public class HotelController {
 
     @ApiOperation(value = "查看酒店所有类型的房间信息", notes = "查看酒店所有类型的房间信息")
     @GetMapping("/getHotelRoomTypeList")
-    public Response getHotelRoomTypeList(@RequestParam("hotelId") Integer hotelId){
-        return hotelService.getHotelRoomTypeList(hotelId);
+    public Response getHotelRoomTypeList(@ModelAttribute QueryRoomTypeDto queryRoomTypeDto){
+        return hotelService.getHotelRoomTypeList(queryRoomTypeDto);
     }
+
 
 }

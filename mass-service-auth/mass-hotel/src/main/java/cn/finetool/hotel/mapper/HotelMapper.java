@@ -18,7 +18,8 @@ public interface HotelMapper extends BaseMapper<Hotel> {
     HotelVo queryHotelInfo(@Param("hotelId") int hotelId);
 
     List<RoomInfoVo> queryHotelRoomTypeList(@Param(("hotelId")) Integer hotelId,
-                                            @Param("date")LocalDate date);
+                                            @Param("checkInDate") LocalDate checkInDate,
+                                            @Param("checkOutDate") LocalDate checkOutDate);
 
 
 }

@@ -1,5 +1,6 @@
 package cn.finetool.hotel.service;
 
+import cn.finetool.common.dto.QueryRoomTypeDto;
 import cn.finetool.common.po.Hotel;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.vo.HotelVo;
@@ -13,5 +14,5 @@ public interface HotelService extends IService<Hotel> {
 
     Response getNearByHotelList(Double userLng, Double userLat, Double queryRange);
 
-    Response getHotelRoomTypeList(Integer hotelId);
+    Response getHotelRoomTypeList(QueryRoomTypeDto queryRoomTypeDto);
 }

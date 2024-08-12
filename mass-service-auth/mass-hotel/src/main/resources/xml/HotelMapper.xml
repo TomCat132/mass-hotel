@@ -20,16 +20,22 @@
 
     <!-- 使用 聚合函数 需要对 非聚合字段进行分组    -->
     <select id="queryHotelRoomTypeList" resultType="cn.finetool.common.vo.RoomInfoVo">
-        SELECT room.room_id,room.room_name,room.room_type,room.room_desc,
-               MIN(room_date.price) AS today_price,
-               COUNT(room_date.ri_id) AS room_count
-        FROM tb_room As room
-        JOIN tb_room_info room_info ON room.room_id = room_info.room_id
-        JOIN tb_room_date room_date ON room_info.id = room_date.ri_id
-        WHERE room.hotel_id = #{hotelId}
-        AND room_info.status = 1
+        SELECT room.room_id,room.room_name,room.room_type,room.basic_price AS old_price,
+               MIN(room_date.price) AS todayPrice,
+               IFNULL(COUNT(DISTINCT room_date.ri_id), 0) room_count
+        FROM tb_room room
+        LEFT JOIN tb_room_info AS room_info ON room_info.room_id = room.room_id
+        LEFT JOIN tb_room_date AS room_date ON room_date.ri_id = room_info.id
+        AND room_date.date BETWEEN #{checkInDate} AND #{checkOutDate}
         AND room_date.status = 0
-        AND room_date.date = #{date}
-        GROUP BY room.room_id,room.room_name,room.room_desc,room.room_type
+        WHERE room.hotel_id = #{hotelId}
+        AND room_info.id NOT IN (
+                SELECT ri_id
+                FROM tb_room_date
+                WHERE date BETWEEN #{checkInDate} AND #{checkOutDate}
+                AND status != 0
+            )
+        GROUP BY room.room_id,room.room_name,room.room_type,room.basic_price
+        HAVING COUNT(DISTINCT room_date.date) = DATEDIFF(#{checkOutDate},#{checkInDate}) + 1;
     </select>
 </mapper>
