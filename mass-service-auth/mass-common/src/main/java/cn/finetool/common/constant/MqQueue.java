@@ -11,6 +11,6 @@ public class MqQueue {
     /** ======== 订单队列 ======== */
     public static final String RECHARGE_ORDER_QUEUE = "order_queue";
 
-    /** ======== 订单死信队列 ======== */
-    public static final String RECHARGE_ORDER_DLX_QUEUE = "order_dlx_queue";
+    /** ======== 房间预订订单队列 ======== */
+    public static final String ROOM_RESERVE_ORDER_QUEUE = "room_reserve_order_queue";
 }

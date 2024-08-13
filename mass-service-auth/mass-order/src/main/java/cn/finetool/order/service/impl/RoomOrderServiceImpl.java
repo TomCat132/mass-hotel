@@ -39,7 +39,7 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
     private OrderStatusService orderStatusService;
 
 
-   SnowflakeIdWorker ID_WORKER = new SnowflakeIdWorker(3, 0);
+    SnowflakeIdWorker ID_WORKER = new SnowflakeIdWorker(3, 0);
 
 
     @Override
@@ -80,6 +80,9 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
                 Integer roomDateId = roomDateIdList.stream()
                         .skip(new Random().nextInt(roomDateIdList.size()))
                         .findFirst().get();
+
+                // 发送消息实现订单超时取消
+
                 // 修改房间状态
                 hotelAPIService.updateRoomDateStatus(roomDateId,roomBookingDto.getCheckInDate(),
                         checkOutDate, Status.ROOM_DATE_RESERVED.getCode());

@@ -11,6 +11,6 @@ public class MqExchange {
     /** ========= 订单交换机 =========== */
     public static final String ORDER_EXCHANGE = "order_exchange";
 
-    /** ========= 订单死信交换机 =========== */
-    public static final String ORDER_DLX_EXCHANGE = "order_dlx_exchange";
+    /** ========= 房间预订订单交换机 =========== */
+    public static final String ROOM_DATE_RESERVE_ORDER_EXCHANGE = "room_date_reserve_order_exchange";
 }

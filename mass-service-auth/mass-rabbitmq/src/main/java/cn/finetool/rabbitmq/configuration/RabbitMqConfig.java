@@ -7,8 +7,6 @@ import cn.finetool.common.constant.MqRoutingKey;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +23,28 @@ public class RabbitMqConfig implements CommandLineRunner {
 
     @Resource
     private AmqpAdmin amqpAdmin;
+
+    @Bean
+    public Binding RoomReserveOrderBinding(){
+        return BindingBuilder.bind(RoomReserveOrderQueue())
+                .to(RoomReserveOrderExchange())
+                .with(MqRoutingKey.ROOM_RESERVE_ORDER_ROUTING_KEY).noargs();
+    }
+
+    @Bean
+    public Queue RoomReserveOrderQueue(){
+        log.info("创建房间预定订单队列");
+        return new Queue(MqQueue.ROOM_RESERVE_ORDER_QUEUE, true, false, false);
+    }
+
+    @Bean
+    public CustomExchange RoomReserveOrderExchange(){
+        log.info("创建房间预定订单交换机");
+        Map<String,Object> args = new HashMap<>();
+        args.put("x-delayed-type", "direct");
+        return new CustomExchange(MqExchange.ROOM_DATE_RESERVE_ORDER_EXCHANGE,"x-delayed-message",
+                true,false,args);
+    }
 
 
     /** ============充值订单 交换机 ========== */
