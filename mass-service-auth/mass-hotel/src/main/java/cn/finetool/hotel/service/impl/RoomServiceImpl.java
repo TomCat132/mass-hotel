@@ -1,6 +1,6 @@
 package cn.finetool.hotel.service.impl;
 
-import cn.finetool.common.constant.RedisCache;
+
 import cn.finetool.common.dto.RoomBookingDto;
 import cn.finetool.common.dto.RoomDto;
 import cn.finetool.common.enums.BusinessErrors;
@@ -13,21 +13,15 @@ import cn.finetool.hotel.mapper.RoomInfoMapper;
 import cn.finetool.hotel.mapper.RoomMapper;
 import cn.finetool.hotel.service.RoomService;
 import cn.finetool.hotel.strategy.discountStrategy.RoomPricingContext;
-import cn.finetool.hotel.strategy.memberLevelDiscountStrategy.MemberLevelDiscountStrategy;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.util.Value;
-import io.lettuce.core.RedisClient;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
-import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 @Service
 public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements RoomService {
@@ -82,8 +76,8 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
     }
 
     @Override
-    public Integer queryResidualRoomInfo(String roomId, LocalDate date) {
-        return roomInfoMapper.queryResidualRoomInfo(roomId,date);
+    public List<Integer> queryResidualRoomInfo(String roomId, LocalDate checkInDate, LocalDate checkOutDate) {
+        return roomInfoMapper.queryResidualRoomInfo(roomId,checkInDate,checkOutDate);
     }
 
     @Override

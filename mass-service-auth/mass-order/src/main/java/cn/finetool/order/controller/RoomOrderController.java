@@ -1,5 +1,6 @@
 package cn.finetool.order.controller;
 
+import cn.finetool.common.dto.RoomBookingDto;
 import cn.finetool.common.po.RoomOrder;
 import cn.finetool.common.util.Response;
 import cn.finetool.order.service.RoomOrderService;
@@ -21,7 +22,7 @@ public class RoomOrderController {
 
     @ApiOperation(value = "创建房间订单", notes = "创建房间订单")
     @PostMapping("/create")
-    public Response createRoomOrder(@RequestBody RoomOrder roomOrder){
-        return roomOrderService.createRoomOrder(roomOrder);
+    public Response createRoomOrder(@RequestBody RoomBookingDto roomBookingDto){
+        return roomOrderService.createRoomOrder(roomBookingDto);
     }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 public interface RoomInfoMapper extends BaseMapper<RoomInfo> {
     List<RoomInfo> getCanUseRoomInfoList();
 
-    Integer queryResidualRoomInfo(@Param("roomId") String roomId,
+    List<Integer> queryResidualRoomInfo(@Param("roomId") String roomId,
                                   @Param("checkInDate") LocalDate checkInDate,
                                   @Param("checkOutDate") LocalDate checkOutDate);
 

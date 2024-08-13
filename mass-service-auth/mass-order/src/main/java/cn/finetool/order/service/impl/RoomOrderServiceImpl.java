@@ -2,6 +2,7 @@ package cn.finetool.order.service.impl;
 
 import cn.finetool.api.service.HotelAPIService;
 import cn.finetool.common.constant.RedisCache;
+import cn.finetool.common.dto.RoomBookingDto;
 import cn.finetool.common.enums.BusinessErrors;
 import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.RoomOrder;
@@ -14,7 +15,9 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -28,20 +31,24 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
 
 
     @Override
-    public Response createRoomOrder(RoomOrder roomOrder) {
-        LocalDateTime nowTime = LocalDateTime.now();
+    public Response createRoomOrder(RoomBookingDto roomBookingDto) {
 
-        Integer roomCount =  hotelAPIService.queryResidualRoomInfo(roomOrder.getRoomId(), nowTime.toLocalDate());
-        if (roomCount == 0){
+        LocalDate checkOutDate = roomBookingDto.getCheckOutDate().minusDays(1);
+
+        List<Integer> roomDateIdList =  hotelAPIService.queryResidualRoomInfo(roomBookingDto.getRoomId(),
+                roomBookingDto.getCheckInDate(),checkOutDate);
+        if (roomDateIdList.isEmpty()){
             throw new BusinessRuntimeException(BusinessErrors.RUNTIME_ERROR,"房间已售罄");
         }
-        RLock roomLock = redissonClient.getLock(RedisCache.ROOM_ORDER_LOCK + roomOrder.getRoomId());
+        RLock roomLock = redissonClient.getLock(RedisCache.ROOM_ORDER_LOCK + roomBookingDto.getRoomId());
 
         try {
             boolean isGetLock = roomLock.tryLock(2000,1000, TimeUnit.MICROSECONDS);
             if (isGetLock){
                 // 获取锁成功, 创建订单
                 // TODO
+
+
 
                 return null;
             } else{

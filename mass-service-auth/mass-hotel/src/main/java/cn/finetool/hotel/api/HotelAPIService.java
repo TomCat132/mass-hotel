@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/hotel/api")
@@ -18,9 +19,10 @@ public class HotelAPIService {
 
     /** ========== 查询该天日期房间类型的具体剩余数量 ===========*/
     @GetMapping("/queryResidualRoomInfo")
-    public Integer queryResidualRoomInfo(@RequestParam("roomId") String roomId,
-                                         @RequestParam("date")LocalDate date){
-        return roomService.queryResidualRoomInfo(roomId, date);
+    public List<Integer> queryResidualRoomInfo(@RequestParam("roomId") String roomId,
+                                               @RequestParam("checkInDate")LocalDate checkInDate,
+                                               @RequestParam("checkOutDate") LocalDate checkOutDate){
+        return roomService.queryResidualRoomInfo(roomId,checkInDate,checkOutDate);
     }
 
 }

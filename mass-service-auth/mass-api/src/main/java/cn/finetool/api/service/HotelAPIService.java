@@ -5,11 +5,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @FeignClient(name = "mass-hotel-service", path = "/hotel/api")
 public interface HotelAPIService {
 
     @GetMapping("/queryResidualRoomInfo")
-    Integer queryResidualRoomInfo(@RequestParam("roomId") String roomId,
-                                  @RequestParam("date") LocalDate localDate);
+    List<Integer> queryResidualRoomInfo(@RequestParam("roomId") String roomId,
+                                        @RequestParam("checkInDate") LocalDate checkInDate,
+                                        @RequestParam("checkOutDate") LocalDate checkOutDate);
 }
