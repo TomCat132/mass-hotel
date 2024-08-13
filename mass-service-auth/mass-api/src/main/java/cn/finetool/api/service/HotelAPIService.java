@@ -23,4 +23,6 @@ public interface HotelAPIService {
                               @RequestParam("checkInDate") LocalDate checkInDate,
                               @RequestParam("checkOutDate") LocalDate checkOutDate,
                               @RequestParam("status") Integer status);
+
+
 }

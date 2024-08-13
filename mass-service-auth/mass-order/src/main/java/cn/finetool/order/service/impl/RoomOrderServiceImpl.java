@@ -71,16 +71,8 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
             boolean isGetLock = roomLock.tryLock(2000,1000, TimeUnit.MICROSECONDS);
             if (isGetLock){
                 // 获取锁成功
-                // 创建订单
                 String orderId = String.valueOf(ID_WORKER.nextId());
                 String userId = StpUtil.getLoginIdAsString();
-
-                RoomOrder roomOrder = new RoomOrder();
-                roomOrder.setOrderId(orderId);
-                roomOrder.setRoomId(roomOrder.getRoomId());
-                roomOrder.setUserPayAmount(roomBookingDto.getUserPayAmount());
-                roomOrder.setCreateTime(LocalDateTime.now());
-                save(roomOrder);
 
                 // 冷热数据分离: 订单状态表信息保存
                 OrderStatus orderStatus = new OrderStatus();
@@ -96,7 +88,21 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
                 MessageDo messageDo = new MessageDo();
                 Map<String,Object> messageMap = new HashMap<>();
                 messageMap.put("orderId",orderId);
+                messageMap.put("roomDateId",roomDateId);
+                messageMap.put("checkInDate",roomBookingDto.getCheckInDate());
+                messageMap.put("checkOutDate",checkOutDate);
                 messageDo.setMessageMap(messageMap);
+
+                // 创建订单
+                RoomOrder roomOrder = new RoomOrder();
+                roomOrder.setOrderId(orderId);
+                roomOrder.setRoomId(roomOrder.getRoomId());
+                roomOrder.setCheckInDate(roomBookingDto.getCheckInDate());
+                roomOrder.setCheckOutDate(roomBookingDto.getCheckOutDate());
+                roomOrder.setRoomDateId(roomDateId);
+                roomOrder.setUserPayAmount(roomBookingDto.getUserPayAmount());
+                roomOrder.setCreateTime(LocalDateTime.now());
+                save(roomOrder);
 
                 // 发送消息实现订单 防止超时取消
                 rabbitTemplate.convertAndSend(MqExchange.ROOM_DATE_RESERVE_ORDER_EXCHANGE,

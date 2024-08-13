@@ -666,3 +666,34 @@ Warnings:
 16:54:40:477  INFO 4380 --- [mass-order-service] [main] c.a.nacos.client.config.impl.CacheData   : [fixed-192.168.64.100_8848] [add-listener] ok, tenant=, dataId=mass-order-service.yaml, group=DEFAULT_GROUP, cnt=1
 16:54:40:477  INFO 4380 --- [mass-order-service] [main] c.a.c.n.refresh.NacosContextRefresher    : [Nacos Config] Listening config: dataId=mass-order-service.yaml, group=DEFAULT_GROUP
 16:54:40:477  INFO 4380 --- [mass-order-service] [main] cn.finetool.order.OrderApplication       : OrderApplication started! 端口号: 8090
+17:20:04:381  WARN 4380 --- [mass-order-service] [Thread-1] c.a.n.common.http.HttpClientBeanHolder   : [HttpClientBeanHolder] Start destroying common HttpClient
+17:20:04:381  WARN 4380 --- [mass-order-service] [Thread-7] c.a.nacos.common.notify.NotifyCenter     : [NotifyCenter] Start destroying Publisher
+17:20:04:381  WARN 4380 --- [mass-order-service] [Thread-7] c.a.nacos.common.notify.NotifyCenter     : [NotifyCenter] Destruction of the end
+17:20:04:382  WARN 4380 --- [mass-order-service] [Thread-1] c.a.n.common.http.HttpClientBeanHolder   : [HttpClientBeanHolder] Destruction of the end
+17:20:04:399  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] c.a.c.n.registry.NacosServiceRegistry    : De-registering from Nacos Server now...
+17:20:04:399  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : [DEREGISTER-SERVICE] public deregistering service mass-order-service with instance: Instance{instanceId='null', ip='192.168.247.1', port=8091, weight=1.0, healthy=true, enabled=true, ephemeral=true, clusterName='DEFAULT', serviceName='null', metadata={}}
+17:20:04:402  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] c.a.c.n.registry.NacosServiceRegistry    : De-registration finished.
+17:20:04:403  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : com.alibaba.nacos.client.naming.cache.ServiceInfoHolder do shutdown begin
+17:20:04:403  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : com.alibaba.nacos.client.naming.backups.FailoverReactor do shutdown begin
+17:20:04:403  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : com.alibaba.nacos.client.naming.backups.FailoverReactor do shutdown stop
+17:20:04:403  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : com.alibaba.nacos.client.naming.cache.ServiceInfoHolder do shutdown stop
+17:20:04:403  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : com.alibaba.nacos.client.naming.remote.NamingClientProxyDelegate do shutdown begin
+17:20:04:403  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : com.alibaba.nacos.client.naming.core.ServiceInfoUpdateService do shutdown begin
+17:20:04:403  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : com.alibaba.nacos.client.naming.core.ServiceInfoUpdateService do shutdown stop
+17:20:04:403  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : com.alibaba.nacos.client.naming.core.ServerListManager do shutdown begin
+17:20:04:403  WARN 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : [NamingHttpClientManager] Start destroying NacosRestTemplate
+17:20:04:403  WARN 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : [NamingHttpClientManager] Destruction of the end
+17:20:04:403  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : com.alibaba.nacos.client.naming.core.ServerListManager do shutdown stop
+17:20:04:404  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : com.alibaba.nacos.client.naming.remote.http.NamingHttpClientProxy do shutdown begin
+17:20:04:404  WARN 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : [NamingHttpClientManager] Start destroying NacosRestTemplate
+17:20:04:404  WARN 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : [NamingHttpClientManager] Destruction of the end
+17:20:04:404  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : com.alibaba.nacos.client.naming.remote.http.NamingHttpClientProxy do shutdown stop
+17:20:04:404  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.common.remote.client   : Shutdown rpc client, set status to shutdown
+17:20:04:404  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.common.remote.client   : Shutdown client event executor java.util.concurrent.ScheduledThreadPoolExecutor@23e54c8a[Running, pool size = 2, active threads = 2, queued tasks = 0, completed tasks = 0]
+17:20:04:404  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.common.remote.client   : Close current connection 1723539280782_192.168.64.1_62135
+17:20:04:405  INFO 4380 --- [mass-order-service] [nacos-grpc-client-executor-192.168.64.100-317] c.a.n.c.remote.client.grpc.GrpcClient    : [1723539280782_192.168.64.1_62135]Ignore complete event,isRunning:false,isAbandon=false
+17:20:04:406  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] c.a.n.c.remote.client.grpc.GrpcClient    : Shutdown grpc executor java.util.concurrent.ThreadPoolExecutor@3b24fb6f[Running, pool size = 4, active threads = 0, queued tasks = 0, completed tasks = 318]
+17:20:04:406  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : Shutdown grpc redo service executor java.util.concurrent.ScheduledThreadPoolExecutor@409b1740[Running, pool size = 1, active threads = 0, queued tasks = 1, completed tasks = 507]
+17:20:04:407  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] c.a.n.c.a.r.identify.CredentialWatcher   : [null] CredentialWatcher is stopped
+17:20:04:407  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] c.a.n.c.a.r.identify.CredentialService   : [null] CredentialService is freed
+17:20:04:407  INFO 4380 --- [mass-order-service] [SpringApplicationShutdownHook] com.alibaba.nacos.client.naming          : com.alibaba.nacos.client.naming.remote.NamingClientProxyDelegate do shutdown stop

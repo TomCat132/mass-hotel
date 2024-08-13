@@ -23,4 +23,8 @@ public interface OrderAPIService {
     /**====== 获取 用户 充值订单列表 =====*/
     @GetMapping("/getRechargeOrderList")
     List<OrderVo> getRechargeOrderList(@RequestParam("userId") String userId);
+
+    @PutMapping("/changeOrderStatus")
+    void changeOrderStatus(@RequestParam("orderId") String orderId,
+                           @RequestParam("orderStatus") Integer orderStatus);
 }

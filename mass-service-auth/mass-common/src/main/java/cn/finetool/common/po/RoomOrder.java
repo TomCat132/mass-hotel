@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -24,6 +25,11 @@ public class RoomOrder implements Serializable {
      *  订单号
      */
     private String orderId;
+
+    /**
+     *  room_date_id
+     */
+    private Integer roomDateId;
 
     /**
      *  用户Id
@@ -50,4 +56,16 @@ public class RoomOrder implements Serializable {
      * 数据状态: 0:删除 1：正常
      */
     private Integer status;
+
+    /**
+     * 入住时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private LocalDate checkInDate;
+
+    /**
+     * 离店时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private LocalDate checkOutDate;
 }

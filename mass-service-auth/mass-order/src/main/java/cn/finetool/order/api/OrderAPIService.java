@@ -4,6 +4,7 @@ package cn.finetool.order.api;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.vo.OrderVo;
+import cn.finetool.order.service.OrderStatusService;
 import cn.finetool.order.service.RechargeOrderService;
 import cn.finetool.order.service.impl.RechargeOrderServiceImpl;
 import jakarta.annotation.Resource;
@@ -19,6 +20,9 @@ public class OrderAPIService {
 
     @Resource
     private RechargeOrderService rechargeOrderService;
+
+    @Resource
+    private OrderStatusService orderStatusService;
 
     @Resource
     private RechargeOrderServiceImpl rechargeOrderServiceImpl;
@@ -45,6 +49,13 @@ public class OrderAPIService {
     @GetMapping("/getRechargeOrderList")
     public List<OrderVo> getRechargeOrderList(@RequestParam("userId") String userId){
         return rechargeOrderService.getRechargeOrderList(userId);
+    }
+
+    /** ========= 充值订单状态修改 ========= */
+    @PutMapping("/changeOrderStatus")
+    public void changeOrderStatus(@RequestParam("orderId") String orderId,
+                                  @RequestParam("orderStatus") Integer orderStatus){
+        orderStatusService.changeOrderStatus(orderId, orderStatus);
     }
 
 }
