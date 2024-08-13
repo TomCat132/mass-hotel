@@ -14,7 +14,8 @@ public interface RoomInfoMapper extends BaseMapper<RoomInfo> {
     List<RoomInfo> getCanUseRoomInfoList();
 
     Integer queryResidualRoomInfo(@Param("roomId") String roomId,
-                                  @Param("date") LocalDate date);
+                                  @Param("checkInDate") LocalDate checkInDate,
+                                  @Param("checkOutDate") LocalDate checkOutDate);
 
     BigDecimal getRoomPrice(@Param("roomId") String roomId,
                             @Param("date") LocalDate date,

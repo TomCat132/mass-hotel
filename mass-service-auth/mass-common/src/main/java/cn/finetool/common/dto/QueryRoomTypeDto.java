@@ -1,5 +1,6 @@
 package cn.finetool.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -17,10 +18,12 @@ public class QueryRoomTypeDto implements Serializable {
     /**
      * 入住时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private LocalDate checkInDate;
 
     /**
      * 离开时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private LocalDate checkOutDate;
 }

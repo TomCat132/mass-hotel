@@ -120,7 +120,6 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
 
         // 1. 将 checkOutDate 减一天，得到实际的入住日期
         LocalDate checkOutDate = queryRoomTypeDto.getCheckOutDate().minusDays(1);
-        // TODO: SQL尚未修改
         List<RoomInfoVo> roomInfoVoList = hotelMapper.queryHotelRoomTypeList(queryRoomTypeDto.getHotelId(),
                 queryRoomTypeDto.getCheckInDate(),
                 checkOutDate);
