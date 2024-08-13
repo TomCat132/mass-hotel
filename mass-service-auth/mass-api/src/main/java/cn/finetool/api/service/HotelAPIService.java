@@ -19,8 +19,8 @@ public interface HotelAPIService {
                                         @RequestParam("checkOutDate") LocalDate checkOutDate);
 
     @PutMapping("/updateRoomDateStatus")
-    void updateRoomDateStatus(@Param("roomDateId") Integer roomDateId,
-                              @Param("checkInDate") LocalDate checkInDate,
-                              @Param("checkOutDate") LocalDate checkOutDate,
-                              @Param("status") Integer status);
+    void updateRoomDateStatus(@RequestParam("roomDateId") Integer roomDateId,
+                              @RequestParam("checkInDate") LocalDate checkInDate,
+                              @RequestParam("checkOutDate") LocalDate checkOutDate,
+                              @RequestParam("status") Integer status);
 }

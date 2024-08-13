@@ -39,7 +39,7 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
     private OrderStatusService orderStatusService;
 
 
-    private static final SnowflakeIdWorker ID_WORKER = new SnowflakeIdWorker(3, 0);
+   SnowflakeIdWorker ID_WORKER = new SnowflakeIdWorker(3, 0);
 
 
     @Override
