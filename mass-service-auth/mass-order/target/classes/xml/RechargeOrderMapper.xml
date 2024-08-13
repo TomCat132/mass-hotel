@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.finetool.order.mapper.RechargeOrderMapper">
+
+    <!-- 更新订单状态 -->
+    <update id="updateOrderStatus">
+        UPDATE tb_recharge_order
+        <set>
+            order_status = #{orderStatus},
+
+            <if test="orderStatus == 3">
+               cancel_time = #{cancelTime}
+            </if>
+        </set>
+        WHERE order_id = #{orderId}
+    </update>
+
+    <update id="handleRechargeOrder">
+        UPDATE tb_recharge_order
+        SET order_status = #{orderStatus},
+            pay_time = #{payTime},
+            pay_type = #{payType}
+        WHERE order_Id = #{orderId}
+    </update>
+
+    <select id="queryOrder" resultType="cn.finetool.common.po.RechargeOrder">
+        SELECT plan_id,user_pay_amount,total_amount,order_status,create_time,user_id FROM tb_recharge_order
+        WHERE order_id = #{orderId}
+    </select>
+
+    <select id="getRechargeOrderList" resultType="cn.finetool.common.vo.OrderVo">
+        SELECT  order_id,order_status,user_pay_amount,create_time
+        FROM tb_recharge_order
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,7 @@
+minio:
+  url: http://192.168.64.100:9005
+  host: 192.168.64.100
+  port: 9005
+  bucket: mass-hotel
+  username: minioadmin
+  password: minioadmin

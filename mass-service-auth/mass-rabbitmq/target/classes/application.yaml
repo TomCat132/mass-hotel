@@ -1,0 +1,19 @@
+server:
+  port: 5672
+mass-hotel:
+  db:
+    host: 192.168.64.100
+    port: 3306
+    database: mass_hotel
+    username: root
+    password: root
+  redis:
+    host: 192.168.64.100
+    port: 6379
+    database: 0
+  rabbitmq:
+    host: 192.168.64.100
+    port: 5672
+    username: guest
+    password: guest
+    prefetch: 3

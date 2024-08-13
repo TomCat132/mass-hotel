@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.finetool.hotel.mapper.RoomInfoMapper">
+
+    <select id="getCanUseRoomInfoList" resultType="cn.finetool.common.po.RoomInfo">
+        SELECT id,room_id,room_info_id
+        FROM tb_room_info
+        WHERE status = 1
+    </select>
+
+    <select id="queryResidualRoomInfo" resultType="java.lang.Integer">
+         SELECT COUNT(DISTINCT room_date.date)
+         FROM tb_room_date AS room_date
+         JOIN tb_room_info AS room_info ON room_date.ri_id = room_info.id
+                                                     AND room_info.status = 1
+                                                     AND room_info.id NOT IN (
+                                                         SELECT room_date.ri_id
+                                                         FROM tb_room_date AS room_date
+                                                         WHERE room_date.date BETWEEN #{checkInDate} AND #{checkOutDate}
+                                                         AND status != 0
+                 )
+         WHERE room_date.date BETWEEN #{checkInDate} AND #{checkOutDate}
+         AND room_date.status = 0
+         AND room_info.room_id = #{roomId}
+         GROUP BY room_date.ri_id
+         HAVING COUNT(DISTINCT room_date.date) = DATEDIFF(#{checkOutDate}, #{checkInDate}) + 1
+    </select>
+
+    <select id="getRoomPrice" resultType="java.math.BigDecimal">
+        SELECT DISTINCT price * #{liveCount}
+        FROM tb_room_date AS room_date
+        JOIN tb_room_info AS room_info ON room_info.id = room_date.ri_id
+        AND room_info.room_id = #{roomId}
+        AND room_date.date = #{date}
+    </select>
+</mapper>

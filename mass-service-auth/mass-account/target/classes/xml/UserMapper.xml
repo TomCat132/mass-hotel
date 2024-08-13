@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.finetool.account.mapper.UserMapper">
+
+
+    <update id="updateUserInfo">
+        UPDATE tb_user
+        SET
+            points = COALESCE(points, 0) + #{points},
+            account = COALESCE(account, 0) + #{account},
+            use_points = COALESCE(use_points, 0) + #{usePoints}
+        WHERE user_id = #{userId}
+    </update>
+</mapper>
