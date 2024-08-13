@@ -18,4 +18,6 @@ public interface RoomService extends IService<Room> {
     List<Integer> queryResidualRoomInfo(String roomId, LocalDate checkInDate, LocalDate checkOutDate);
 
     Response calculatePrice(RoomBookingDto roombookingDto);
+
+
 }

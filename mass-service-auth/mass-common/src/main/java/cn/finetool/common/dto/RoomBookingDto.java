@@ -34,4 +34,9 @@ public class RoomBookingDto implements Serializable {
      * 价格（临时）
      */
     private BigDecimal tempPrice;
+
+    /**
+     * 用户应该支付价格
+     */
+    private BigDecimal userPayAmount;
 }

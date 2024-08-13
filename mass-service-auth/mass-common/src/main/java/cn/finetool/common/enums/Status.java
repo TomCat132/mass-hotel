@@ -8,6 +8,11 @@ public enum Status {
     RECHARGE_PLAN_UP(0,"上架中"),
     RECHARGE_PLAN_DOWN(1,"已下架"),
 
+    ROOM_DATE_CAN_USE(0,"可预定"),
+    ROOM_DATE_RESERVED(1,"已预定"),
+    ROOM_DATE_CHECK_IN(2,"已入住"),
+    ROOM_DATE_CHECK_OUT(3,"已离店"),
+
     ORDER_WAIT(0,"待支付"),
     ORDER_SUCCESS(1,"支付成功"),
     ORDER_FAIL(2,"支付失败"),

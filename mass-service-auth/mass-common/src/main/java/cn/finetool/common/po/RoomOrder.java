@@ -26,6 +26,11 @@ public class RoomOrder implements Serializable {
     private String orderId;
 
     /**
+     *  用户Id
+     */
+    private String userId;
+
+    /**
      * 房间号
      */
     private String roomId;

@@ -41,6 +41,8 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
     @Resource
     private RoomInfoMapper roomInfoMapper;
 
+
+
     @Resource
     private RoomPricingContext roomPricingContext;
 
@@ -95,4 +97,6 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
         return Response.success(price);
 
     }
+
+
 }

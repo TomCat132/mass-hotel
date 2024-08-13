@@ -12,4 +12,6 @@ import java.time.LocalDate;
 public interface RoomDateMapper extends BaseMapper<RoomDate> {
     BigDecimal queryHotelMinPrice(@Param("hotelId") Integer hotelId,
                                   @Param("today")LocalDate today);
+
+    void updateRoomDateStatus(Integer roomDateId, LocalDate checkInDate, LocalDate checkOutDate, Integer status);
 }

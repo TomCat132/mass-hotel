@@ -1,7 +1,10 @@
 package cn.finetool.api.service;
 
+import cn.finetool.common.enums.Status;
+import feign.Param;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
@@ -14,4 +17,10 @@ public interface HotelAPIService {
     List<Integer> queryResidualRoomInfo(@RequestParam("roomId") String roomId,
                                         @RequestParam("checkInDate") LocalDate checkInDate,
                                         @RequestParam("checkOutDate") LocalDate checkOutDate);
+
+    @PutMapping("/updateRoomDateStatus")
+    void updateRoomDateStatus(@Param("roomDateId") Integer roomDateId,
+                              @Param("checkInDate") LocalDate checkInDate,
+                              @Param("checkOutDate") LocalDate checkOutDate,
+                              @Param("status") Integer status);
 }
