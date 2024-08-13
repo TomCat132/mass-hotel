@@ -2,6 +2,10 @@ package cn.finetool.order.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.finetool.api.service.HotelAPIService;
+import cn.finetool.common.Do.MessageDo;
+import cn.finetool.common.constant.MqExchange;
+import cn.finetool.common.constant.MqRoutingKey;
+import cn.finetool.common.constant.MqTTL;
 import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.dto.RoomBookingDto;
 import cn.finetool.common.enums.BusinessErrors;
@@ -18,11 +22,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -36,8 +44,13 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
     private RedissonClient redissonClient;
 
     @Resource
-    private OrderStatusService orderStatusService;
+    private RabbitTemplate rabbitTemplate;
 
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Resource
+    private OrderStatusService orderStatusService;
 
     SnowflakeIdWorker ID_WORKER = new SnowflakeIdWorker(3, 0);
 
@@ -58,7 +71,6 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
             boolean isGetLock = roomLock.tryLock(2000,1000, TimeUnit.MICROSECONDS);
             if (isGetLock){
                 // 获取锁成功
-
                 // 创建订单
                 String orderId = String.valueOf(ID_WORKER.nextId());
                 String userId = StpUtil.getLoginIdAsString();
@@ -81,12 +93,24 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
                         .skip(new Random().nextInt(roomDateIdList.size()))
                         .findFirst().get();
 
-                // 发送消息实现订单超时取消
+                MessageDo messageDo = new MessageDo();
+                Map<String,Object> messageMap = new HashMap<>();
+                messageMap.put("orderId",orderId);
+                messageDo.setMessageMap(messageMap);
+
+                // 发送消息实现订单 防止超时取消
+                rabbitTemplate.convertAndSend(MqExchange.ROOM_DATE_RESERVE_ORDER_EXCHANGE,
+                        MqRoutingKey.ORDER_ROUTING_KEY,messageDo, message -> {
+                            message.getMessageProperties().getHeaders().put("x-delay", MqTTL.FIVE_MINUTES);
+                            return message;
+                        });
 
                 // 修改房间状态
                 hotelAPIService.updateRoomDateStatus(roomDateId,roomBookingDto.getCheckInDate(),
                         checkOutDate, Status.ROOM_DATE_RESERVED.getCode());
 
+                // 订单未处理标记
+                redisTemplate.opsForValue().set(RedisCache.ROOM_RESERVED_ORDER_IS_TIMEOUT + orderId,"");
 
                 return Response.success(orderId);
             } else{

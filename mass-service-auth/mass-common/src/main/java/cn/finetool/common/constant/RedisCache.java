@@ -26,4 +26,7 @@ public class RedisCache {
     /** =========== 房间订单锁 ========== */
     public static final String ROOM_ORDER_LOCK = "room_order_lock";
 
+    /** =========== 房间预订订单前缀 ========== */
+    public static final String ROOM_RESERVED_ORDER_IS_TIMEOUT = "room_reserved_order_is_timeout_order_id:";
+
 }
