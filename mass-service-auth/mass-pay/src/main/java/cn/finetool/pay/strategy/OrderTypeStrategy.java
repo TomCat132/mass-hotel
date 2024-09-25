@@ -9,4 +9,6 @@ public interface OrderTypeStrategy {
     boolean verifyOrderIsPayAmount(String orderId);
 
     void handleOrder(String orderId);
+
+    void deleteOrderFlag(String orderId);
 }

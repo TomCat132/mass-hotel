@@ -1,6 +1,5 @@
 package cn.finetool.pay.service.impl;
 
-import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.dto.OrderPayDto;
 import cn.finetool.pay.service.AliPayService;
 import cn.finetool.pay.strategy.OrderTypeStrategy;
@@ -130,7 +129,7 @@ public class AliPayServiceImpl implements AliPayService {
         strategy.handleOrder(orderId);
 
         // 订单支付成功，删除标记
-        redisTemplate.delete(RedisCache.RECHARGE_ORDER_IS_TIMEOUT + orderId);
+        strategy.deleteOrderFlag(orderId);
 
         return "success";
     }

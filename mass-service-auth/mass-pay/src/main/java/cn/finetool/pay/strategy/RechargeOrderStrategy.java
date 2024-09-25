@@ -1,10 +1,13 @@
 package cn.finetool.pay.strategy;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.finetool.api.service.OrderAPIService;
 import cn.finetool.api.service.UserAPIService;
+import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.po.RechargeOrder;
 import jakarta.annotation.Resource;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -21,11 +24,16 @@ public class RechargeOrderStrategy implements OrderTypeStrategy{
     @Resource
     private UserAPIService userAPIService;
 
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
+
+    // TODO: 冷热数据分离，待修改
     @Override
     public Object queryOrder(String orderId) {
         RechargeOrder rechargeOrder = orderAPIService.queryRechargeOrder(orderId);
         rechargeOrderMap.put(orderId,rechargeOrder);
         return rechargeOrder;
+
     }
 
     @Override
@@ -56,6 +64,11 @@ public class RechargeOrderStrategy implements OrderTypeStrategy{
         RechargeOrder rechargeOrder = rechargeOrderMap.get(orderId);
         // 更新用户信息
         userAPIService.updateUserInfo(rechargeOrder.getUserId(),rechargeOrder.getTotalAmount());
+    }
+
+    @Override
+    public void deleteOrderFlag(String orderId) {
+        redisTemplate.delete(RedisCache.RECHARGE_ORDER_IS_TIMEOUT + orderId);
     }
 
 }

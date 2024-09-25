@@ -1,6 +1,7 @@
 package cn.finetool.api.service;
 
 
+import cn.finetool.common.po.OrderStatus;
 import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.vo.OrderVo;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -10,9 +11,6 @@ import java.util.List;
 
 @FeignClient(name = "mass-order-service", path = "/order/api")
 public interface OrderAPIService {
-
-    @PutMapping(value = "/updateOrderStatus")
-    void updateOrderStatus(@RequestParam("orderId") String orderId, @RequestParam("orderStatus") Integer orderStatus);
 
     @GetMapping("/queryRechargeOrder/{orderId}")
     RechargeOrder queryRechargeOrder(@PathVariable("orderId") String orderId);
@@ -27,4 +25,8 @@ public interface OrderAPIService {
     @PutMapping("/changeOrderStatus")
     void changeOrderStatus(@RequestParam("orderId") String orderId,
                            @RequestParam("orderStatus") Integer orderStatus);
+
+    /** ======== 获取 充值订单状态 =======*/
+    @GetMapping("/queryOrder")
+    OrderStatus queryOrder(@RequestParam("orderId") String orderId);
 }

@@ -25,7 +25,9 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.sql.Array;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,4 +128,9 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
     public RechargeOrder getOrderById(String orderId){
          return rechargeOrderMapper.queryOrder(orderId);
     }
+
+    public static void main(String[] args) {
+
+    }
+    
 }

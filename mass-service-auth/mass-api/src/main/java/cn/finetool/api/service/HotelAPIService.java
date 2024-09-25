@@ -1,7 +1,6 @@
 package cn.finetool.api.service;
 
-import cn.finetool.common.enums.Status;
-import feign.Param;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,6 +22,5 @@ public interface HotelAPIService {
                               @RequestParam("checkInDate") LocalDate checkInDate,
                               @RequestParam("checkOutDate") LocalDate checkOutDate,
                               @RequestParam("status") Integer status);
-
 
 }

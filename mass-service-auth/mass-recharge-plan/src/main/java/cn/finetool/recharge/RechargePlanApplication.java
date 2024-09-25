@@ -3,6 +3,7 @@ package cn.finetool.recharge;
 
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -20,4 +21,6 @@ public class RechargePlanApplication {
         SpringApplication.run(RechargePlanApplication.class, args);
         log.info("RechargePlanApplication started successfully.");
     }
+
+
 }

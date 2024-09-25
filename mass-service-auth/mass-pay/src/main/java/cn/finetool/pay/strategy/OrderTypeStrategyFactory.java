@@ -16,15 +16,17 @@ public class OrderTypeStrategyFactory {
     @Resource
     private RechargeOrderStrategy rechargeOrderStrategy;
 
+    @Resource
+    private RoomReserveOrderStrategy roomReserveOrderStrategy;
+
     private static final Map<Integer, OrderTypeStrategy> strategies = new HashMap<>();
 
     @PostConstruct
-    public void init() {
+    private void init() {
         log.info("init OrderTypeStrategy");
-        // Populate the map with the Spring-managed bean
         strategies.put(0, rechargeOrderStrategy);
-        // You can add more strategies here as needed
-        // strategies.put(1, anotherStrategy);
+        strategies.put(1, roomReserveOrderStrategy);
+
     }
 
     public OrderTypeStrategy getStrategy(Integer orderType) {

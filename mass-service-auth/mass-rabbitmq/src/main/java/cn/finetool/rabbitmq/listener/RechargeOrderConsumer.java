@@ -29,7 +29,7 @@ public class RechargeOrderConsumer {
     OrderAPIService orderAPIService;
 
     /** ========== 充值订单超时消费者 ========== */
-    @RabbitListener(queues = MqQueue.RECHARGE_ORDER_QUEUE)
+    @RabbitListener(queues = MqQueue.RECHARGE_ORDER_QUEUE,concurrency = "10")
     public void rechargeOrderTimeoutConsumer(MessageDo messageDo, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag){
 
        String orderId = (String) messageDo.getMessageMap().get("orderId");
@@ -40,7 +40,7 @@ public class RechargeOrderConsumer {
        } else{
             log.info("订单：{} 超时未支付，取消订单", orderId);
             //更新订单状态
-            orderAPIService.updateOrderStatus(orderId, Status.ORDER_CANCEL.getCode());
+            orderAPIService.changeOrderStatus(orderId, Status.ORDER_CANCEL.getCode());
             // 清除标记
             redisTemplate.delete(RedisCache.RECHARGE_ORDER_IS_TIMEOUT + orderId);
        } try {
