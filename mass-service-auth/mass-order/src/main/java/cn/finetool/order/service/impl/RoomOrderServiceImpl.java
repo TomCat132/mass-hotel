@@ -18,6 +18,7 @@ import cn.finetool.common.util.SnowflakeIdWorker;
 import cn.finetool.order.mapper.RoomOrderMapper;
 import cn.finetool.order.service.OrderStatusService;
 import cn.finetool.order.service.RoomOrderService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.redisson.api.RLock;
@@ -51,6 +52,9 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
 
     @Resource
     private OrderStatusService orderStatusService;
+
+    @Resource
+    private RoomOrderService roomOrderService;
 
     SnowflakeIdWorker ID_WORKER = new SnowflakeIdWorker(3, 0);
 
@@ -129,5 +133,10 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
         } finally {
             roomLock.unlock();
         }
+    }
+
+    public RoomOrder queryRoomOrderInfo(String orderId) {
+        return roomOrderService.getOne(new LambdaQueryWrapper<RoomOrder>()
+                .eq(RoomOrder::getOrderId,orderId));
     }
 }

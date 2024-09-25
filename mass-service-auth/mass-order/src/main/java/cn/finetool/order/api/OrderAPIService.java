@@ -3,10 +3,13 @@ package cn.finetool.order.api;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.finetool.common.po.RechargeOrder;
+import cn.finetool.common.po.RoomOrder;
 import cn.finetool.common.vo.OrderVo;
 import cn.finetool.order.service.OrderStatusService;
 import cn.finetool.order.service.RechargeOrderService;
+import cn.finetool.order.service.RoomOrderService;
 import cn.finetool.order.service.impl.RechargeOrderServiceImpl;
+import cn.finetool.order.service.impl.RoomOrderServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +29,9 @@ public class OrderAPIService {
 
     @Resource
     private RechargeOrderServiceImpl rechargeOrderServiceImpl;
+
+    @Resource
+    private RoomOrderServiceImpl roomOrderService;
 
     /** ========= 更改订单状态 ========= */
     @PutMapping("/updateOrderStatus")
@@ -57,6 +63,14 @@ public class OrderAPIService {
                                   @RequestParam("orderStatus") Integer orderStatus){
         orderStatusService.changeOrderStatus(orderId, orderStatus);
     }
+
+    /** ========= 查询 房间订单信息 ========= */
+    @GetMapping("/queryRoomOrderInfo")
+    public RoomOrder queryRoomOrderInfo(@RequestParam("orderId") String orderId){
+        return roomOrderService.queryRoomOrderInfo(orderId);
+    }
+
+
 
 }
 
