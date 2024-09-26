@@ -7,13 +7,9 @@ import cn.finetool.account.service.UserService;
 import cn.finetool.api.service.OrderAPIService;
 import cn.finetool.api.service.OssAPIService;
 import cn.finetool.api.service.RechargePlanAPIService;
-import cn.finetool.common.configuration.ChannelManager;
-import cn.finetool.common.constant.MqQueue;
-import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.dto.PasswordDto;
 import cn.finetool.common.enums.BusinessErrors;
 import cn.finetool.common.enums.RoleType;
-import cn.finetool.common.enums.Status;
 import cn.finetool.common.exception.BusinessRuntimeException;
 
 import cn.finetool.common.po.User;
@@ -24,29 +20,25 @@ import cn.finetool.common.vo.OrderVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.GetResponse;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.util.WebUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -68,7 +60,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private OrderAPIService orderAPIService;
 
     @Resource
-    OssAPIService ossAPIService;
+    private OssAPIService ossAPIService;
     @Autowired
     private UserMapper userMapper;
     @Autowired
@@ -148,14 +140,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public Response editAvatar(MultipartFile file) {
-        String fileUrl = ossAPIService.uploadFileToMinio(file);
+    public Response editAvatar(MultipartFile file, HttpServletRequest request) {
 
-        userService.update()
-                .set("avatar_key",fileUrl)
-                .eq("user_id",StpUtil.getLoginIdAsString())
-                .update();
-        return Response.success("修改成功");
+        try {
+            byte[] fileBytes = file.getBytes();
+            String fileName = file.getOriginalFilename();
+            String contentType = file.getContentType();
+            String fileUrl = ossAPIService.uploadFileToMinio(fileBytes,fileName,contentType);
+
+            userService.update()
+                    .set("avatar_key",fileUrl)
+                    .eq("user_id",StpUtil.getLoginIdAsString())
+                    .update();
+            return Response.success("修改成功");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        
     }
 
     @Override

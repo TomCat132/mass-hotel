@@ -8,12 +8,15 @@ import cn.finetool.common.util.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/user")
 @Api(tags = "用户管理")
+@Slf4j
 public class UserController {
 
     @Resource
@@ -45,8 +48,8 @@ public class UserController {
 
     @ApiOperation(value = "修改头像", notes = "修改头像")
     @PostMapping("/editavatar")
-    public Response editAvatar(@RequestParam("file") MultipartFile file){
-        return userService.editAvatar(file);
+    public Response editAvatar(@RequestParam("file") MultipartFile file, HttpServletRequest request){
+        return userService.editAvatar(file,request);
     }
 
     @ApiOperation(value = "修改密码", notes = "修改密码")

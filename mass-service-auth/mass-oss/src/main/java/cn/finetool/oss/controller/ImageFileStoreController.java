@@ -5,16 +5,14 @@ import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.oss.util.FileConvertUtil;
 import io.minio.MinioClient;
 import jakarta.annotation.Resource;
-import org.apache.commons.io.IOUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/oss/api")
 public class ImageFileStoreController {
@@ -44,12 +42,25 @@ public class ImageFileStoreController {
     }
 
     /** ========== 图片转换接口 ========== */
-    @PostMapping("/convert")
+    @GetMapping("/convert")
+
     private String urlToBase64(@RequestParam("url") String url){
         try {
             return fileConvertUtil.convertFile(url);
         }catch (Exception e) {
             throw new BusinessRuntimeException(BusinessErrors.IMAGE_CONVERT_ERROR, "图片转换失败");
         }
+    }
+
+    public String uploadImage(byte[] fileBytes, String fileName, String contentType) {
+        // 转换为 MultipartFile 对象
+        MultipartFile multipartFile = new MockMultipartFile(
+                "file",  // 表单字段名
+                fileName,  // 文件名
+                contentType,  // 内容类型
+                fileBytes   // 文件内容
+        );
+        // 上传文件
+        return putMinioFile(multipartFile);
     }
 }

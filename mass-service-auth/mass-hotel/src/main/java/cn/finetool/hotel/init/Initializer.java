@@ -55,7 +55,7 @@ public class Initializer {
 
 
     /** ============= 初始化缓存酒店的每日房间信息 =========== */
-    @Scheduled(cron = "1 40 12 * * ?")
+    @Scheduled(cron = "0 0 1 * * ?")
     public void InitRoomDateInfo(){
         //获取所有酒店每日的具体房间信息 roomId,roomInfoId,id
         List<RoomInfo> roomInfoList =roomInfoMapper.getCanUseRoomInfoList();

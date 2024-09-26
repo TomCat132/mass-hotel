@@ -4,6 +4,7 @@ import cn.finetool.common.dto.PasswordDto;
 import cn.finetool.common.po.User;
 import cn.finetool.common.util.Response;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -18,7 +19,7 @@ public interface UserService extends IService<User> {
 
     Response logout();
 
-    Response editAvatar(MultipartFile file);
+    Response editAvatar(MultipartFile file, HttpServletRequest request);
 
     Response editPassword(PasswordDto passwordDto);
 
