@@ -21,6 +21,13 @@ public enum Status {
     ORDER_REFUND_SUCCESS(5,"退款成功"),
     ORDER_REFUND_FAIL(6,"退款失败"),
     ORDER_CLOSE(7,"订单失效"),
+
+    VOUCHER_PREPARE(0,"待发放"),
+    VOUCHER_SEND(1,"已发放"),
+    VOUCHER_CAN_USE(2,"可使用"),
+    VOUCHER_USED(3,"已使用"),
+    VOUCHER_EXPIRED(4,"已过期"),
+    VOUCHER_INVALID(5,"无效")
     ;
 
     private final int code;
