@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @TableName("tb_voucher_coupon")
 public class Coupon implements Serializable {
 
-
     @TableId("voucher_id")
     private String voucherId;
 

@@ -26,7 +26,6 @@ public class OrderTypeStrategyFactory {
         log.info("init OrderTypeStrategy");
         strategies.put(0, rechargeOrderStrategy);
         strategies.put(1, roomReserveOrderStrategy);
-
     }
 
     public OrderTypeStrategy getStrategy(Integer orderType) {
