@@ -60,8 +60,9 @@ public class OrderAPIService {
     /** ========= 充值订单状态修改 ========= */
     @PutMapping("/changeOrderStatus")
     public void changeOrderStatus(@RequestParam("orderId") String orderId,
-                                  @RequestParam("orderStatus") Integer orderStatus){
-        orderStatusService.changeOrderStatus(orderId, orderStatus);
+                                  @RequestParam("orderStatus") Integer orderStatus,
+                                  @RequestParam(value = "payType",required = false) Integer payType){
+        orderStatusService.changeOrderStatus(orderId, orderStatus,payType);
     }
 
     /** ========= 查询 房间订单信息 ========= */

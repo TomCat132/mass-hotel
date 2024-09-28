@@ -11,11 +11,13 @@ import cn.finetool.common.enums.BusinessErrors;
 import cn.finetool.common.enums.PayType;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.exception.BusinessRuntimeException;
+import cn.finetool.common.po.OrderStatus;
 import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.util.CommonsUtils;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.vo.OrderVo;
 import cn.finetool.order.mapper.RechargeOrderMapper;
+import cn.finetool.order.service.OrderStatusService;
 import cn.finetool.order.service.RechargeOrderService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -25,6 +27,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.sql.Array;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -43,6 +46,9 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
     private RechargeOrderMapper rechargeOrderMapper;
 
     @Resource
+    private OrderStatusService orderStatusService;
+
+    @Resource
     private RabbitTemplate rabbitTemplate;
 
     @Resource
@@ -50,31 +56,35 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
 
     @Override
     public Response createOrder(RechargeDto rechargeDto) {
-        String token = StpUtil.getTokenValue();
 
-        log.info("token:{}", token);
         String loginId = (String) StpUtil.getLoginId();
 
         // 先判断是否有未支付的订单
-        RechargeOrder orderInfo = rechargeOrderService.getOne(new LambdaQueryWrapper<RechargeOrder>()
-                .eq(RechargeOrder::getUserId,loginId)
-                .eq(RechargeOrder::getOrderStatus, Status.ORDER_WAIT.getCode()));
+        OrderStatus orderInfo = orderStatusService.getOne(new LambdaQueryWrapper<OrderStatus>()
+                .eq(OrderStatus::getUserId, loginId)
+                .eq(OrderStatus::getOrderStatus, Status.ORDER_WAIT.getCode()));
         if (orderInfo != null){
             throw new BusinessRuntimeException(BusinessErrors.ORDER_CREATE_REQUEST_FAIL,"您有未支付的订单，请先支付或取消订单");
         }
 
+        String orderId = CommonsUtils.getWorkerID();
+
         RechargeOrder rechargeOrder = new RechargeOrder();
-        rechargeOrder.setOrderId(CommonsUtils.getWorkerID());
-        rechargeOrder.setOrderStatus(Status.ORDER_WAIT.getCode());
-        rechargeOrder.setCreateTime(LocalDateTime.now());
+        rechargeOrder.setOrderId(orderId);
         rechargeOrder.setUserId(loginId);
         if (rechargeDto.getPlanId() != null){
             rechargeOrder.setPlanId(rechargeDto.getPlanId());
         }
+        rechargeOrder.setCreateTime(LocalDateTime.now());
         rechargeOrder.setUserPayAmount(rechargeDto.getUserPayAmount());
         rechargeOrder.setTotalAmount(rechargeDto.getUserPayAmount().add(rechargeDto.getBonusAmount()));
         save(rechargeOrder);
 
+        OrderStatus orderStatus = new OrderStatus();
+        orderStatus.setOrderId(orderId);
+        orderStatus.setUserId(loginId);
+        orderStatus.setOrderStatus(Status.ORDER_WAIT.getCode());
+        orderStatusService.save(orderStatus);
 
         //  发送消息通知
         MessageDo messageDo = new MessageDo();

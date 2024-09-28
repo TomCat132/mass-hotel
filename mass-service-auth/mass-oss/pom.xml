@@ -13,6 +13,8 @@
     <artifactId>mass-oss</artifactId>
 
     <dependencies>
+
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
@@ -67,6 +69,7 @@
             <artifactId>mass-api</artifactId>
             <version>0.0.4</version>
         </dependency>
+
     </dependencies>
 
 </project>

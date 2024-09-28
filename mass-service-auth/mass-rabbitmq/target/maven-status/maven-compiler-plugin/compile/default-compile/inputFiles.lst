@@ -4,5 +4,6 @@ C:\Users\86173\Desktop\毕业设计-后端源码\mass-service-auth\mass-rabbitmq
 C:\Users\86173\Desktop\毕业设计-后端源码\mass-service-auth\mass-rabbitmq\src\main\java\cn\finetool\rabbitmq\MqApplication.java
 C:\Users\86173\Desktop\毕业设计-后端源码\mass-service-auth\mass-rabbitmq\src\main\java\cn\finetool\rabbitmq\listener\RechargePlanConsumer.java
 C:\Users\86173\Desktop\毕业设计-后端源码\mass-service-auth\mass-rabbitmq\src\main\java\cn\finetool\rabbitmq\configuration\RabbitTemplateConfig.java
+C:\Users\86173\Desktop\毕业设计-后端源码\mass-service-auth\mass-rabbitmq\src\main\java\cn\finetool\rabbitmq\listener\RoomOrderConsumer.java
 C:\Users\86173\Desktop\毕业设计-后端源码\mass-service-auth\mass-rabbitmq\src\main\java\cn\finetool\rabbitmq\configuration\GlobalExceptionHandler.java
 C:\Users\86173\Desktop\毕业设计-后端源码\mass-service-auth\mass-rabbitmq\src\main\java\cn\finetool\rabbitmq\configuration\RabbitMqConfig.java

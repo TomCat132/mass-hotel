@@ -1,5 +1,7 @@
 package cn.finetool.account.controller;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaMode;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.finetool.account.service.UserService;
 import cn.finetool.common.dto.PasswordDto;
@@ -62,6 +64,18 @@ public class UserController {
     @GetMapping("/orderlist")
     public Response getOrderList() {
         return userService.getOrderList();
+    }
+
+    @ApiOperation(value = "管理员登录", notes = "管理员登录")
+    @PostMapping("/admin/login")
+    public Response adminLogin(@RequestBody User user){
+        return userService.adminLogin(user);
+    }
+
+    @SaCheckRole(value = {"admin","super_admin"},mode = SaMode.OR)
+    @GetMapping("/admin/test")
+    public Response adminTest(){
+        return Response.success("admin test");
     }
 
 }

@@ -1,7 +1,9 @@
 package cn.finetool.account.service.impl;
 
+import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.finetool.account.mapper.UserMapper;
+import cn.finetool.account.service.RoleService;
 import cn.finetool.account.service.UserRolesService;
 import cn.finetool.account.service.UserService;
 import cn.finetool.api.service.OrderAPIService;
@@ -9,11 +11,15 @@ import cn.finetool.api.service.OssAPIService;
 import cn.finetool.api.service.RechargePlanAPIService;
 import cn.finetool.common.dto.PasswordDto;
 import cn.finetool.common.enums.BusinessErrors;
+import cn.finetool.common.enums.OrderType;
 import cn.finetool.common.enums.RoleType;
 import cn.finetool.common.exception.BusinessRuntimeException;
 
+import cn.finetool.common.po.RechargeOrder;
+import cn.finetool.common.po.Role;
 import cn.finetool.common.po.User;
 
+import cn.finetool.common.po.UserRoles;
 import cn.finetool.common.util.CommonsUtils;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.vo.OrderVo;
@@ -39,6 +45,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -49,6 +56,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     private UserRolesService userRolesService;
+
+    @Resource
+    private RoleService roleService;
 
     @Resource
     private RabbitTemplate rabbitTemplate;
@@ -200,12 +210,54 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         List<OrderVo> orderList = new ArrayList<>();
 
         //查询充值订单
-        List<OrderVo> rechargeOrderList = orderAPIService.getRechargeOrderList(StpUtil.getLoginIdAsString());
+        List<RechargeOrder> rechargeOrderList = orderAPIService.getRechargeOrderList(StpUtil.getLoginIdAsString());
+
         if (rechargeOrderList != null){
-            orderList.addAll(rechargeOrderList);
+            List<OrderVo> rechargeOrderSet = rechargeOrderList.stream().map(rechargeOrder -> {
+                OrderVo orderVo = new OrderVo();
+                orderVo.setOrderId(rechargeOrder.getOrderId());
+                orderVo.setOrderType(OrderType.RECHARGE_ORDER.getValue());
+                orderVo.setOrderStatus(rechargeOrder.getOrderStatus());
+                orderVo.setUserPayAmount(rechargeOrder.getUserPayAmount());
+                orderVo.setCreateTime(rechargeOrder.getCreateTime());
+                return orderVo;
+            }).toList();
+            orderList.addAll(rechargeOrderSet);
         }
 
+
         return Response.success(orderList);
+    }
+
+    @Override
+    public Response adminLogin(User user) {
+
+        //1.校验用户名密码
+        if (StringUtils.isAnyEmpty(user.getPhone(),user.getPassword())){
+            throw new BusinessRuntimeException(BusinessErrors.PARAM_CANNOT_EMPTY);
+        }
+
+        User accountInfo = userService.getOne(new LambdaQueryWrapper<User>()
+                .eq(User::getPhone, user.getPhone()));
+        if (!CommonsUtils.encodeMD5(user.getPassword() + accountInfo.getSalty())
+                .equals(accountInfo.getPassword())){
+            throw new BusinessRuntimeException(BusinessErrors.AUTHENTICATION_ERROR);
+        }
+        //2.校验是否为管理员
+        List<UserRoles> list = userRolesService.list(new LambdaQueryWrapper<UserRoles>()
+                .eq(UserRoles::getUserId, accountInfo.getUserId()));
+        List<Integer> roleIdList = list.stream().map(UserRoles::getRoleId).toList();
+        //3. 批量查询
+        List<String> roleList = roleService.listByIds(roleIdList).stream().map(Role::getRoleKey).toList();
+
+        if (!roleList.contains(RoleType.ADMIN.getKey()) && !roleList.contains(RoleType.SUPER_ADMIN.getKey())){
+            throw new BusinessRuntimeException(BusinessErrors.PERMISSION_DENIED);
+        }
+        //4. 校验完成，保存用户角色权限等信息
+        StpUtil.login(accountInfo.getUserId());
+        StpUtil.getTokenSession().set(SaSession.ROLE_LIST,roleList);
+
+        return Response.success("登录成功");
     }
 
 

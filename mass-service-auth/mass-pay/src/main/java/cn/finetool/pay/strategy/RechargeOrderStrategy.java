@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.finetool.api.service.OrderAPIService;
 import cn.finetool.api.service.UserAPIService;
 import cn.finetool.common.constant.RedisCache;
+import cn.finetool.common.enums.PayType;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.po.RechargeOrder;
 import jakarta.annotation.Resource;
@@ -59,7 +60,7 @@ public class RechargeOrderStrategy implements OrderTypeStrategy{
     @Override
     public void handleOrder(String orderId) {
         // 处理充值订单
-        orderAPIService.handleRechargeOrder(orderId);
+        orderAPIService.changeOrderStatus(orderId, Status.ORDER_SUCCESS.getCode(), PayType.ALI_PAY.getCode());
         
         RechargeOrder rechargeOrder = rechargeOrderMap.get(orderId);
         // 更新用户信息

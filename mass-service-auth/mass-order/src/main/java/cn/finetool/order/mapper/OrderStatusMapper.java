@@ -11,5 +11,6 @@ import java.time.LocalDateTime;
 public interface OrderStatusMapper extends BaseMapper<OrderStatus> {
     void changeOrderStatus(@Param("orderId") String orderId,
                            @Param("orderStatus") Integer orderStatus,
-                           @Param("cancelTime")LocalDateTime cancelTime);
+                           @Param("operationTime")LocalDateTime operationTime,
+                           @Param("payType") Integer payType);
 }

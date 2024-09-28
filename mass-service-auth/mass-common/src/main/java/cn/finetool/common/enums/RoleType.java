@@ -5,16 +5,14 @@ import lombok.Getter;
 @Getter
 public enum RoleType {
 
-    SUPER_ADMIN(0,"超级管理员"),
-    ADMIN(2,"普通管理员"),
+    SUPER_ADMIN(0,"super_admin"),
+    ADMIN(2,"admin"),
     
-    USER(3,"普通用户");
+    USER(3,"user");
 
     private int code;
     private String key;
-    
-    
-    
+
     RoleType(int code, String key) {
         this.code = code;
         this.key = key;

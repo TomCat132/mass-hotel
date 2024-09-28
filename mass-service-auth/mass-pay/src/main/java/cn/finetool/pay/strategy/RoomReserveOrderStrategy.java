@@ -57,8 +57,7 @@ public class RoomReserveOrderStrategy implements OrderTypeStrategy{
     @Override
     public void handleOrder(String orderId) {
         // 处理订单 (更改订单状态)
-        orderAPIService.changeOrderStatus(orderId,Status.ORDER_SUCCESS.getCode());
-
+        orderAPIService.changeOrderStatus(orderId,Status.ORDER_SUCCESS.getCode(),null);
     }
 
     @Override

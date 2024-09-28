@@ -21,11 +21,12 @@ public interface OrderAPIService {
 
     /**====== 获取 用户 充值订单列表 =====*/
     @GetMapping("/getRechargeOrderList")
-    List<OrderVo> getRechargeOrderList(@RequestParam("userId") String userId);
+    List<RechargeOrder> getRechargeOrderList(@RequestParam("userId") String userId);
 
     @PutMapping("/changeOrderStatus")
     void changeOrderStatus(@RequestParam("orderId") String orderId,
-                           @RequestParam("orderStatus") Integer orderStatus);
+                           @RequestParam("orderStatus") Integer orderStatus,
+                           @RequestParam(value = "payType",required = false) Integer payType);
 
     /** ======== 获取 充值订单状态 =======*/
     @GetMapping("/queryOrder")

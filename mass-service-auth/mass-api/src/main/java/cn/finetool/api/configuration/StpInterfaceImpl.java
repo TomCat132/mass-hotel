@@ -1,7 +1,10 @@
 package cn.finetool.api.configuration;
 
 
+
+import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpInterface;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.finetool.api.service.RoleAPIService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +40,7 @@ public class StpInterfaceImpl implements StpInterface {
         log.info("获取角色列表");
         List<String> roleList = new ArrayList<>();
 
-        roleList = roleAPIService.queryAccountRoles(loginId, loginType);
+        roleList = (List<String>) StpUtil.getTokenSession().get(SaSession.ROLE_LIST);
         log.info("本次登录用户所拥有的角色:{}",roleList.toArray());
         return roleList;
     }

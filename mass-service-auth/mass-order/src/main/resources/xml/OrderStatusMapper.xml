@@ -6,8 +6,15 @@
 <mapper namespace="cn.finetool.order.mapper.OrderStatusMapper">
 
     <update id="changeOrderStatus">
-        UPDATE tb_order_status AS order_status
-        SET order_status.order_status = #{orderStatus}
-        WHERE order_status.order_id = #{orderId}
+        UPDATE tb_order_status
+        SET order_status = #{orderStatus}
+        <if test="payType == null">
+            ,cancel_time = #{operationTime}
+        </if>
+        <if test="payType !=null">
+            ,pay_time = #{operationTime}
+            ,pay_type = #{payType}
+        </if>
+        WHERE order_id = #{orderId}
      </update>
 </mapper>

@@ -27,15 +27,18 @@
     </update>
 
     <select id="queryOrder" resultType="cn.finetool.common.po.RechargeOrder">
-        SELECT plan_id,user_pay_amount,total_amount,order_status,create_time,user_id FROM tb_recharge_order
-        WHERE order_id = #{orderId}
+        SELECT order1.plan_id,order1.user_pay_amount,order1.total_amount,order2.order_status,order1.create_time,order1.user_id
+        FROM tb_recharge_order AS order1
+        JOIN tb_order_status AS order2 ON order1.order_id = order2.order_id
+        WHERE order1.order_id = #{orderId}
     </select>
 
     <select id="getRechargeOrderList" resultType="cn.finetool.common.vo.OrderVo">
-        SELECT  order_id,order_status,user_pay_amount,create_time
-        FROM tb_recharge_order
-        WHERE user_id = #{userId}
-        ORDER BY create_time DESC
+        SELECT  order1.order_id,order2.order_status,order1.user_pay_amount,order1.create_time
+        FROM tb_recharge_order AS order1
+        JOIN tb_order_status AS order2 ON order1.order_id = order2.order_id
+        WHERE order1.user_id = #{userId}
+        ORDER BY order1.create_time DESC
     </select>
 
 </mapper>

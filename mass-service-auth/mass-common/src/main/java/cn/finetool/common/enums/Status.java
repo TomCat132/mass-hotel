@@ -16,13 +16,11 @@ public enum Status {
     ORDER_WAIT(0,"待支付"),
     ORDER_SUCCESS(1,"支付成功"),
     ORDER_FAIL(2,"支付失败"),
-    ORDER_CANCEL(3,"取消订单"),
+    ORDER_CANCEL(3,"已取消"),
     ORDER_REFUND(4,"退款中"),
     ORDER_REFUND_SUCCESS(5,"退款成功"),
     ORDER_REFUND_FAIL(6,"退款失败"),
-    ORDER_FINISH(7,"订单完成"),
-    ORDER_CLOSE(8,"订单失效"),
-
+    ORDER_CLOSE(7,"订单失效"),
     ;
 
     private final int code;

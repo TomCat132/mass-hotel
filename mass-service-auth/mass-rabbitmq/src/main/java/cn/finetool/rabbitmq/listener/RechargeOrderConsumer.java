@@ -40,7 +40,7 @@ public class RechargeOrderConsumer {
        } else{
             log.info("订单：{} 超时未支付，取消订单", orderId);
             //更新订单状态
-            orderAPIService.changeOrderStatus(orderId, Status.ORDER_CANCEL.getCode());
+            orderAPIService.changeOrderStatus(orderId, Status.ORDER_CLOSE.getCode(),null);
             // 清除标记
             redisTemplate.delete(RedisCache.RECHARGE_ORDER_IS_TIMEOUT + orderId);
        } try {

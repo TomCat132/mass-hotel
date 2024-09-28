@@ -31,4 +31,4 @@ alipay:
   # 支付成功 同步回调页面
   return-url: http://localhost:3000/home/userInfo
   # 异步回调接口
-  notifyUrl:  http://hhlwyl.free.idcfengye.com/alipay/notify
+  notifyUrl:  http://hhl.free.idcfengye.com/alipay/notify
