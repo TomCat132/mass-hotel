@@ -1,5 +1,6 @@
 package cn.finetool.common.po;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @TableName("tb_user_voucher")
 public class UserVoucher implements Serializable {
 
-    @TableId("id")
+    @TableId(value = "id",type = IdType.AUTO)
     private Integer id;
 
     @TableField("user_id")

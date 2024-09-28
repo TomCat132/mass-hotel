@@ -42,7 +42,7 @@ spring:
         - id: mass-activity-service
           uri: lb://mass-activity-service
           predicates:
-            - Path=/usersign/**
+            - Path=/usersign/**,/coupon/**,/voucher/**,/userVoucher
         # 文件存储服务路由
         - id: mass-oss-service
           uri: lb://mass-oss-service

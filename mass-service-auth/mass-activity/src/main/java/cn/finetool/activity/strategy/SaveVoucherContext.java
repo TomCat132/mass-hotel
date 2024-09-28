@@ -1,6 +1,7 @@
 package cn.finetool.activity.strategy;
 
 import cn.finetool.common.dto.VoucherDto;
+import cn.finetool.common.enums.Status;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -28,5 +29,15 @@ public class SaveVoucherContext {
     public void saveVoucher(VoucherDto voucherDto){
         SaveVoucherStrategy strategy = strategies.get(voucherDto.getVoucherType());
         strategy.save(voucherDto);
+    }
+
+    public void changStatus(Integer voucherType, Integer voucherId, Integer status) {
+        SaveVoucherStrategy strategy = strategies.get(voucherType);
+        strategy.changeStatus(voucherId,status);
+    }
+
+    public void decreaseVoucherStock(Integer voucherType, String voucherId) {
+        SaveVoucherStrategy strategy = strategies.get(voucherType);
+        strategy.decreaseVoucherStock(voucherId);
     }
 }

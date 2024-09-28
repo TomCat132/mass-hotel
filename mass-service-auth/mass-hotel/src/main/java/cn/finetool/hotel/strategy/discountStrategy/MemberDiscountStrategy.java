@@ -18,7 +18,6 @@ public class MemberDiscountStrategy implements RoomPricingStrategy {
 
     @Override
     public BigDecimal calculatePrice(RoomBookingDto roomBookingDto) {
-        // TODO: 计算会员折扣
         BigDecimal tempPrice = roomBookingDto.getTempPrice();
         Integer memberLevel = roomBookingDto.getMemberLevel();
         if (memberLevel != 0){

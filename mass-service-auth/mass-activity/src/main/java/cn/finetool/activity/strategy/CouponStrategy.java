@@ -18,4 +18,20 @@ public class CouponStrategy implements SaveVoucherStrategy{
             couponService.save(voucherDto.getCoupon());
         }
     }
+
+    @Override
+    public void changeStatus(Integer voucherId, Integer status) {
+        couponService.update()
+                .set("status",status)
+                .eq("voucher_id",voucherId)
+                .update();
+    }
+
+    @Override
+    public void decreaseVoucherStock(String voucherId) {
+        couponService.update()
+                .setSql("count = count - 1")
+                .eq("voucher_id",voucherId)
+                .update();
+    }
 }

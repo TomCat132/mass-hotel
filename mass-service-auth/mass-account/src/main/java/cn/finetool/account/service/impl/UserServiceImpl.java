@@ -6,6 +6,7 @@ import cn.finetool.account.mapper.UserMapper;
 import cn.finetool.account.service.RoleService;
 import cn.finetool.account.service.UserRolesService;
 import cn.finetool.account.service.UserService;
+import cn.finetool.api.service.ActivityAPIService;
 import cn.finetool.api.service.OrderAPIService;
 import cn.finetool.api.service.OssAPIService;
 import cn.finetool.api.service.RechargePlanAPIService;
@@ -71,10 +72,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     private OssAPIService ossAPIService;
+
     @Autowired
     private UserMapper userMapper;
-    @Autowired
-    private RechargePlanAPIService rechargePlanAPIService;
+
+    @Resource
+    private ActivityAPIService activityAPIService;
 
     @Override
     public Response register(User user) {
@@ -258,6 +261,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         StpUtil.getTokenSession().set(SaSession.ROLE_LIST,roleList);
 
         return Response.success("登录成功");
+    }
+
+    @Override
+    public Response getVoucher(String voucherId) {
+
+        activityAPIService.getVoucher(voucherId,StpUtil.getLoginIdAsString());
+
+        return Response.success("领取成功");
     }
 
 

@@ -28,4 +28,6 @@ public interface UserService extends IService<User> {
     Response getOrderList();
 
     Response adminLogin(User user);
+
+    Response getVoucher(String voucherId);
 }

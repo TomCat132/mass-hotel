@@ -8,10 +8,7 @@ import cn.finetool.common.util.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/voucher")
@@ -26,5 +23,12 @@ public class VoucherController {
     @ApiOperation(value = "添加活动券", notes = "添加活动券")
     public Response addVoucher(@RequestBody VoucherDto voucherDto){
         return voucherService.addVoucher(voucherDto);
+    }
+
+    @SaCheckRole(value = {"admin","super_admin"}, mode = SaMode.OR)
+    @PutMapping("/admin/grant")
+    @ApiOperation(value = "发放优惠券", notes = "发放优惠券")
+    public Response grantVoucher(@RequestParam("voucherId") Integer voucherId){
+        return voucherService.grantVoucher(voucherId);
     }
 }

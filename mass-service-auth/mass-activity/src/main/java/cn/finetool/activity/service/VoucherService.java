@@ -8,4 +8,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface VoucherService extends IService<Voucher> {
 
     Response addVoucher(VoucherDto voucherDto);
+
+    Response grantVoucher(Integer voucherId);
 }

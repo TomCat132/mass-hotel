@@ -31,7 +31,8 @@ public class RoomPricingContext {
             BigDecimal tempPrice = strategy.calculatePrice(roomBookingDto);
             roomBookingDto.setTempPrice(tempPrice);
         }
-        return roomBookingDto.getTempPrice();
+        // 保留2位小数
+        return roomBookingDto.getTempPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
 }

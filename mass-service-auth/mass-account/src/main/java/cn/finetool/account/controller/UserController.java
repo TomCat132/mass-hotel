@@ -78,4 +78,10 @@ public class UserController {
         return Response.success("admin test");
     }
 
+    @SaCheckRole(value = {"user"},mode = SaMode.OR)
+    @ApiOperation(value = "用户领取优惠券", notes = "用户领取优惠券")
+    @PostMapping("/getVoucher")
+    public Response getVoucher(@RequestParam("voucherId") String voucherId){
+        return userService.getVoucher(voucherId);
+    }
 }
