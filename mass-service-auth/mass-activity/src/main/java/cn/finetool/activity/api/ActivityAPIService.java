@@ -1,6 +1,7 @@
 package cn.finetool.activity.api;
 
 import cn.finetool.activity.service.UserVoucherService;
+import cn.finetool.common.util.Response;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,8 +17,8 @@ public class ActivityAPIService {
 
     /** ============= 领取优惠券   ========== */
     @PostMapping("/getVoucher")
-    public void getVoucher(@RequestParam("voucherId") String voucherId,
-                           @RequestParam("userId") String userId){
-        userVoucherService.getVoucher(voucherId, userId);
+    public Response getVoucher(@RequestParam("voucherId") String voucherId,
+                               @RequestParam("userId") String userId){
+       return userVoucherService.getVoucher(voucherId, userId);
     }
 }

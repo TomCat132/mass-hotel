@@ -1,6 +1,7 @@
 package cn.finetool.api.service;
 
 
+import cn.finetool.common.util.Response;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -9,6 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ActivityAPIService {
 
     @PostMapping("/getVoucher")
-    void getVoucher(@RequestParam("voucherId") String voucherId,
-                    @RequestParam("userId") String userId);
+    Response getVoucher(@RequestParam("voucherId") String voucherId,
+                        @RequestParam("userId") String userId);
 }

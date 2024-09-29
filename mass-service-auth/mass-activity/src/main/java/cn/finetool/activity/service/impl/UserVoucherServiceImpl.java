@@ -7,6 +7,7 @@ import cn.finetool.activity.strategy.SaveVoucherContext;
 import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.UserVoucher;
 import cn.finetool.common.po.Voucher;
+import cn.finetool.common.util.Response;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
@@ -25,22 +26,31 @@ public class UserVoucherServiceImpl extends ServiceImpl<UserVoucherMapper, UserV
     private VoucherService voucherService;
 
     @Override
-    public void getVoucher(String voucherId, String userId) {
-        // 接口幂等性校验
-        UserVoucher voucher = userVoucherService.getOne(new LambdaQueryWrapper<UserVoucher>()
-                .eq(UserVoucher::getVoucherId, voucherId));
-        if (voucher != null){
-            throw new BusinessRuntimeException("该优惠券已被领取");
+    public Response getVoucher(String voucherId, String userId) {
+
+        try {
+            // 接口幂等性校验
+            UserVoucher voucher = userVoucherService.getOne(new LambdaQueryWrapper<UserVoucher>()
+                    .eq(UserVoucher::getVoucherId, voucherId));
+            if (voucher != null){
+                throw new BusinessRuntimeException("该优惠券已被领取");
+            }
+            UserVoucher userVoucher = new UserVoucher();
+            userVoucher.setVoucherId(voucherId);
+            userVoucher.setUserId(userId);
+            save(userVoucher);
+
+            Voucher voucherInfo = voucherService.getOne(new LambdaQueryWrapper<Voucher>()
+                    .eq(Voucher::getVoucherId, voucherId));
+
+            //扣减库存
+            saveVoucherContext.decreaseVoucherStock(voucherInfo.getVoucherType(),voucherId);
+
+            return Response.success("领取成功");
+        } catch (Exception e){
+            throw  new BusinessRuntimeException("领取失败");
         }
-        UserVoucher userVoucher = new UserVoucher();
-        userVoucher.setVoucherId(voucherId);
-        userVoucher.setUserId(userId);
-        save(userVoucher);
 
-        Voucher voucherInfo = voucherService.getOne(new LambdaQueryWrapper<Voucher>()
-                .eq(Voucher::getVoucherId, voucherId));
 
-        //扣减库存
-        saveVoucherContext.decreaseVoucherStock(voucherInfo.getVoucherType(),voucherId);
     }
 }

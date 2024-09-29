@@ -265,10 +265,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public Response getVoucher(String voucherId) {
-
-        activityAPIService.getVoucher(voucherId,StpUtil.getLoginIdAsString());
-
-        return Response.success("领取成功");
+        return activityAPIService.getVoucher(voucherId,StpUtil.getLoginIdAsString());
     }
 
 
