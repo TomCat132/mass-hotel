@@ -2,6 +2,7 @@ package cn.finetool.account.service.impl;
 
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.finetool.account.mapper.RoleMapper;
 import cn.finetool.account.mapper.UserMapper;
 import cn.finetool.account.service.RoleService;
 import cn.finetool.account.service.UserRolesService;
@@ -35,18 +36,20 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.util.WebUtils;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -75,6 +78,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     private UserMapper userMapper;
+
+    @Resource
+    private RoleMapper roleMapper;
 
     @Resource
     private ActivityAPIService activityAPIService;
@@ -127,6 +133,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .set("last_login_time", LocalDateTime.now())
                 .eq("user_id", DBUser.getUserId())
                 .update();
+
+        // 保存用户角色权限信息
+        List<String> roleList = new ArrayList<>();
+
+        List<UserRoles> userRolesList = userRolesService.list(new LambdaQueryWrapper<UserRoles>()
+                .eq(UserRoles::getUserId, DBUser.getUserId()));
+
+        userRolesList.forEach(userRoles -> {
+            Role roleInfo = roleService.getOne(new LambdaQueryWrapper<Role>()
+                    .eq(Role::getRoleId, userRoles.getRoleId()));
+            roleList.add(roleInfo.getRoleKey());
+        });
+
+        //
+        StpUtil.getTokenSession().set(SaSession.ROLE_LIST,roleList);
 
         return Response.success("登录成功");
     }

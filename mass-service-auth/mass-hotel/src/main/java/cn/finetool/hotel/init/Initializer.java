@@ -21,11 +21,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Component
 @Slf4j
 public class Initializer {
+
+    private static final Logger LOGGER = Logger.getLogger(Initializer.class.getName());
 
     @Resource
     private RedisTemplate<String,Object> redisTemplate;
@@ -45,6 +48,9 @@ public class Initializer {
     /** ============= 初始化缓存酒店的经纬度信息 =========== */
     @PostConstruct
     public void InitHotelGeo(){
+
+        LOGGER.info("初始化缓存酒店的经纬度信息");
+
        List<HotelVo> hotelVoList = hotelMapper.getHotelGeoList();
 
        hotelVoList.forEach(hotelVo -> {
@@ -55,7 +61,10 @@ public class Initializer {
 
 
     /** ============= 初始化缓存酒店的每日房间信息 =========== */
-    @Scheduled(cron = "0 0 1 * * ?")
+    /**
+     * 每天22:29执行一次
+     */
+    @Scheduled(cron = "31 30 22 * * ?")
     public void InitRoomDateInfo(){
         //获取所有酒店每日的具体房间信息 roomId,roomInfoId,id
         List<RoomInfo> roomInfoList =roomInfoMapper.getCanUseRoomInfoList();

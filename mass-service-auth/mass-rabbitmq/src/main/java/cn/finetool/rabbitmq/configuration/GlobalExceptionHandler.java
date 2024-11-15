@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  *  全局异常处理
  */
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class  GlobalExceptionHandler {
 
     @ExceptionHandler(value = BusinessRuntimeException.class)
     @ResponseBody

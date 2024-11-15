@@ -25,7 +25,6 @@ import java.util.Map;
 @RequestMapping("/alipay")
 public class AliPayController {
 
-
     @Resource
     private Environment config;
 

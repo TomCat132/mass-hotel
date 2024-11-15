@@ -82,13 +82,6 @@
 <!--            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>-->
 <!--            <version>${spring-cloud-alibaba.version}</version>-->
 <!--       </dependency>-->
-
-        <dependency>
-            <groupId>cn.finetool.mass</groupId>
-            <artifactId>mass-common</artifactId>
-            <version>0.0.4</version>
-        </dependency>
-
         <dependency>
             <groupId>cn.finetool.mass</groupId>
             <artifactId>mass-api</artifactId>

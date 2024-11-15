@@ -40,7 +40,7 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
 
     @Override
     public Response addHotelInfo(Hotel hotel) {
-        // TODO: 代优化 （简单添加数据）
+        // TODO: 代优化 （简单添加数据);
         save(hotel);
         return Response.success("添加成功");
     }
@@ -62,7 +62,7 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
         Circle circle = new Circle(userPoint, queryRange);
         GeoResults<RedisGeoCommands.GeoLocation<Object>> nearbyHotels = redisTemplate.opsForGeo().radius(RedisCache.HOTEL_LOCATION_LIST, circle);
         if (nearbyHotels == null || nearbyHotels.getContent().isEmpty()) {
-            return Response.error("No hotels found within the specified range.");
+            return Response.error("附近没有入驻的酒店哦~");
         }
 
         // 3. 计算用户到每个酒店的距离
@@ -83,7 +83,6 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
             }
 
             // 根据id 获取酒店详细地址 、 最低价格 、 距离
-
             // 判断是否是临时用户位置 酒店id：自增主键 用户ID: 管理员ID: 19位 开发调试账号：110
             if (hotelIdStr.equals("110") || hotelIdStr.length() >= 19){
                 log.info("新添加的临时用户位置，不进行查询");

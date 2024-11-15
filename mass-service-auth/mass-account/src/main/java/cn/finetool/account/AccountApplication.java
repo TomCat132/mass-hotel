@@ -14,6 +14,5 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 public class AccountApplication {
     public static void main(String[] args) {
         SpringApplication.run(AccountApplication.class, args);
-        log.info("用户服务启动,端口: 8080");
     }
 }
