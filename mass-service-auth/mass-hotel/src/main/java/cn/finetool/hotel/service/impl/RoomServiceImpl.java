@@ -4,6 +4,7 @@ package cn.finetool.hotel.service.impl;
 import cn.finetool.common.dto.RoomBookingDto;
 import cn.finetool.common.dto.RoomDto;
 import cn.finetool.common.enums.BusinessErrors;
+import cn.finetool.common.enums.CodeSign;
 import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.Room;
 import cn.finetool.common.util.Response;
@@ -54,7 +55,7 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
             Room room = new Room();
             room.setRoomDesc(JSONUTIL.writeValueAsString(roomDto.getRoomDesc()));
             room.setRoomName(roomDto.getRoomName());
-            room.setRoomId(String.valueOf(idWorker.nextId()));
+            room.setRoomId(CodeSign.RoomTypePrefix.getCode() +String.valueOf(idWorker.nextId()));
             room.setRoomType(roomDto.getRoomType());
             room.setHotelId(roomDto.getHotelId());
             room.setBasicPrice(roomDto.getBasicPrice());

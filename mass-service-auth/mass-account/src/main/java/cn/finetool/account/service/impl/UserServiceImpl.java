@@ -13,6 +13,7 @@ import cn.finetool.api.service.OssAPIService;
 import cn.finetool.api.service.RechargePlanAPIService;
 import cn.finetool.common.dto.PasswordDto;
 import cn.finetool.common.enums.BusinessErrors;
+import cn.finetool.common.enums.CodeSign;
 import cn.finetool.common.enums.OrderType;
 import cn.finetool.common.enums.RoleType;
 import cn.finetool.common.exception.BusinessRuntimeException;
@@ -24,6 +25,7 @@ import cn.finetool.common.po.User;
 import cn.finetool.common.po.UserRoles;
 import cn.finetool.common.util.CommonsUtils;
 import cn.finetool.common.util.Response;
+import cn.finetool.common.util.SnowflakeIdWorker;
 import cn.finetool.common.vo.OrderVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
@@ -54,6 +56,8 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    private static final SnowflakeIdWorker IdWorker = new SnowflakeIdWorker(0, 0);
 
     @Resource
     private UserService userService;
@@ -104,7 +108,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String salty = User.generateSalty();
         user.setPassword(CommonsUtils.encodeMD5(user.getPassword() + salty));
         user.setRegistrationTime(LocalDateTime.now());
-        user.setUserId(CommonsUtils.getWorkerID());
+        // 设置用户ID 前缀标志 1010
+        user.setUserId(CodeSign.UserPrefix.getCode() + String.valueOf(IdWorker.nextId()));
         user.setSalty(salty);
 
         save(user);

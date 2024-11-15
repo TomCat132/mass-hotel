@@ -4,6 +4,7 @@ import cn.finetool.activity.mapper.VoucherMapper;
 import cn.finetool.activity.service.VoucherService;
 import cn.finetool.activity.strategy.SaveVoucherContext;
 import cn.finetool.common.dto.VoucherDto;
+import cn.finetool.common.enums.CodeSign;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.po.Voucher;
 import cn.finetool.common.util.Response;
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 @Service
 public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> implements VoucherService {
 
-    private static final SnowflakeIdWorker workerID = new SnowflakeIdWorker(0,0);
+    private static final SnowflakeIdWorker workerID = new SnowflakeIdWorker(2,0);
 
     @Resource
     private SaveVoucherContext saveVoucherContext;
@@ -30,7 +31,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
     @Override
     public Response addVoucher(VoucherDto voucherDto) {
 
-        String voucherId = String.valueOf(workerID.nextId());
+        String voucherId = CodeSign.VoucherPrefix.getCode() + String.valueOf(workerID.nextId());
         voucherDto.getCoupon().setVoucherId(voucherId);
         LocalDateTime nowTime = LocalDateTime.now();
 
