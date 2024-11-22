@@ -3,6 +3,7 @@ package cn.finetool.account.service.impl;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.finetool.account.mapper.RoleMapper;
+import cn.finetool.account.mapper.SystemMapper;
 import cn.finetool.account.mapper.UserMapper;
 import cn.finetool.account.service.RoleService;
 import cn.finetool.account.service.UserRolesService;
@@ -10,7 +11,7 @@ import cn.finetool.account.service.UserService;
 import cn.finetool.api.service.ActivityAPIService;
 import cn.finetool.api.service.OrderAPIService;
 import cn.finetool.api.service.OssAPIService;
-import cn.finetool.api.service.RechargePlanAPIService;
+import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.dto.PasswordDto;
 import cn.finetool.common.enums.BusinessErrors;
 import cn.finetool.common.enums.CodeSign;
@@ -34,24 +35,17 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.util.WebUtils;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 @Service
 @Slf4j
@@ -69,9 +63,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private RoleService roleService;
 
     @Resource
-    private RabbitTemplate rabbitTemplate;
-
-    @Resource
     private RedisTemplate<String,Object> redisTemplate;
 
     @Resource
@@ -85,6 +76,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     private RoleMapper roleMapper;
+
+    @Resource
+    private SystemMapper systemMapper;
 
     @Resource
     private ActivityAPIService activityAPIService;
@@ -261,7 +255,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Response adminLogin(User user) {
 
-        //1.校验用户名密码
+        //校验用户名密码
         if (StringUtils.isAnyEmpty(user.getPhone(),user.getPassword())){
             throw new BusinessRuntimeException(BusinessErrors.PARAM_CANNOT_EMPTY);
         }
@@ -272,19 +266,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .equals(accountInfo.getPassword())){
             throw new BusinessRuntimeException(BusinessErrors.AUTHENTICATION_ERROR);
         }
-        //2.校验是否为管理员
+        //校验是否为管理员
         List<UserRoles> list = userRolesService.list(new LambdaQueryWrapper<UserRoles>()
                 .eq(UserRoles::getUserId, accountInfo.getUserId()));
         List<Integer> roleIdList = list.stream().map(UserRoles::getRoleId).toList();
-        //3. 批量查询
+        //批量查询
         List<String> roleList = roleService.listByIds(roleIdList).stream().map(Role::getRoleKey).toList();
 
         if (!roleList.contains(RoleType.ADMIN.getKey()) && !roleList.contains(RoleType.SUPER_ADMIN.getKey())){
             throw new BusinessRuntimeException(BusinessErrors.PERMISSION_DENIED);
         }
-        //4. 校验完成，保存用户角色权限等信息
+        //校验完成，保存用户角色权限等信息
         StpUtil.login(accountInfo.getUserId());
         StpUtil.getTokenSession().set(SaSession.ROLE_LIST,roleList);
+
+        //保存用户所在酒店Id
+        redisTemplate.opsForValue().set(RedisCache.USER_HOTEL_BINDING +user.getUserId(),
+                systemMapper.getHotelId(user.getUserId()));
 
         return Response.success("登录成功");
     }

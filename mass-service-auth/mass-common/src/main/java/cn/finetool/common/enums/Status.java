@@ -39,7 +39,10 @@ public enum Status {
     ROOMBOOKING_CHANGE(5,"已更换"),
     /** 查询方式 */
     QUERY_ORDER(0,"订单查询"),
-    QUERY_PHONE(1,"手机号查询")
+    QUERY_PHONE(1,"手机号查询"),
+    /** 按钮状态 */
+    CAN_USE(0,"启用"),
+    BAN_USE(1,"禁用"),
     ;
 
     private final int code;

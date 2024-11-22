@@ -67,20 +67,15 @@ public class UserController {
     }
 
     @ApiOperation(value = "管理员登录", notes = "管理员登录")
+    @SaCheckRole(value = {"admin","super_admin"},mode = SaMode.OR)
     @PostMapping("/admin/login")
     public Response adminLogin(@RequestBody User user){
         return userService.adminLogin(user);
     }
 
-    @SaCheckRole(value = {"admin","super_admin"},mode = SaMode.OR)
-    @GetMapping("/admin/test")
-    public Response adminTest(){
-        return Response.success("admin test");
-    }
-
     @SaCheckRole(value = {"user"},mode = SaMode.OR)
     @ApiOperation(value = "用户领取优惠券", notes = "用户领取优惠券")
-    @PostMapping("/get-voucher")
+    @PostMapping("/getVoucher")
     public Response getVoucher(@RequestParam("voucherId") String voucherId){
         return userService.getVoucher(voucherId);
     }
