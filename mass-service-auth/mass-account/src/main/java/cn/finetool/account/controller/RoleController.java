@@ -22,7 +22,7 @@ public class RoleController {
     private RoleService roleService;
 
     @ApiOperation(value = "新增角色", notes = "新增角色")
-    @SaCheckRole("super_admin")
+//    @SaCheckRole("super_admin")
     @PostMapping("/add")
     public Response addRole(@RequestBody Role role){
         return roleService.addRole(role);

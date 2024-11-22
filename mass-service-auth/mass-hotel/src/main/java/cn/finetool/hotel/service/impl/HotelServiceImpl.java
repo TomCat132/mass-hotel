@@ -83,13 +83,11 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
             }
 
             // 根据id 获取酒店详细地址 、 最低价格 、 距离
-            // 判断是否是临时用户位置 酒店id：自增主键 用户ID: 管理员ID: 19位 开发调试账号：110
-            if (hotelIdStr.equals("110") || hotelIdStr.length() >= 19){
-                log.info("新添加的临时用户位置，不进行查询");
+            // 判断是否是临时用户位置 酒店id：自增主键 用户ID: 1010
+            if (hotelIdStr.startsWith("1010")){
                 continue;
             }
             HotelVo hotelVo = hotelMapper.queryHotelInfo(Integer.parseInt(hotelIdStr));
-
             hotelVo.setHotelLng(hotelPoint.getX());
             hotelVo.setHotelLat(hotelPoint.getY());
             hotelVo.setDistance(distance.getValue());
@@ -101,6 +99,8 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
                 hotelVo.setMinPrice(minPrice);
                 hotelVoList.add(hotelVo);
             }
+
+
         }
 
         // 删除临时存储的用户位置

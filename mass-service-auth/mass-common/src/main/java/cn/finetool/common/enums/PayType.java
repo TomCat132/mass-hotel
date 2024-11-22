@@ -6,7 +6,9 @@ import lombok.Getter;
 public enum PayType {
     ALI_PAY(0,"支付宝支付"),
 
-    WX_PAY(1,"微信支付");
+    WX_PAY(1,"微信支付"),
+
+    ACCOUNT_PAY(2,"账户余额支付");
 
     private final int code;
     private final String msg;

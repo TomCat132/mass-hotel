@@ -1,5 +1,6 @@
 package cn.finetool.hotel.controller;
 
+import cn.finetool.common.dto.RoomBookingDto;
 import cn.finetool.common.po.RoomInfo;
 import cn.finetool.common.util.Response;
 import cn.finetool.hotel.service.RoomInfoService;
@@ -23,5 +24,11 @@ public class RoomInfoController {
     @PostMapping("/add")
     public Response addRoomInfo(@RequestBody RoomInfo roomInfo){
         return roomInfoService.addRoomInfo(roomInfo);
+    }
+
+    @ApiOperation(value = "提交入住订单,预定房间", notes = "提交入住订单,预定房间")
+    @PostMapping("/reserve")
+    public Response reserveRoom(@RequestBody RoomBookingDto roomBookingDto){
+        return roomInfoService.reserveRoom(roomBookingDto);
     }
 }

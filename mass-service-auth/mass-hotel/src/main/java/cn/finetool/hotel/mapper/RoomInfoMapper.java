@@ -20,4 +20,10 @@ public interface RoomInfoMapper extends BaseMapper<RoomInfo> {
     BigDecimal getRoomPrice(@Param("roomId") String roomId,
                             @Param("date") LocalDate date,
                             @Param("liveCount") Integer liveCount);
+
+    Integer queryCanUseRoomCount(@Param("roomId") String roomId,
+                                 @Param("checkInDate") LocalDate checkInDate,
+                                 @Param("checkOutDate") LocalDate checkOutDate);
+
+
 }

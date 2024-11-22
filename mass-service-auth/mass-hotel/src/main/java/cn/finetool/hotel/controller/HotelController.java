@@ -1,6 +1,7 @@
 package cn.finetool.hotel.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaMode;
 import cn.finetool.common.dto.QueryRoomTypeDto;
 import cn.finetool.common.po.Hotel;
 import cn.finetool.common.util.Response;
@@ -11,9 +12,11 @@ import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
+import static cn.dev33.satoken.annotation.SaMode.OR;
+
 @RestController
 @RequestMapping("/hotel")
-@Api(tags = "酒店模块")
+@Api(tags = "酒店管理")
 public class HotelController {
 
 
@@ -27,7 +30,7 @@ public class HotelController {
         return hotelService.addHotelInfo(hotel);
     }
 
-    @SaCheckRole("user")
+    @SaCheckRole(value = {"super_admin", "admin", "user"}, mode = SaMode.OR)
     @ApiOperation(value = "获取附近的酒店列表", notes = "获取附近的酒店列表")
     @GetMapping("/getNearByHotelList")
     public Response getNearByHotelList(@RequestParam("userLng") Double userLng,

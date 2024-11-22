@@ -16,7 +16,7 @@
         FROM tb_room_date room_date
         JOIN tb_room_info room_info ON room_date.ri_id = room_info.id
         JOIN tb_room room ON room.room_id = room_info.room_id
-        WHERE room.hotel_id = #{hotelId} AND room_date.date = #{today}
+        WHERE room.hotel_id = #{hotelId} AND room_date.date = #{today} AND room_date.status = 0
     </select>
 
 

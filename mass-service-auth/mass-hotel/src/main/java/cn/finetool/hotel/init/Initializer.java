@@ -16,9 +16,11 @@ import org.springframework.data.geo.Point;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -50,6 +52,9 @@ public class Initializer {
     public void InitHotelGeo(){
 
         LOGGER.info("初始化缓存酒店的经纬度信息");
+        // 清空缓存
+
+        redisTemplate.delete(RedisCache.HOTEL_LOCATION_LIST);
 
        List<HotelVo> hotelVoList = hotelMapper.getHotelGeoList();
 
@@ -62,37 +67,61 @@ public class Initializer {
 
     /** ============= 初始化缓存酒店的每日房间信息 =========== */
     /**
-     * 每天22:29执行一次
+     * 生成当月的每日房间信息，只执行一次
      */
-    @Scheduled(cron = "31 30 22 * * ?")
-    public void InitRoomDateInfo(){
-        //获取所有酒店每日的具体房间信息 roomId,roomInfoId,id
-        List<RoomInfo> roomInfoList =roomInfoMapper.getCanUseRoomInfoList();
+    @Scheduled(cron = "0 0 2 1 * ?")
+//    @PostConstruct
+    public void InitRoomDateInfo() {
+        //获取月份 临时脚本
+//        LocalDate now = LocalDate.now();
+//        int month = now.getMonthValue();
+//        Boolean b = redisTemplate.hasKey(String.valueOf(month));
+//        if (b){
+//            return;
+//        }
+        // 获取所有酒店每日的具体房间信息 roomId,roomInfoId,id
+        List<RoomInfo> roomInfoList = roomInfoMapper.getCanUseRoomInfoList();
 
-        //添加今日的具体房间信息到信息表中 id,roomId,date
-        List<RoomDate> roomDateList = roomInfoList.stream().map(roomInfo -> {
-            RoomDate roomDate = new RoomDate();
-            roomDate.setRiId(roomInfo.getId());
-            roomDate.setDate(LocalDate.now());
-            //设置临时id,后续清除
-            roomDate.setTempRoomId(roomInfo.getRoomId());
-            return roomDate;
-        }).toList();
+        // 获取当前月份的第一天和最后一天
+        LocalDate now = LocalDate.now();
+        LocalDate firstDayOfMonth = now.withDayOfMonth(1);
+        LocalDate lastDayOfMonth = now.withDayOfMonth(now.lengthOfMonth());
 
-        //收集房间id
-        List<String> roomIdList = roomDateList.parallelStream()
+        // 创建一个包含当前月份所有日期的列表
+        List<LocalDate> datesInMonth = new ArrayList<>();
+        for (LocalDate date = firstDayOfMonth; !date.isAfter(lastDayOfMonth); date = date.plusDays(1)) {
+            datesInMonth.add(date);
+        }
+
+        // 添加当月的具体房间信息到信息表中 id,roomId,date
+        List<RoomDate> roomDateList = new ArrayList<>();
+        for (RoomInfo roomInfo : roomInfoList) {
+            for (LocalDate date : datesInMonth) {
+                RoomDate roomDate = new RoomDate();
+                roomDate.setRiId(roomInfo.getId());
+                roomDate.setDate(date);
+                // 设置临时id, 后续清除
+                roomDate.setTempRoomId(roomInfo.getRoomId());
+                roomDateList.add(roomDate);
+            }
+        }
+
+        // 收集房间id
+        List<String> roomIdList = roomDateList.stream()
                 .map(RoomDate::getTempRoomId)
+                .distinct() // 去重
                 .toList();
 
-        //获取对应具体房间的基础价格  roomId,basic_price
+        // 获取对应具体房间的基础价格  roomId,basic_price
         Map<String, BigDecimal> roomPriceMap = roomMapper.getRoomPriceList(roomIdList).stream().collect(Collectors.toMap(Room::getRoomId, Room::getBasicPrice));
 
-        //设置 price
+        // 设置 price
         roomDateList.forEach(roomDate -> {
             roomDate.setPrice(roomPriceMap.get(roomDate.getTempRoomId()));
         });
-        //批量插入
+
+        // 批量插入
         roomDateMapper.insert(roomDateList);
-        log.info("初始化缓存酒店的每日房间信息完成");
+        log.info("初始化缓存酒店的每月房间信息完成");
     }
 }

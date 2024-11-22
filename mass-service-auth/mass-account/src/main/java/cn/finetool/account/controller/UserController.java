@@ -55,7 +55,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "修改密码", notes = "修改密码")
-    @PutMapping("/updatepwd")
+    @PutMapping("/update-pwd")
     public Response editPassword(@RequestBody PasswordDto passwordDto){
         return userService.editPassword(passwordDto);
     }
@@ -80,7 +80,7 @@ public class UserController {
 
     @SaCheckRole(value = {"user"},mode = SaMode.OR)
     @ApiOperation(value = "用户领取优惠券", notes = "用户领取优惠券")
-    @PostMapping("/getVoucher")
+    @PostMapping("/get-voucher")
     public Response getVoucher(@RequestParam("voucherId") String voucherId){
         return userService.getVoucher(voucherId);
     }
