@@ -36,5 +36,7 @@ public interface OrderAPIService {
     @GetMapping("/queryOrderInfo")
     RoomOrder queryOrderInfo(@RequestParam("orderId") String orderId);
 
-
+    @PostMapping("/createRoomOrder")
+    void createRoomOrder(@RequestParam("RoomOrder") RoomOrder roomOrder,
+                         @RequestParam("orderStatus") OrderStatus orderStatus);
 }

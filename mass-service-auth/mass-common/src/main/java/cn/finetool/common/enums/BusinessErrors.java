@@ -12,18 +12,27 @@ public enum BusinessErrors {
     DATA_NOT_EXIST(1002, "数据不存在"),
     DATA_STATUS_ERROR(1003, "数据状态错误"),
     PARAM_CANNOT_EMPTY(1004, "参数不能为空"),
+    DATA_NOT_MATCH(1005, "数据不匹配"),
+    SYSTEM_ERROR(1006, "系统错误"),
+    AUTHENTICATION_ERROR(1007, "参数校验错误"),
 
-    SYSTEM_ERROR(2001, "系统错误"),
+
+    ACCOUNT_NOT_ENOUGH(2001, "账户余额不足"),
+    ACCOUNT_NOT_EXIST(2002, "账户不存在"),
+    ACCOUNT_LOCKED(2003, "账户被锁定"),
+
+
+
     TOKEN_IS_INVALID(3001, "Token已经失效，重新登录"),
-    AUTHENTICATION_ERROR(3002, "参数校验错误"),
+
     PERMISSION_DENIED(3003, "权限不足"),
-    PAYMENT_COMMUNICATION_FAILURE(5004, "预支付通讯失败"),
-    PAYMENT_PRE_PAY_FAIL(5005, "预支付失败"),
-    PAYMENT_PAY_IN_PROGRESSL(5005, "支付进行中"),
-    WS_SEND_FAILED(6001, "websocket发送消息失败"),
+
+
+
 
     ORDER_CREATE_REQUEST_FAIL(7001, "订单创建请求失败"),
-    DATA_NOT_MATCH(7002, "数据不匹配"),
+
+
     IMAGE_CONVERT_ERROR(8001, "图片转换失败"),
 
     ALI_PAY_ERROR( 9001, "支付宝支付失败"),

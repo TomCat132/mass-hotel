@@ -2,6 +2,7 @@ package cn.finetool.order.api;
 
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.finetool.common.po.OrderStatus;
 import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.po.RoomOrder;
 import cn.finetool.common.vo.OrderVo;
@@ -69,6 +70,13 @@ public class OrderAPIService {
     @GetMapping("/queryRoomOrderInfo")
     public RoomOrder queryRoomOrderInfo(@RequestParam("orderId") String orderId){
         return roomOrderService.queryRoomOrderInfo(orderId);
+    }
+
+    /** ========= 创建房间订单 ========= */
+    @PostMapping("/CreateRoomOrder")
+    public void CreateRoomOrder(@RequestParam("RoomOrder") RoomOrder roomOrder,
+                                @RequestParam("OrderStatus") OrderStatus orderStatus){
+        roomOrderService.createRoomOrderInfo(roomOrder,orderStatus);
     }
 
 

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.finetool.hotel.mapper.RoomBookingMapper">
+    <update id="changeStatus">
+        UPDATE tb_room_booking AS room_booking
+        SET status = #{status}
+        WHERE room_booking.order_id = #{orderId}
+    </update>
+
+    <!--    HotelId,避免越权查询 -->
+    <select id="queryRoomBookingList" resultType="cn.finetool.common.po.RoomBooking">
+        SELECT *
+        FROM tb_room_booking AS room_booking
+        JOIN tb_room_date AS room_date ON room_booking.room_date_id = room_date.id
+        JOIN tb_room_info AS room_info ON room_booking.room_id = room_date.ri_id
+        JOIN tb_room AS room ON room.room_id = room_info.room_id
+        <where>
+            -- 过滤酒店ID
+            AND room.hotel_id = #{hotelId}
+
+            -- 按订单号查询
+            <if test="queryType == 0">
+                AND room_booking.order_id = #{queryValue}
+            </if>
+
+            -- 按手机号查询
+            <if test="queryType == 1">
+                JOIN tb_user AS user ON room_booking.user_id = user.user_id
+                AND user.phone = #{queryValue}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -29,4 +29,10 @@ public class RedisCache {
     /** =========== 房间预订订单前缀 ========== */
     public static final String ROOM_RESERVED_ORDER_IS_TIMEOUT = "room_reserved_order_is_timeout_order_id:";
 
+    /** =========== 预定锁定房间分布式锁 （roomId）======== */
+    public static final String RESERVE_ROOM = "reserve_room_roomId:";
+
+    /** =========== 用户酒店绑定表缓存标记 ========== */
+    public static final String USER_HOTEL_BINDING = "user_hotel_binding_userId:";
+
 }

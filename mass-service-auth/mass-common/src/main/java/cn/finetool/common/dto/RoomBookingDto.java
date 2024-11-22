@@ -21,9 +21,14 @@ public class RoomBookingDto implements Serializable {
     private LocalDate checkInDate;
 
     /**
-     * 入住时间
+     * 离店时间
      */
     private LocalDate checkOutDate;
+
+    /**
+     * 房间数量
+     */
+    private Integer roomCount;
 
     /**
      * 会员等级

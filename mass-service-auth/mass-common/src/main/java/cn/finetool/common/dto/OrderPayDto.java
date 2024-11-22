@@ -28,4 +28,7 @@ public class OrderPayDto implements Serializable {
      * 订单类型
      */
     private Integer orderType;
+
+    /** ==== 账户支付参数  ===== */
+    private Integer payType;
 }
