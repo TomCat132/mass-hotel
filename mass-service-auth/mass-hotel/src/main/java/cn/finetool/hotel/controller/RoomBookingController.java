@@ -51,6 +51,14 @@ public class RoomBookingController {
     }
 
     @SaCheckRole(value = {"admin"})
+    @PostMapping("/bindingDoorKey")
+    @ApiOperation(value = "绑定门禁卡", notes = "酒店前台: 绑定门禁卡")
+    public Response bindingDoorKey(@RequestParam("id") Integer id,
+                                   @RequestParam("doorKey") String doorKey){
+        return roomBookingService.bindingDoorKey(id,doorKey);
+    }
+
+    @SaCheckRole(value = {"admin"})
     @PutMapping("/finishHandleCheckIn")
     @ApiOperation(value = "完成入住手续办理", notes = "根据订单号完成入住")
     public Response finishHandleCheckIn(@RequestBody ExamineDto examineDto){

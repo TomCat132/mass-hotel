@@ -20,5 +20,9 @@ public class ExamineDto implements java.io.Serializable {
      */
     private boolean isConfirmDeposit;
 
+    /**
+     * 是否绑定门禁卡
+     */
+    private boolean isBindingDoorKey;
 
 }

@@ -83,12 +83,22 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
     @Override
     public Response finishHandleCheckIn(ExamineDto examineDto) {
         // 有一步手续未完成禁止确认入住
-        if (!examineDto.isConfirmRoom() || !examineDto.isConfirmDeposit()){
+        if (!examineDto.isConfirmRoom() || !examineDto.isConfirmDeposit()
+        || !examineDto.isBindingDoorKey()){
             return Response.error("请先完成手续确认");
         }
         // status : 办理中 -》 入住中
         roomBookingMapper.changeStatus(examineDto.getOrderId(), Status.ROOMBOOKING_CHECK_IN.getCode());
         return Response.success("已确认");
+    }
+
+    @Override
+    public Response bindingDoorKey(Integer id,String doorKey) {
+
+        roomBookingMapper.update(new UpdateWrapper<RoomBooking>()
+                .set("door_key",doorKey)
+                .eq("id",id));
+        return Response.success("门禁卡绑定成功");
     }
 
 }

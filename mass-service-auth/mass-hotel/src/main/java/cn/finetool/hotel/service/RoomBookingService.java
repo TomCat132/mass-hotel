@@ -19,4 +19,6 @@ public interface RoomBookingService extends IService<RoomBooking> {
     Response receiveDeposit(String id);
 
     Response finishHandleCheckIn(ExamineDto examineDto);
+
+    Response bindingDoorKey(Integer id,String doorKey);
 }
