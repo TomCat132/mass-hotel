@@ -294,5 +294,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return activityAPIService.getVoucher(voucherId,StpUtil.getLoginIdAsString());
     }
 
+    @Override
+    public BigDecimal getUserAccount(String userId) {
+        return userMapper.getUserAccount(userId);
+    }
+
+    @Override
+    public void decreaseUserAccount(String userId, BigDecimal userPayAmount) {
+        userMapper.decreaseUserAccount(userId,userPayAmount);
+    }
+
 
 }

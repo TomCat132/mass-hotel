@@ -14,4 +14,16 @@
             use_points = COALESCE(use_points, 0) + #{usePoints}
         WHERE user_id = #{userId}
     </update>
+
+    <update id="decreaseUserAccount">
+        UPDATE tb_user
+        SET account = account - #{account}
+        WHERE user_id = #{userId}
+    </update>
+
+    <select id="getUserAccount" resultType="java.math.BigDecimal">
+        SELECT account
+        FROM tb_user AS user
+        WHERE user_id = #{userId}
+    </select>
 </mapper>

@@ -30,4 +30,8 @@ public interface UserService extends IService<User> {
     Response adminLogin(User user);
 
     Response getVoucher(String voucherId);
+
+    BigDecimal getUserAccount(String userId);
+
+    void decreaseUserAccount(String userId, BigDecimal userPayAmount);
 }

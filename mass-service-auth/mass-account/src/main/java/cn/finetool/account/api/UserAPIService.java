@@ -2,10 +2,7 @@ package cn.finetool.account.api;
 
 import cn.finetool.account.service.UserService;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
@@ -21,5 +18,17 @@ public class UserAPIService {
     public void updateUserInfo(@RequestParam("userId") String userId,
                                @RequestParam("totalAmount") BigDecimal totalAmount){
         userService.updateUserInfo(userId, totalAmount);
+    }
+
+    /** =========== FeignClient: 获取账户余额 ============= */
+    @GetMapping("/getUserAccount")
+    public BigDecimal getUserAccount(@RequestParam("userId") String userId){
+       return userService.getUserAccount(userId);
+    }
+    /** =========== FeignClient: 扣除账户余额 ============= */
+    @PostMapping("/increaseUserAccount")
+    public void decreaseUserAccount(@RequestParam("userId") String userId,
+                                    @RequestParam("userPayAmount") BigDecimal userPayAmount){
+        userService.decreaseUserAccount(userId, userPayAmount);
     }
 }

@@ -14,5 +14,11 @@ public interface UserMapper extends BaseMapper<User> {
                         @Param("account") BigDecimal totalAmount,
                         @Param("points") int points,
                         @Param("usePoints") int usePoints);
+
+    BigDecimal getUserAccount(@Param("userId") String userId);
+
+
+    void decreaseUserAccount(@Param("userId") String userId,
+                             @Param("userPayAmount") BigDecimal userPayAmount);
 }
 
