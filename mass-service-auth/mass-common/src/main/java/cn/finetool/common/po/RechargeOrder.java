@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author rock
@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("tb_recharge_order")
-public class RechargeOrder implements Serializable {
+public class  RechargeOrder implements Serializable {
 
     private static final long serialVersionUID=1L;
 
@@ -60,12 +60,6 @@ public class RechargeOrder implements Serializable {
     private BigDecimal totalAmount;
 
     /**
-     * 订单状态
-     */
-    @TableField(value = "order_status")
-    private Integer orderStatus;
-
-    /**
      * 订单创建时间
      */
     @TableField(value = "create_time")
@@ -80,23 +74,7 @@ public class RechargeOrder implements Serializable {
     private String userId;
 
     /**
-     * 支付方式
+     * 0: 未删   1: 已删
      */
-    @TableField(value = "pay_type")
-    private String payType;
-
-    /**
-     * 支付时间
-     */
-    @TableField(value = "pay_time")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private LocalDateTime payTime;
-
-    /**
-     * 取消订单时间
-     */
-    @TableField(value = "cancel_time")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private LocalDateTime cancelTime;
-
+    private Integer isDeleted;
 }

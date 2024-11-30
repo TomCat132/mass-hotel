@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author rock
@@ -61,4 +61,9 @@ public class RechargePlans implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime expirationDate;
 
+
+    /**
+     * 0：正常 ;1：删除
+     */
+    private Integer isDelete;
 }

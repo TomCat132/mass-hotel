@@ -68,4 +68,9 @@ public class RoomOrder implements Serializable {
      */
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private LocalDate checkOutDate;
+
+    /**
+     * 0: 未删   1: 已删
+     */
+    private Integer isDeleted;
 }

@@ -6,7 +6,7 @@ package cn.finetool.common.enums;
  */
 public enum ResponseState {
     SUCCESS(200, "成功"),
-    ERROR(-1, "失败"),
+    ERROR(400, "失败"),
     UNKNOWN(-2, "未知错误");
 
     private int code;

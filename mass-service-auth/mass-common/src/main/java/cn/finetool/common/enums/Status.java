@@ -43,6 +43,9 @@ public enum Status {
     /** 按钮状态 */
     CAN_USE(0,"启用"),
     BAN_USE(1,"禁用"),
+
+    IS_DELETED(1,"已删除"),
+    NOT_DELETED(0,"未删除"),
     ;
 
     private final int code;

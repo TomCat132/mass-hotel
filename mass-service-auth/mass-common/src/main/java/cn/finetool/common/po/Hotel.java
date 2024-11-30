@@ -17,6 +17,11 @@ public class Hotel {
     private Integer hotelId;
 
     /**
+     * 酒店编号
+     */
+    private String merchantId;
+
+    /**
      *  酒店名称
      */
     private String hotelName;
@@ -62,4 +67,9 @@ public class Hotel {
      */
     @TableField(value = "hotel_lat")
     private Double hotelLat;
+
+    /**
+     * 状态
+     */
+    private Integer status;
 }

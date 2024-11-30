@@ -21,4 +21,9 @@ public class CheckRoomInfoVO implements java.io.Serializable {
      * 房间状态: 可用，不可用
      */
     private Integer status;
+
+    /**
+     * 手机号
+     */
+    private String phone;
 }

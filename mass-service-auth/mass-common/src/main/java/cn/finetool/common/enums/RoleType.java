@@ -7,7 +7,7 @@ public enum RoleType {
 
     SUPER_ADMIN(0,"super_admin"),
     ADMIN(2,"admin"),
-    
+    SYS_ADMIN(1,"sys_admin"),
     USER(3,"user");
 
     private int code;
