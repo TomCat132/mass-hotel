@@ -27,7 +27,7 @@ public class RoomInfoController {
     }
 
     @ApiOperation(value = "提交入住订单,预定房间", notes = "提交入住订单,预定房间")
-    @PostMapping("/reserve")
+    @PostMapping(value = "/reserve")
     public Response reserveRoom(@RequestBody RoomBookingDto roomBookingDto){
         return roomInfoService.reserveRoom(roomBookingDto);
     }

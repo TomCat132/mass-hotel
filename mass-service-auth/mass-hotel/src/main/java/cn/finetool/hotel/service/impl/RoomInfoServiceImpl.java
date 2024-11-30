@@ -7,12 +7,10 @@ import cn.finetool.common.constant.MqExchange;
 import cn.finetool.common.constant.MqRoutingKey;
 import cn.finetool.common.constant.MqTTL;
 import cn.finetool.common.constant.RedisCache;
+import cn.finetool.common.dto.CreateOrderDto;
 import cn.finetool.common.dto.RoomBookingDto;
-import cn.finetool.common.enums.BusinessErrors;
 import cn.finetool.common.enums.CodeSign;
-import cn.finetool.common.enums.OrderType;
 import cn.finetool.common.enums.Status;
-import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.*;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.util.SnowflakeIdWorker;
@@ -21,24 +19,25 @@ import cn.finetool.hotel.service.RoomBookingService;
 import cn.finetool.hotel.service.RoomDateService;
 import cn.finetool.hotel.service.RoomInfoService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 @Service
 public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> implements RoomInfoService {
 
     private static final SnowflakeIdWorker ID_WORKER = new SnowflakeIdWorker(7,0);
+
+    private static final Logger log = Logger.getLogger(RoomInfoServiceImpl.class.getName());
 
     @Resource
     private RedissonClient redissonClient;
@@ -75,12 +74,12 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
         //2. 锁定房间（分布式锁）
         RLock lock = redissonClient.getLock(RedisCache.RESERVE_ROOM + roomBookingDto.getRoomId());
         try {
-            if (lock.tryLock(2000, 2000, TimeUnit.MILLISECONDS)) {
+            if (lock.tryLock(2000, TimeUnit.MILLISECONDS)) {
                 Response.error(400, "房间已被预订，请选择其他房间~");
             }
             if (canUseRoomCount > 0) {
                 // 可用房间列表
-                Integer canUseRoomInfoId = roomInfoMapper.selectList(new LambdaQueryWrapper<RoomInfo>()
+                Integer canUserRoomDateId = roomInfoMapper.selectList(new LambdaQueryWrapper<RoomInfo>()
                         .eq(RoomInfo::getRoomId, roomBookingDto.getRoomId())
                         .eq(RoomInfo::getStatus, 1))
                         .stream()
@@ -107,42 +106,46 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
                 // 随机锁定一个房间
                 roomDateService.update()
                         .set("status", Status.ROOM_DATE_RESERVED.getCode())
-                        .eq("ri_id",canUseRoomInfoId)
+                        .eq("id", canUserRoomDateId)
                         .update();
                 // 生成订单号
-                String roomOrderId = String.valueOf(CodeSign.HotelOrderPrefix.getCode() + ID_WORKER.nextId());
+                String roomOrderId = CodeSign.HotelOrderPrefix.getCode() + String.valueOf( + ID_WORKER.nextId());
                 String userId = StpUtil.getLoginIdAsString();
                 // 保存预定房间信息 （tb_room_booking）
                 RoomBooking roomBooking = new RoomBooking();
-                Integer roomDateId = roomDateService.getOne(new LambdaQueryWrapper<RoomDate>()
-                                .eq(RoomDate::getRiId, canUseRoomInfoId))
-                                .getId();
-                roomBooking.setRoomDateId(roomDateId);
+                roomBooking.setRoomDateId(canUserRoomDateId);
                 roomBooking.setOrderId(roomOrderId);
                 roomBooking.setCreatedTime(LocalDateTime.now());
+                roomBooking.setStatus(Status.ROOMBOOKING_RESERVED.getCode());
                 roomBookingService.save(roomBooking);
 
                 // 保存订单信息 （tb_room_order , tb_order_status）
                 RoomOrder roomOrder = new RoomOrder();
                 roomOrder.setOrderId(roomOrderId);
                 roomOrder.setRoomId(roomBookingDto.getRoomId());
-                roomOrder.setRoomDateId(roomDateId);
+                roomOrder.setRoomDateId(canUserRoomDateId);
                 roomOrder.setUserPayAmount(roomBookingDto.getUserPayAmount());
                 roomOrder.setCreateTime(LocalDateTime.now());
+                roomOrder.setCheckInDate(roomBookingDto.getCheckInDate());
+                roomOrder.setCheckOutDate(roomBookingDto.getCheckOutDate());
                 roomOrder.setUserId(userId);
 
                 // 冷热数据分离
                 OrderStatus orderStatus = new OrderStatus();
                 orderStatus.setOrderId(roomOrderId);
                 orderStatus.setOrderStatus(Status.ORDER_WAIT.getCode());
+                orderStatus.setUserId(userId);
 
-                orderAPIService.createRoomOrder(roomOrder,orderStatus);
+                CreateOrderDto orderDto = new CreateOrderDto();
+                orderDto.setRoomOrder(roomOrder);
+                orderDto.setOrderStatus(orderStatus);
+                orderAPIService.createRoomOrder(orderDto);
 
                 // 发送过期消息
                 MessageDo messageDo = new MessageDo();
                 Map<String,Object> messageMap = new HashMap<>();
                 messageMap.put("orderId",roomOrderId);
-                messageMap.put("roomDateId",roomDateId);
+                messageMap.put("roomDateId",canUserRoomDateId);
                 messageMap.put("checkInDate",roomOrder.getCheckInDate());
                 messageMap.put("checkOutDate",roomOrder.getCheckInDate());
                 messageDo.setMessageMap(messageMap);
@@ -153,11 +156,11 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
                             message.getMessageProperties().getHeaders().put("x-delay", MqTTL.FIVE_MINUTES);
                             return message;
                         });
-
+                log.info("预定房间成功，订单号:" + roomOrderId);
                 return Response.success(roomOrderId);
             }
         } catch (Exception e) {
-            lock.unlock();
+
             throw new RuntimeException(e);
         } finally {
             lock.unlock();

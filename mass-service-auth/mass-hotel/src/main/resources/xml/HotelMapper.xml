@@ -38,4 +38,20 @@
         GROUP BY room.room_id,room.room_name,room.room_type,room.basic_price
         HAVING COUNT(DISTINCT room_date.date) = DATEDIFF(#{checkOutDate},#{checkInDate}) + 1;
     </select>
+    <select id="queryHotelReserveRoomBookingList" resultType="cn.finetool.common.vo.CheckRoomInfoVO">
+        SELECT *
+        FROM tb_room_booking AS room_booking
+                 JOIN tb_room_date AS room_date ON room_booking.room_date_id = room_date.id
+                 JOIN tb_room_info AS room_info ON room_booking.id = room_date.ri_id
+                 JOIN tb_room AS room ON room.room_id = room_info.room_id
+        AND room.hotel_id = #{hotelId}
+    </select>
+
+    <select id="queryUserColumn" resultType="java.lang.String">
+        SELECT user.phone
+        FROM tb_user AS user
+        JOIN tb_room_order AS room_order ON  user.user_id  = room_order.user_id
+        JOIN tb_room_booking AS room_booking ON room_order.order_id = room_booking.order_id
+        WHERE room_booking.room_date_id = #{roomDateId}
+    </select>
 </mapper>
