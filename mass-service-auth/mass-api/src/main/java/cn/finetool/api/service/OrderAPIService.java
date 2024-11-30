@@ -1,6 +1,8 @@
 package cn.finetool.api.service;
 
 
+
+import cn.finetool.common.dto.CreateOrderDto;
 import cn.finetool.common.po.OrderStatus;
 import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.po.RoomOrder;
@@ -21,7 +23,7 @@ public interface OrderAPIService {
 
     /**====== 获取 用户 充值订单列表 =====*/
     @GetMapping("/getRechargeOrderList")
-    List<RechargeOrder> getRechargeOrderList(@RequestParam("userId") String userId);
+    List<OrderVo> getRechargeOrderList(@RequestParam("userId") String userId);
 
     @PutMapping("/changeOrderStatus")
     void changeOrderStatus(@RequestParam("orderId") String orderId,
@@ -36,7 +38,15 @@ public interface OrderAPIService {
     @GetMapping("/queryOrderInfo")
     RoomOrder queryOrderInfo(@RequestParam("orderId") String orderId);
 
-    @PostMapping("/createRoomOrder")
-    void createRoomOrder(@RequestParam("RoomOrder") RoomOrder roomOrder,
-                         @RequestParam("orderStatus") OrderStatus orderStatus);
+    /** ======== 创建 房间预定 订单 =======*/
+    @PostMapping(value = "/createRoomOrder", consumes = "application/json")
+    void createRoomOrder(@RequestBody CreateOrderDto createOrderDto);
+
+    /** ======== 获取 用户 房间预定订单列表 =======*/
+    @GetMapping("/getRoomOrderList")
+    List<OrderVo> getRoomOrderList(@RequestParam("userId") String userId);
+
+    /** ======== 逻辑删除 订单 =======*/
+    @PutMapping("/deleteOrder")
+    void deleteOrder(@RequestParam("orderId") String orderId);
 }
