@@ -19,17 +19,15 @@ import cn.finetool.common.enums.OrderType;
 import cn.finetool.common.enums.RoleType;
 import cn.finetool.common.exception.BusinessRuntimeException;
 
-import cn.finetool.common.po.RechargeOrder;
-import cn.finetool.common.po.Role;
-import cn.finetool.common.po.User;
+import cn.finetool.common.po.*;
 
-import cn.finetool.common.po.UserRoles;
 import cn.finetool.common.util.CommonsUtils;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.util.SnowflakeIdWorker;
 import cn.finetool.common.vo.OrderVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,8 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 @Service
@@ -189,7 +186,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        
+
     }
 
     @Override
@@ -233,22 +230,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         List<OrderVo> orderList = new ArrayList<>();
 
         //查询充值订单
-        List<RechargeOrder> rechargeOrderList = orderAPIService.getRechargeOrderList(StpUtil.getLoginIdAsString());
-
-        if (rechargeOrderList != null){
-            List<OrderVo> rechargeOrderSet = rechargeOrderList.stream().map(rechargeOrder -> {
-                OrderVo orderVo = new OrderVo();
-                orderVo.setOrderId(rechargeOrder.getOrderId());
-                orderVo.setOrderType(OrderType.RECHARGE_ORDER.getValue());
-                orderVo.setOrderStatus(rechargeOrder.getOrderStatus());
-                orderVo.setUserPayAmount(rechargeOrder.getUserPayAmount());
-                orderVo.setCreateTime(rechargeOrder.getCreateTime());
-                return orderVo;
-            }).toList();
-            orderList.addAll(rechargeOrderSet);
+        List<OrderVo> rechargeOrderList = orderAPIService.getRechargeOrderList(StpUtil.getLoginIdAsString());
+        if (Objects.nonNull(rechargeOrderList)){
+            orderList.addAll(rechargeOrderList.stream().peek(orderVo -> orderVo.setOrderType(CodeSign.RechargeOrderPrefix.getCode())).toList());
         }
-
-
+        //查询房间预定订单
+        List<OrderVo> roomOrderList =  orderAPIService.getRoomOrderList(StpUtil.getLoginIdAsString());
+        if (Objects.nonNull(roomOrderList)){
+            orderList.addAll(roomOrderList.stream().peek(orderVo -> orderVo.setOrderType(CodeSign.HotelOrderPrefix.getCode())).toList());
+        }
         return Response.success(orderList);
     }
 
@@ -262,6 +252,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         User accountInfo = userService.getOne(new LambdaQueryWrapper<User>()
                 .eq(User::getPhone, user.getPhone()));
+        if (Objects.isNull(accountInfo)){
+            throw new BusinessRuntimeException(BusinessErrors.ACCOUNT_NOT_EXIST);
+        }
         if (!CommonsUtils.encodeMD5(user.getPassword() + accountInfo.getSalty())
                 .equals(accountInfo.getPassword())){
             throw new BusinessRuntimeException(BusinessErrors.AUTHENTICATION_ERROR);
@@ -272,19 +265,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         List<Integer> roleIdList = list.stream().map(UserRoles::getRoleId).toList();
         //批量查询
         List<String> roleList = roleService.listByIds(roleIdList).stream().map(Role::getRoleKey).toList();
-
-        if (!roleList.contains(RoleType.ADMIN.getKey()) && !roleList.contains(RoleType.SUPER_ADMIN.getKey())){
-            throw new BusinessRuntimeException(BusinessErrors.PERMISSION_DENIED);
+        //判断是否为管理员/超级管理员/系统管理员
+        //如果是，则保存用户角色权限等信息；否则，返回权限不足
+        if (!roleList.contains(RoleType.ADMIN.getKey()) && !roleList.contains(RoleType.SUPER_ADMIN.getKey())
+                && !roleList.contains(RoleType.SYS_ADMIN.getKey())){
+            return Response.error("权限不足");
         }
         //校验完成，保存用户角色权限等信息
         StpUtil.login(accountInfo.getUserId());
         StpUtil.getTokenSession().set(SaSession.ROLE_LIST,roleList);
 
         //保存用户所在酒店Id
-        redisTemplate.opsForValue().set(RedisCache.USER_HOTEL_BINDING +user.getUserId(),
-                systemMapper.getHotelId(user.getUserId()));
+        Integer hotelId = systemMapper.getHotelId(accountInfo.getUserId());
+        redisTemplate.opsForValue().set(RedisCache.USER_HOTEL_BINDING +user.getUserId(), hotelId);
 
-        return Response.success("登录成功");
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("userId",accountInfo.getUserId());
+        resultMap.put("hotelId",hotelId);
+        resultMap.put("userRole",roleList);
+
+        return Response.success(resultMap);
     }
 
     @Override
@@ -300,6 +300,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public void decreaseUserAccount(String userId, BigDecimal userPayAmount) {
         userMapper.decreaseUserAccount(userId,userPayAmount);
+    }
+
+    @Override
+    public Response deleteOrderById(String orderId) {
+        orderAPIService.deleteOrder(orderId);
+        return Response.success("订单删除成功");
+    }
+
+    @Override
+    public Response checkPwd(String oldPwd) {
+        User user = userMapper.selectOne(new QueryWrapper<User>()
+                .eq("user_id", StpUtil.getLoginIdAsString()));
+        if (!CommonsUtils.encodeMD5(oldPwd+ user.getSalty()).equals(user.getPassword())){
+            return Response.error("false");
+        }
+
+        return Response.success("true");
     }
 
 

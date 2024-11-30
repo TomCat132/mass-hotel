@@ -60,14 +60,7 @@ public class UserController {
         return userService.editPassword(passwordDto);
     }
 
-    @ApiOperation(value = "获取所有类型的订单列表", notes = "获取所有类型的订单列表")
-    @GetMapping("/orderlist")
-    public Response getOrderList() {
-        return userService.getOrderList();
-    }
-
     @ApiOperation(value = "管理员登录", notes = "管理员登录")
-    @SaCheckRole(value = {"admin","super_admin"},mode = SaMode.OR)
     @PostMapping("/admin/login")
     public Response adminLogin(@RequestBody User user){
         return userService.adminLogin(user);
@@ -79,4 +72,25 @@ public class UserController {
     public Response getVoucher(@RequestParam("voucherId") String voucherId){
         return userService.getVoucher(voucherId);
     }
+
+
+    @GetMapping("/orderlist")
+    @ApiOperation(value = "获取所有类型的订单列表", notes = "获取所有类型的订单列表")
+    public Response getOrderList() {
+        return userService.getOrderList();
+    }
+
+    @PutMapping("/deleteOrderById/{orderId}")
+    @ApiOperation(value = "删除订单", notes = "删除订单")
+    public Response deleteOrderById(@PathVariable("orderId") String orderId){
+        return userService.deleteOrderById(orderId);
+    }
+
+    @PostMapping("/checkPwd")
+    @ApiOperation(value = "校验密码", notes = "校验密码")
+    public Response checkPwd(@RequestParam("oldPwd") String oldPwd){
+        return userService.checkPwd(oldPwd);
+    }
+
+
 }

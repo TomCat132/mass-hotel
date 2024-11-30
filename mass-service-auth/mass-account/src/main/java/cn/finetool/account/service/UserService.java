@@ -34,4 +34,8 @@ public interface UserService extends IService<User> {
     BigDecimal getUserAccount(String userId);
 
     void decreaseUserAccount(String userId, BigDecimal userPayAmount);
+
+    Response deleteOrderById(String orderId);
+
+    Response checkPwd(String oldPwd);
 }
