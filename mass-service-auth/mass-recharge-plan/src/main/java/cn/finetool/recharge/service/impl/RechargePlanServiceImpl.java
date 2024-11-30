@@ -4,6 +4,7 @@ import cn.finetool.common.Do.MessageDo;
 import cn.finetool.common.constant.MqExchange;
 import cn.finetool.common.constant.MqRoutingKey;
 import cn.finetool.common.constant.RedisCache;
+import cn.finetool.common.dto.PlanDto;
 import cn.finetool.common.enums.BusinessErrors;
 import cn.finetool.common.enums.OrderType;
 import cn.finetool.common.enums.RechargePlanType;
@@ -111,10 +112,10 @@ public class RechargePlanServiceImpl extends ServiceImpl<RechargePlanMapper, Rec
 
     /**====== 更改充值方案状态 =====*/
     @Override
-    public boolean updateRechargePlanStatus(Integer planId) {
+    public boolean updateRechargePlanStatus(Integer planId,Integer status) {
         try {
             rechargePlanMapper.update(new UpdateWrapper<RechargePlans>()
-                    .set("status", Status.RECHARGE_PLAN_DOWN.getCode())
+                    .set("status", status)
                     .eq("plan_id", planId));
             return true;
         }catch (Exception e){
@@ -128,12 +129,23 @@ public class RechargePlanServiceImpl extends ServiceImpl<RechargePlanMapper, Rec
         List<RechargePlans> rechargePlansList = (List<RechargePlans>) redisTemplate.opsForValue().get(RedisCache.VALID_RECHARGE_PLAN_LIST);
 
         if (rechargePlansList == null){
-            rechargePlansList = rechargePlanService.list(new LambdaQueryWrapper<RechargePlans>()
-                    .eq(RechargePlans::getStatus, Status.RECHARGE_PLAN_UP.getCode()));
+          rechargePlansList = rechargePlanService.list(new LambdaQueryWrapper<RechargePlans>()
+                    .eq(RechargePlans::getStatus, Status.RECHARGE_PLAN_UP.getCode())
+                    .eq(RechargePlans::getIsDelete,Status.IS_DELETED.getCode()));
         }
 
         redisTemplate.opsForValue().set(RedisCache.VALID_RECHARGE_PLAN_LIST, rechargePlansList);
 
         return Response.success(rechargePlansList);
     }
+
+    @Override
+    public Response deleteById(Integer id) {
+        rechargePlanService.update()
+                .set("is_delete",Status.IS_DELETED.getCode())
+                .eq("plan_id", id)
+                .update();
+        return Response.success(null);
+    }
+
 }

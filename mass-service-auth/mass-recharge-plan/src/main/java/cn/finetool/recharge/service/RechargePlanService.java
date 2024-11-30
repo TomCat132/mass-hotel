@@ -1,5 +1,6 @@
 package cn.finetool.recharge.service;
 
+import cn.finetool.common.dto.PlanDto;
 import cn.finetool.common.po.RechargePlans;
 import cn.finetool.common.util.Response;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -9,7 +10,9 @@ public interface RechargePlanService extends IService<RechargePlans> {
 
     Response addChargePlan(RechargePlans rechargePlans) throws JsonProcessingException;
 
-    boolean updateRechargePlanStatus(Integer planId);
+    boolean updateRechargePlanStatus(Integer planId, Integer status);
 
     Response validRechargePlanList();
+
+    Response deleteById(Integer id);
 }
