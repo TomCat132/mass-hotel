@@ -118,7 +118,14 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
 
         RechargeOrder rechargeOrder = getOrderById(orderId);
 
-        return Response.success(rechargeOrder);
+        OrderStatus orderStatus = orderStatusService.getOne(new LambdaQueryWrapper<OrderStatus>()
+                .eq(OrderStatus::getOrderId, orderId));
+
+        Map<String,Object> orderInfo = new HashMap<>();
+        orderInfo.put("order",rechargeOrder);
+        orderInfo.put("orderStatus",orderStatus);
+
+        return Response.success(orderInfo);
     }
 
     @Override
@@ -142,5 +149,5 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
     public static void main(String[] args) {
 
     }
-    
+
 }

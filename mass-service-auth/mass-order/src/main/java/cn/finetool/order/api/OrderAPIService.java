@@ -1,11 +1,11 @@
 package cn.finetool.order.api;
 
 
-import cn.dev33.satoken.stp.StpUtil;
-import cn.finetool.common.po.OrderStatus;
+import cn.finetool.common.dto.CreateOrderDto;
 import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.po.RoomOrder;
 import cn.finetool.common.vo.OrderVo;
+import cn.finetool.order.handler.OrderHandler;
 import cn.finetool.order.service.OrderStatusService;
 import cn.finetool.order.service.RechargeOrderService;
 import cn.finetool.order.service.RoomOrderService;
@@ -34,6 +34,9 @@ public class OrderAPIService {
     @Resource
     private RoomOrderServiceImpl roomOrderService;
 
+    @Resource
+    public OrderHandler orderHandler;
+
     /** ========= 更改订单状态 ========= */
     @PutMapping("/updateOrderStatus")
     public void updateOrderStatus(@RequestParam("orderId") String orderId, @RequestParam("orderStatus") Integer orderStatus){
@@ -52,12 +55,6 @@ public class OrderAPIService {
         rechargeOrderService.handleRechargeOrder(orderId);
     }
 
-    /** ========= 获取 用户 充值订单列表 ========= */
-    @GetMapping("/getRechargeOrderList")
-    public List<OrderVo> getRechargeOrderList(@RequestParam("userId") String userId){
-        return rechargeOrderService.getRechargeOrderList(userId);
-    }
-
     /** ========= 充值订单状态修改 ========= */
     @PutMapping("/changeOrderStatus")
     public void changeOrderStatus(@RequestParam("orderId") String orderId,
@@ -73,12 +70,28 @@ public class OrderAPIService {
     }
 
     /** ========= 创建房间订单 ========= */
-    @PostMapping("/CreateRoomOrder")
-    public void CreateRoomOrder(@RequestParam("RoomOrder") RoomOrder roomOrder,
-                                @RequestParam("OrderStatus") OrderStatus orderStatus){
-        roomOrderService.createRoomOrderInfo(roomOrder,orderStatus);
+    @PostMapping("/createRoomOrder")
+    public void CreateRoomOrder(@RequestBody CreateOrderDto createOrderDto){
+        roomOrderService.createRoomOrderInfo(createOrderDto);
     }
 
+    /** ========= 获取 用户 充值订单列表 ========= */
+    @GetMapping("/getRechargeOrderList")
+    public List<OrderVo> getRechargeOrderList(@RequestParam("userId") String userId){
+        return rechargeOrderService.getRechargeOrderList(userId);
+    }
+
+    /** ========= 获取 用户 房间订单列表 ========= */
+    @GetMapping("/getRoomOrderList")
+    public List<OrderVo> getRoomOrderList(@RequestParam("userId") String userId){
+        return roomOrderService.getRoomOrderList(userId);
+    }
+
+    /** ========= 删除订单 ========= */
+    @PutMapping("/deleteOrder")
+    public void deleteOrder(@RequestParam("orderId") String orderId){
+        orderHandler.deleteOrder(orderId);
+    }
 
 
 }
