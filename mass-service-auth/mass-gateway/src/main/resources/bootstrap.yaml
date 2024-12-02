@@ -2,6 +2,7 @@ spring:
   main:
     web-application-type: reactive
     allow-circular-references: true
+    allow-bean-definition-overriding: true
   servlet:
     multipart:
       max-file-size: 100MB
@@ -37,7 +38,7 @@ spring:
         - id: mass-order-service
           uri: lb://mass-order-service
           predicates:
-            - Path=/rechargeOrder/**
+            - Path=/rechargeOrder/**,/roomOrder/**
         # 活动服务路由
         - id: mass-activity-service
           uri: lb://mass-activity-service

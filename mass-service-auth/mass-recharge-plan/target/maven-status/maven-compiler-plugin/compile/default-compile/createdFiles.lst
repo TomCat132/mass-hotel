@@ -1,7 +1,0 @@
-cn\finetool\recharge\service\RechargePlanService.class
-cn\finetool\recharge\mapper\RechargePlanMapper.class
-cn\finetool\recharge\RechargePlanApplication.class
-cn\finetool\recharge\service\impl\RechargePlanServiceImpl.class
-cn\finetool\recharge\controller\RechargePlanController.class
-cn\finetool\recharge\api\RechargePlanAPIService.class
-cn\finetool\recharge\configuration\RabbitTemplateConfig.class

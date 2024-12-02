@@ -2,7 +2,6 @@ package cn.finetool.account.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
-import cn.dev33.satoken.stp.StpUtil;
 import cn.finetool.account.service.UserService;
 import cn.finetool.common.dto.PasswordDto;
 import cn.finetool.common.po.User;

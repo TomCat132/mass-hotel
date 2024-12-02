@@ -35,7 +35,7 @@ import java.util.logging.Logger;
 @Service
 public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> implements RoomInfoService {
 
-    private static final SnowflakeIdWorker ID_WORKER = new SnowflakeIdWorker(7,0);
+    private static final SnowflakeIdWorker ID_WORKER = new SnowflakeIdWorker(7, 0);
 
     private static final Logger log = Logger.getLogger(RoomInfoServiceImpl.class.getName());
 
@@ -80,10 +80,10 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
             if (canUseRoomCount > 0) {
                 // 可用房间列表
                 Integer canUserRoomDateId = roomInfoMapper.selectList(new LambdaQueryWrapper<RoomInfo>()
-                        .eq(RoomInfo::getRoomId, roomBookingDto.getRoomId())
-                        .eq(RoomInfo::getStatus, 1))
+                                .eq(RoomInfo::getRoomId, roomBookingDto.getRoomId())
+                                .eq(RoomInfo::getStatus, 1))
                         .stream()
-                        .map( roomInfo -> {
+                        .map(roomInfo -> {
                             // 找到第一个 room_date_id 主键
                             List<RoomDate> list = roomDateService.list(new LambdaQueryWrapper<RoomDate>()
                                     .eq(RoomDate::getRiId, roomInfo.getId())
@@ -109,7 +109,7 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
                         .eq("id", canUserRoomDateId)
                         .update();
                 // 生成订单号
-                String roomOrderId = CodeSign.HotelOrderPrefix.getCode() + String.valueOf( + ID_WORKER.nextId());
+                String roomOrderId = CodeSign.HotelOrderPrefix.getCode() + String.valueOf(+ID_WORKER.nextId());
                 String userId = StpUtil.getLoginIdAsString();
                 // 保存预定房间信息 （tb_room_booking）
                 RoomBooking roomBooking = new RoomBooking();
@@ -143,16 +143,16 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
 
                 // 发送过期消息
                 MessageDo messageDo = new MessageDo();
-                Map<String,Object> messageMap = new HashMap<>();
-                messageMap.put("orderId",roomOrderId);
-                messageMap.put("roomDateId",canUserRoomDateId);
-                messageMap.put("checkInDate",roomOrder.getCheckInDate());
-                messageMap.put("checkOutDate",roomOrder.getCheckInDate());
+                Map<String, Object> messageMap = new HashMap<>();
+                messageMap.put("orderId", roomOrderId);
+                messageMap.put("roomDateId", canUserRoomDateId);
+                messageMap.put("checkInDate", roomOrder.getCheckInDate());
+                messageMap.put("checkOutDate", roomOrder.getCheckInDate());
                 messageDo.setMessageMap(messageMap);
 
                 // 发送消息实现订单 防止超时取消
                 rabbitTemplate.convertAndSend(MqExchange.ROOM_DATE_RESERVE_ORDER_EXCHANGE,
-                        MqRoutingKey.ORDER_ROUTING_KEY,messageDo, message -> {
+                        MqRoutingKey.ORDER_ROUTING_KEY, messageDo, message -> {
                             message.getMessageProperties().getHeaders().put("x-delay", MqTTL.FIVE_MINUTES);
                             return message;
                         });
@@ -160,7 +160,6 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
                 return Response.success(roomOrderId);
             }
         } catch (Exception e) {
-
             throw new RuntimeException(e);
         } finally {
             lock.unlock();
@@ -168,8 +167,6 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
 
         return Response.error(400, "房间已被预订，请选择其他房间~");
     }
-
-
 
 
 }

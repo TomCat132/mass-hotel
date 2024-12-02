@@ -14,7 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @EnableFeignClients(basePackages = "cn.finetool.api.service")
 @ComponentScan(basePackages = {
-        "cn.finetool.rabbitmq.configuration","cn.finetool.rabbitmq.listener"})
+        "cn.finetool.rabbitmq.configuration", "cn.finetool.rabbitmq.listener"})
 public class MqApplication {
     public static void main(String[] args) {
         SpringApplication.run(MqApplication.class, args);

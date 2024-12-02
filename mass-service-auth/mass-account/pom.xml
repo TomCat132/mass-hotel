@@ -97,6 +97,10 @@
             <artifactId>mass-api</artifactId>
             <version>0.0.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
 
     </dependencies>
 

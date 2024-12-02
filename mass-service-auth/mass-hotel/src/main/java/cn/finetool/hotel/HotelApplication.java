@@ -17,6 +17,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ComponentScan(basePackages = "cn.finetool")
 public class HotelApplication {
     public static void main(String[] args) {
-        SpringApplication.run(HotelApplication.class,args);
+        SpringApplication.run(HotelApplication.class, args);
     }
 }

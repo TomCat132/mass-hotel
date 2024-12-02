@@ -4,16 +4,23 @@ import cn.finetool.api.service.RechargePlanAPIService;
 import cn.finetool.common.dto.PlanDto;
 import cn.finetool.common.enums.CodeSign;
 import cn.finetool.common.po.Hotel;
+import cn.finetool.common.po.Room;
+import cn.finetool.common.po.RoomInfo;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.vo.CheckRoomInfoVO;
 import cn.finetool.common.vo.CpMerchantVO;
 import cn.finetool.hotel.handler.HotelAdminHandler;
 import cn.finetool.hotel.mapper.HotelMapper;
+import cn.finetool.hotel.mapper.RoomInfoMapper;
+import cn.finetool.hotel.mapper.RoomMapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class HotelAdminHandlerImpl implements HotelAdminHandler {
@@ -22,19 +29,25 @@ public class HotelAdminHandlerImpl implements HotelAdminHandler {
     private HotelMapper hotelMapper;
 
     @Resource
+    private RoomMapper roomMapper;
+
+    @Resource
+    private RoomInfoMapper roomInfoMapper;
+
+    @Resource
     private RechargePlanAPIService rechargePlanAPIService;
 
     @Override
     public Response getHotelReserveRoomBookingList(Integer hotelId) {
         // 根据 HotelId 查询 所有预定房间信息
-        List<CheckRoomInfoVO> roombookingList= hotelMapper.queryHotelReserveRoomBookingList(hotelId);
+        List<CheckRoomInfoVO> roombookingList = hotelMapper.queryHotelReserveRoomBookingList(hotelId);
         roombookingList.stream()
-                .map( roombookingVO -> {
-                     // 找到 phone
+                .map(roombookingVO -> {
+                    // 找到 phone
                     Integer roomDateId = roombookingVO.getRoomBooking().getRoomDateId();
-                    String phone =  hotelMapper.queryUserColumn(roomDateId);
+                    String phone = hotelMapper.queryUserColumn(roomDateId);
                     roombookingVO.setPhone(phone);
-                     return roombookingVO;
+                    return roombookingVO;
                 }).toList();
         return Response.success(roombookingList);
     }
@@ -63,5 +76,35 @@ public class HotelAdminHandlerImpl implements HotelAdminHandler {
     public Response updateStatus(PlanDto planDto) {
         rechargePlanAPIService.updateRechargePlanStatus(planDto.getPlanId(), planDto.getStatus());
         return Response.success("更新成功");
+    }
+
+    @Override
+    public Response merchantInfo(String merchantId) {
+        //目前只从 tb_hotel 表中查询数据 merchantId 前缀:1001
+        //截取 merchantId 前缀
+        String prefix = merchantId.substring(0, 4);
+        Object baseInfo = null;
+        if (prefix.equals(CodeSign.MERCHANT_HotelPrefix.getCode())) {
+            //根据 merchantId 查询 hotel 信息
+            Hotel hotel = hotelMapper.selectOne(new QueryWrapper<Hotel>().eq("merchant_id", merchantId));
+            List<Room> roomBaseInfoList = roomMapper.selectList(new QueryWrapper<Room>().eq("hotel_id", hotel.getHotelId()));
+            roomBaseInfoList = roomBaseInfoList.stream().map(room -> {
+                roomInfoMapper.selectList(new QueryWrapper<RoomInfo>().eq("room_id", room.getRoomId()))
+                        .stream()
+                        .forEach(roomInfo -> {
+                            room.getRoomInfoList().add(roomInfo);
+                        });
+                return room;
+            }).toList();
+            hotel.setRoomList(roomBaseInfoList);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("hotel", hotel);
+            result.put("merchantType", CodeSign.MERCHANT_HotelPrefix.getCode());
+
+            baseInfo = result;
+        }
+
+        return Response.success(baseInfo);
     }
 }

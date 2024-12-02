@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @TableName("tb_hotel")
 public class Hotel {
@@ -22,7 +24,7 @@ public class Hotel {
     private String merchantId;
 
     /**
-     *  酒店名称
+     * 酒店名称
      */
     private String hotelName;
 
@@ -42,22 +44,22 @@ public class Hotel {
     private Integer starRating;
 
     /**
-     *  酒店电话
+     * 酒店电话
      */
     private String phoneNumber;
 
     /**
-     *  消费次数
+     * 消费次数
      */
     private Integer liveCount;
 
     /**
-     *  酒店类型
+     * 酒店类型
      */
     private Integer hotelType;
 
     /**
-     *  酒店位置经度
+     * 酒店位置经度
      */
     @TableField(value = "hotel_lng")
     private Double hotelLng;
@@ -72,4 +74,10 @@ public class Hotel {
      * 状态
      */
     private Integer status;
+
+    /**
+     * RoomList 房间类型列表
+     */
+    @TableField(exist = false)
+    private List<Room> roomList;
 }

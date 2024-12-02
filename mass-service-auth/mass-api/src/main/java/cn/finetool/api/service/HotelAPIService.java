@@ -1,6 +1,7 @@
 package cn.finetool.api.service;
 
 
+import cn.finetool.common.configuration.MultipartSupportConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
 import java.util.List;
 
-@FeignClient(name = "mass-hotel-service", path = "/hotel/api")
+@FeignClient(name = "mass-hotel-service", path = "/hotel/api",configuration = MultipartSupportConfig.class)
 public interface HotelAPIService {
 
     @GetMapping("/queryResidualRoomInfo")

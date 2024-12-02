@@ -2,6 +2,7 @@ package cn.finetool.api.service;
 
 
 
+import cn.finetool.common.configuration.MultipartSupportConfig;
 import cn.finetool.common.dto.CreateOrderDto;
 import cn.finetool.common.po.OrderStatus;
 import cn.finetool.common.po.RechargeOrder;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "mass-order-service", path = "/order/api")
+@FeignClient(name = "mass-order-service", path = "/order/api", configuration = MultipartSupportConfig.class)
 public interface OrderAPIService {
 
     @GetMapping("/queryRechargeOrder/{orderId}")
@@ -39,7 +40,7 @@ public interface OrderAPIService {
     RoomOrder queryOrderInfo(@RequestParam("orderId") String orderId);
 
     /** ======== 创建 房间预定 订单 =======*/
-    @PostMapping(value = "/createRoomOrder", consumes = "application/json")
+    @RequestMapping(value = "/createRoomOrder", consumes = "application/json")
     void createRoomOrder(@RequestBody CreateOrderDto createOrderDto);
 
     /** ======== 获取 用户 房间预定订单列表 =======*/

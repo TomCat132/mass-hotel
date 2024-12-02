@@ -5,6 +5,7 @@ import cn.finetool.common.Do.MessageDo;
 import cn.finetool.common.constant.MqQueue;
 import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.enums.BusinessErrors;
+import cn.finetool.common.enums.Status;
 import cn.finetool.common.exception.BusinessRuntimeException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,9 +36,11 @@ public class RechargePlanConsumer {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Resource
-    private RedisTemplate<String,Object> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
-    /** ============ 充值方案过期消费者 ========== */
+    /**
+     * ============ 充值方案过期消费者 ==========
+     */
     @RabbitListener(queues = MqQueue.RECHARGE_PLAN_DLX_QUEUE)
     @Retryable(value = BusinessRuntimeException.class, maxAttempts = 3, backoff = @Backoff(delay = 5000))
     public void rechargePlanConsumer(String messageDo, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
@@ -46,16 +49,16 @@ public class RechargePlanConsumer {
         Integer planId = (Integer) messageInfo.getMessageMap().get("planId");
         log.info("开始消费充值方案过期消息,planId:{}", planId);
         // 更改充值方案状态
-        boolean success = rechargePlanAPIService.updateRechargePlanStatus(planId);
+        boolean success = rechargePlanAPIService.updateRechargePlanStatus(planId, Status.RECHARGE_PLAN_DOWN.getCode());
         // 删除缓存
         redisTemplate.delete(RedisCache.VALID_RECHARGE_PLAN_LIST);
-        if (!success){
-            throw new BusinessRuntimeException(BusinessErrors.DATA_STATUS_ERROR,"更改充值方案状态失败");
+        if (!success) {
+            throw new BusinessRuntimeException(BusinessErrors.DATA_STATUS_ERROR, "更改充值方案状态失败");
         }
         try {
-            channel.basicAck(tag,false);
+            channel.basicAck(tag, false);
         } catch (IOException e) {
-            throw new BusinessRuntimeException(BusinessErrors.DATA_STATUS_ERROR,"更改充值方案状态失败");
+            throw new BusinessRuntimeException(BusinessErrors.DATA_STATUS_ERROR, "更改充值方案状态失败");
         }
     }
 }

@@ -1,9 +1,0 @@
-cn\finetool\pay\PayApplication.class
-cn\finetool\pay\configuraion\AliPayClientConfiguration.class
-cn\finetool\pay\service\impl\AliPayServiceImpl.class
-cn\finetool\pay\strategy\RoomReserveOrderStrategy.class
-cn\finetool\pay\strategy\OrderTypeStrategyFactory.class
-cn\finetool\pay\strategy\OrderTypeStrategy.class
-cn\finetool\pay\strategy\RechargeOrderStrategy.class
-cn\finetool\pay\service\AliPayService.class
-cn\finetool\pay\controller\AliPayController.class

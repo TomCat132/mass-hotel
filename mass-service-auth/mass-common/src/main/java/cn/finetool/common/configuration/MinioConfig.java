@@ -35,16 +35,16 @@ public class MinioConfig {
 //    @ConditionalOnProperty(name = "ruoyi.uploadType", havingValue = "minio")
     public MinioClient minioClient() throws Exception {
         //minio的初始化存在一个小问题，endpoint必须是ip形式，不能是host
-        if (!InetAddressValidator.getInstance().isValid(host)){
+        if (!InetAddressValidator.getInstance().isValid(host)) {
             logger.warn("MinIO:host is not format as ip，change it！");
             InetAddress inetAddress = InetAddress.getByName(host);
             host = inetAddress.getHostAddress();
-            logger.info("MinIO:host change to : {}" , host);
+            logger.info("MinIO:host change to : {}", host);
         }
         MinioClient minioClient = new MinioClient(host,
                 Integer.valueOf(port),
                 username,
-                password,false);
+                password, false);
 
 //        logger.info("minio connected, buckets="+minioClient.listBuckets());
 
@@ -53,7 +53,7 @@ public class MinioConfig {
             // 创建桶
             minioClient.makeBucket(bucket);
         }
-        logger.info("MinIO:bucket init ok , bucket={}" , bucket);
+        logger.info("MinIO:bucket init ok , bucket={}", bucket);
         return minioClient;
     }
 

@@ -1,12 +1,14 @@
 package cn.finetool.common.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -30,7 +32,7 @@ public class Room implements Serializable {
     private String roomName;
 
     /**
-     *  酒店Id
+     * 酒店Id
      */
     private Integer hotelId;
 
@@ -40,12 +42,12 @@ public class Room implements Serializable {
     private Integer roomType;
 
     /**
-     床信息模块（bedInfo）：bedType：床型 bedNum：床数 bedSize：床面积
-     设施模块（facilities）
-     roomSize：房间大小 , floor：楼层
-     bathroom：卫生间 kitchen：厨房
-     balcony：阳台 breakfast：早餐
-     wifi：有无 tv：电视v airConditioning：空调 parking：停车位
+     * 床信息模块（bedInfo）：bedType：床型 bedNum：床数 bedSize：床面积
+     * 设施模块（facilities）
+     * roomSize：房间大小 , floor：楼层
+     * bathroom：卫生间 kitchen：厨房
+     * balcony：阳台 breakfast：早餐
+     * wifi：有无 tv：电视v airConditioning：空调 parking：停车位
      */
     private String roomDesc;
 
@@ -54,4 +56,9 @@ public class Room implements Serializable {
      */
     private BigDecimal basicPrice;
 
+    /**
+     * 非数据库字段
+     */
+    @TableField(exist = false)
+    private List<RoomInfo> roomInfoList;
 }

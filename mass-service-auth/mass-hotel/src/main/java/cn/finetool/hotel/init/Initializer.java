@@ -33,7 +33,7 @@ public class Initializer {
     private static final Logger LOGGER = Logger.getLogger(Initializer.class.getName());
 
     @Resource
-    private RedisTemplate<String,Object> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Resource
     private HotelMapper hotelMapper;
@@ -47,21 +47,23 @@ public class Initializer {
     @Resource
     private RoomDateMapper roomDateMapper;
 
-    /** ============= 初始化缓存酒店的经纬度信息 =========== */
+    /**
+     * ============= 初始化缓存酒店的经纬度信息 ===========
+     */
     @PostConstruct
-    public void InitHotelGeo(){
+    public void InitHotelGeo() {
 
         LOGGER.info("初始化缓存酒店的经纬度信息");
         // 清空缓存
 
         redisTemplate.delete(RedisCache.HOTEL_LOCATION_LIST);
 
-       List<HotelVo> hotelVoList = hotelMapper.getHotelGeoList();
+        List<HotelVo> hotelVoList = hotelMapper.getHotelGeoList();
 
-       hotelVoList.forEach(hotelVo -> {
-          redisTemplate.opsForGeo().add(RedisCache.HOTEL_LOCATION_LIST,
-                  new Point(hotelVo.getHotelLng(),hotelVo.getHotelLat()), hotelVo.getHotelId().toString());
-       });
+        hotelVoList.forEach(hotelVo -> {
+            redisTemplate.opsForGeo().add(RedisCache.HOTEL_LOCATION_LIST,
+                    new Point(hotelVo.getHotelLng(), hotelVo.getHotelLat()), hotelVo.getHotelId().toString());
+        });
     }
 
 

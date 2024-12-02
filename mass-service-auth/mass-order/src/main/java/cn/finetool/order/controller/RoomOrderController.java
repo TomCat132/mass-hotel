@@ -17,16 +17,15 @@ public class RoomOrderController {
     private RoomOrderService roomOrderService;
 
 
-
     @PostMapping("/createRoomOrderInfo")
     @ApiOperation(value = "支付房间订单", notes = "支付房间订单")
-    public Response accountPayRoomOrder(@RequestBody OrderPayDto orderPayDto){
+    public Response accountPayRoomOrder(@RequestBody OrderPayDto orderPayDto) {
         return roomOrderService.accountPayRoomOrder(orderPayDto);
     }
 
     @ApiOperation(value = "查询订单详情", notes = "查询订单详情")
     @GetMapping("/queryOrder/{orderId}")
-    public Response queryOrder(@PathVariable("orderId") String orderId){
+    public Response queryOrder(@PathVariable("orderId") String orderId) {
         return roomOrderService.queryOrder(orderId);
     }
 }

@@ -9,6 +9,7 @@ spring:
       max-request-size: 512MB
   main:
     allow-circular-references: true
+    allow-bean-definition-overriding: true
   application:
     name: mass-account-service
   profiles:

@@ -22,13 +22,13 @@ public class RoomInfoController {
 
     @ApiOperation(value = "添加具体房间信息", notes = "添加具体房间信息")
     @PostMapping("/add")
-    public Response addRoomInfo(@RequestBody RoomInfo roomInfo){
+    public Response addRoomInfo(@RequestBody RoomInfo roomInfo) {
         return roomInfoService.addRoomInfo(roomInfo);
     }
 
     @ApiOperation(value = "提交入住订单,预定房间", notes = "提交入住订单,预定房间")
     @PostMapping(value = "/reserve")
-    public Response reserveRoom(@RequestBody RoomBookingDto roomBookingDto){
+    public Response reserveRoom(@RequestBody RoomBookingDto roomBookingDto) {
         return roomInfoService.reserveRoom(roomBookingDto);
     }
 }

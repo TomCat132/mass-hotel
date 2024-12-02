@@ -1,5 +1,6 @@
 package cn.finetool.api.service;
 
+import cn.finetool.common.configuration.MultipartSupportConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -7,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 
-@FeignClient(name = "mass-account-service", path = "/role/api" , contextId = "role")
+@FeignClient(name = "mass-account-service", path = "/role/api" ,configuration = MultipartSupportConfig.class)
 public interface RoleAPIService {
 
     /**

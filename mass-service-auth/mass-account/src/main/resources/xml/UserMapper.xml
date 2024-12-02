@@ -17,7 +17,7 @@
 
     <update id="decreaseUserAccount">
         UPDATE tb_user
-        SET account = account - #{account}
+        SET account = account - #{userPayAmount}
         WHERE user_id = #{userId}
     </update>
 

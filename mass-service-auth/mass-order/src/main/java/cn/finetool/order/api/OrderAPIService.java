@@ -70,7 +70,7 @@ public class OrderAPIService {
     }
 
     /** ========= 创建房间订单 ========= */
-    @PostMapping("/createRoomOrder")
+    @RequestMapping(value = "/createRoomOrder",consumes = "application/json")
     public void CreateRoomOrder(@RequestBody CreateOrderDto createOrderDto){
         roomOrderService.createRoomOrderInfo(createOrderDto);
     }

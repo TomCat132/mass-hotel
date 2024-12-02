@@ -2,12 +2,13 @@ package cn.finetool.api.service;
 
 
 
+import cn.finetool.common.configuration.MultipartSupportConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@FeignClient(name = "mass-oss-service",path = "/oss/api")
+@FeignClient(name = "mass-oss-service",path = "/oss/api",configuration = MultipartSupportConfig.class)
 public interface OssAPIService {
 
     @PostMapping(value = "uploadFile")
