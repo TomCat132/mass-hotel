@@ -5,10 +5,9 @@ import cn.finetool.common.dto.CreateOrderDto;
 import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.po.RoomOrder;
 import cn.finetool.common.vo.OrderVo;
-import cn.finetool.order.handler.OrderHandler;
+import cn.finetool.order.service.OrderService;
 import cn.finetool.order.service.OrderStatusService;
 import cn.finetool.order.service.RechargeOrderService;
-import cn.finetool.order.service.RoomOrderService;
 import cn.finetool.order.service.impl.RechargeOrderServiceImpl;
 import cn.finetool.order.service.impl.RoomOrderServiceImpl;
 import jakarta.annotation.Resource;
@@ -35,7 +34,7 @@ public class OrderAPIService {
     private RoomOrderServiceImpl roomOrderService;
 
     @Resource
-    public OrderHandler orderHandler;
+    public OrderService orderHandler;
 
     /** ========= 更改订单状态 ========= */
     @PutMapping("/updateOrderStatus")

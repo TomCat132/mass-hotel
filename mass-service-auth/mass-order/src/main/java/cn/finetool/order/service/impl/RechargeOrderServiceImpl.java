@@ -8,6 +8,7 @@ import cn.finetool.common.constant.MqTTL;
 import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.dto.RechargeDto;
 import cn.finetool.common.enums.BusinessErrors;
+import cn.finetool.common.enums.CodeSign;
 import cn.finetool.common.enums.PayType;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.exception.BusinessRuntimeException;
@@ -67,7 +68,7 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
             throw new BusinessRuntimeException(BusinessErrors.ORDER_CREATE_REQUEST_FAIL,"您有未支付的订单，请先支付或取消订单");
         }
 
-        String orderId = CommonsUtils.getWorkerID();
+        String orderId = CodeSign.RechargeOrderPrefix + CommonsUtils.getWorkerID();
 
         RechargeOrder rechargeOrder = new RechargeOrder();
         rechargeOrder.setOrderId(orderId);

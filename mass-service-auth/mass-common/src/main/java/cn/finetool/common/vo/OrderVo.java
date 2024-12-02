@@ -40,5 +40,13 @@ public class OrderVo implements Serializable {
     @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
     private LocalDateTime createTime;
 
+    /**
+     * 订单用户手机号
+     */
+    private String phone;
 
+    /**
+     * 支付方式
+     */
+    private Integer payType;
 }

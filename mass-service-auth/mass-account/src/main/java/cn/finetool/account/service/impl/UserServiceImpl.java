@@ -239,6 +239,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (Objects.nonNull(roomOrderList)){
             orderList.addAll(roomOrderList.stream().peek(orderVo -> orderVo.setOrderType(CodeSign.HotelOrderPrefix.getCode())).toList());
         }
+        // 根据订单状态、订单时间排序，优先级：0：未支付 再按时间 降序
+        orderList.sort(Comparator.comparing(OrderVo::getOrderStatus).reversed().thenComparing(OrderVo::getCreateTime).reversed());
         return Response.success(orderList);
     }
 

@@ -23,4 +23,6 @@ public interface RechargeOrderMapper extends BaseMapper<RechargeOrder> {
                              @Param("orderStatus") int orderStatus);
 
     List<OrderVo> getRechargeOrderList(@Param(("userId")) String userId);
+
+    List<OrderVo> getAppOrderList();
 }
