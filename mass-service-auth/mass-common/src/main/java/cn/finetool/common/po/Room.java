@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -60,5 +61,9 @@ public class Room implements Serializable {
      * 非数据库字段
      */
     @TableField(exist = false)
-    private List<RoomInfo> roomInfoList;
+    private List<RoomInfo> roomInfoList = new ArrayList<>();
+
+    public void addAll(List<RoomInfo> roomInfoList) {
+        this.roomInfoList.addAll(roomInfoList);
+    }
 }

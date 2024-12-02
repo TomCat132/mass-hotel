@@ -82,21 +82,21 @@ public class HotelAdminHandlerImpl implements HotelAdminHandler {
     public Response merchantInfo(String merchantId) {
         //目前只从 tb_hotel 表中查询数据 merchantId 前缀:1001
         //截取 merchantId 前缀
-        String prefix = merchantId.substring(0, 4);
+        Long prefix = Long.valueOf(merchantId.substring(0, 4));
         Object baseInfo = null;
-        if (prefix.equals(CodeSign.MERCHANT_HotelPrefix.getCode())) {
-            //根据 merchantId 查询 hotel 信息
+        if (prefix == CodeSign.MERCHANT_HotelPrefix.getCode()) {
+            //根据 merchantId 查询 hotel 信息、room 信息
             Hotel hotel = hotelMapper.selectOne(new QueryWrapper<Hotel>().eq("merchant_id", merchantId));
-            List<Room> roomBaseInfoList = roomMapper.selectList(new QueryWrapper<Room>().eq("hotel_id", hotel.getHotelId()));
-            roomBaseInfoList = roomBaseInfoList.stream().map(room -> {
-                roomInfoMapper.selectList(new QueryWrapper<RoomInfo>().eq("room_id", room.getRoomId()))
-                        .stream()
-                        .forEach(roomInfo -> {
-                            room.getRoomInfoList().add(roomInfo);
-                        });
-                return room;
-            }).toList();
-            hotel.setRoomList(roomBaseInfoList);
+            List<Room> roomList = new ArrayList<>();
+            List<Room> roomBaseInfoList = roomMapper.selectList(new QueryWrapper<Room>()
+                    .eq("hotel_id", hotel.getHotelId()));
+            roomBaseInfoList.forEach(room -> {
+                List<RoomInfo> roomInfoList = roomInfoMapper.selectList(new QueryWrapper<RoomInfo>()
+                        .eq("room_id", room.getRoomId()));
+                room.addAll(roomInfoList);
+                roomList.add(room);
+            });
+            hotel.setRoomList(roomList);
 
             Map<String, Object> result = new HashMap<>();
             result.put("hotel", hotel);

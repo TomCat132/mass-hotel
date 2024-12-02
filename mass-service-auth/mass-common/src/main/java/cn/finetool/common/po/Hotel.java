@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -79,5 +80,10 @@ public class Hotel {
      * RoomList 房间类型列表
      */
     @TableField(exist = false)
-    private List<Room> roomList;
+    private List<Room> roomList = new ArrayList<>();
+
+
+    public void putRoomList(List<Room> roomList) {
+        this.roomList.addAll(roomList);
+    }
 }
