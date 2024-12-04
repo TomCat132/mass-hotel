@@ -63,7 +63,7 @@ public class RechargeOrderStrategy implements OrderTypeStrategy{
         // 处理充值订单
         orderAPIService.changeOrderStatus(orderId, Status.ORDER_SUCCESS.getCode(), PayType.ALI_PAY.getCode());
 
-        RechargeOrder rechargeOrder = RECHARGE_ORDER_MAP.get(orderId);
+        OrderVo rechargeOrder = RECHARGE_ORDER_MAP.get(orderId);
         // 更新用户信息
         userAPIService.updateUserInfo(rechargeOrder.getUserId(),rechargeOrder.getTotalAmount());
     }

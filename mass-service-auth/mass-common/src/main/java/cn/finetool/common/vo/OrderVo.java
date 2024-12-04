@@ -49,4 +49,19 @@ public class OrderVo implements Serializable {
      * 支付方式
      */
     private Integer payType;
+
+    /**
+     * 订单总充值金额
+     */
+    private BigDecimal totalAmount;
+
+    /**
+     * 订单用户姓名
+     */
+    private String username;
+
+    /**
+     * 用户ID
+     */
+    private String userId;
 }
