@@ -117,7 +117,7 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
     @Override
     public Response queryOrder(String orderId) {
 
-        RechargeOrder rechargeOrder = getOrderById(orderId);
+        OrderVo rechargeOrder = getOrderById(orderId);
 
         OrderStatus orderStatus = orderStatusService.getOne(new LambdaQueryWrapper<OrderStatus>()
                 .eq(OrderStatus::getOrderId, orderId));
@@ -143,12 +143,9 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
         return rechargeOrderMapper.getRechargeOrderList(userId);
     }
 
-    public RechargeOrder getOrderById(String orderId){
+    public OrderVo getOrderById(String orderId){
          return rechargeOrderMapper.queryOrder(orderId);
     }
 
-    public static void main(String[] args) {
-
-    }
 
 }

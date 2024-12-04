@@ -44,7 +44,7 @@ public class OrderAPIService {
 
     /** ========= 查询充值订单 ========= */
     @GetMapping("/queryRechargeOrder/{orderId}")
-    public RechargeOrder queryRechargeOrder(@PathVariable("orderId") String orderId){
+    public OrderVo queryRechargeOrder(@PathVariable("orderId") String orderId){
         return rechargeOrderServiceImpl.getOrderById(orderId);
     }
 

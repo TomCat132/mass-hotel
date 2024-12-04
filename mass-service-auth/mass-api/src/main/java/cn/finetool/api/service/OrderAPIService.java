@@ -16,8 +16,9 @@ import java.util.List;
 @FeignClient(name = "mass-order-service", path = "/order/api", configuration = MultipartSupportConfig.class)
 public interface OrderAPIService {
 
+
     @GetMapping("/queryRechargeOrder/{orderId}")
-    RechargeOrder queryRechargeOrder(@PathVariable("orderId") String orderId);
+    OrderVo queryRechargeOrder(@PathVariable("orderId") String orderId);
 
     @PutMapping("/handleRechargeOrder")
     void handleRechargeOrder(@RequestParam("orderId") String orderId);
