@@ -6,9 +6,7 @@ import cn.finetool.order.handler.OrderHandler;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/order")
@@ -20,8 +18,14 @@ public class OrderWebSource {
 
     @SaCheckRole(value = {"sys_admin"})
     @GetMapping("/getAppRechargeOrderList")
-    @ApiOperation(value = "获取应用充值订单列表")
+    @ApiOperation(value = "获取应用充值订单列表", notes = "后台系统后台（甲方）")
     public Response getAppRechargeOrderList(){
         return orderHandler.getAppRechargeOrderList();
+    }
+
+    @GetMapping("/merchant/getOrderList/{hotelId}")
+    @ApiOperation(value = "获取商户订单列表")
+    public Response getOrderOfMerchant(@PathVariable("hotelId") Integer hotelId){
+        return Response.success(orderHandler.getMerchantOrderList(hotelId));
     }
 }

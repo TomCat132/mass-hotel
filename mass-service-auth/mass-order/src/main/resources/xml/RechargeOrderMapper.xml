@@ -26,7 +26,7 @@
         WHERE order_Id = #{orderId}
     </update>
 
-    <select id="queryOrder" resultType="cn.finetool.common.vo.OrderVo">
+    <select id="queryOrder" resultType="cn.finetool.common.vo.OrderVO">
         SELECT order1.plan_id,order1.user_pay_amount,order1.total_amount,order1.create_time,order1.user_id,
                order2.order_status,order1.total_amount,user.username
         FROM tb_recharge_order AS order1
@@ -35,7 +35,7 @@
         WHERE order1.order_id = #{orderId}
     </select>
 
-    <select id="getRechargeOrderList" resultType="cn.finetool.common.vo.OrderVo">
+    <select id="getRechargeOrderList" resultType="cn.finetool.common.vo.OrderVO">
         SELECT  order1.order_id,order2.order_status,order1.user_pay_amount,order1.create_time
         FROM tb_recharge_order AS order1
         JOIN tb_order_status AS order2 ON order1.order_id = order2.order_id
@@ -43,7 +43,7 @@
         AND order1.is_deleted = 0
         ORDER BY order1.create_time DESC
     </select>
-    <select id="getAppOrderList" resultType="cn.finetool.common.vo.OrderVo">
+    <select id="getAppOrderList" resultType="cn.finetool.common.vo.OrderVO">
         SELECT order1.order_id,order1.user_pay_amount,order1.create_time,order2.order_status,order2.pay_type,user.username
         FROM tb_recharge_order AS order1
         JOIN tb_order_status AS order2 ON order1.order_id = order2.order_id

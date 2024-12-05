@@ -16,7 +16,7 @@ import cn.finetool.common.po.OrderStatus;
 import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.util.CommonsUtils;
 import cn.finetool.common.util.Response;
-import cn.finetool.common.vo.OrderVo;
+import cn.finetool.common.vo.OrderVO;
 import cn.finetool.order.mapper.RechargeOrderMapper;
 import cn.finetool.order.service.OrderStatusService;
 import cn.finetool.order.service.RechargeOrderService;
@@ -28,10 +28,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.sql.Array;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +114,7 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
     @Override
     public Response queryOrder(String orderId) {
 
-        OrderVo rechargeOrder = getOrderById(orderId);
+        OrderVO rechargeOrder = getOrderById(orderId);
 
         OrderStatus orderStatus = orderStatusService.getOne(new LambdaQueryWrapper<OrderStatus>()
                 .eq(OrderStatus::getOrderId, orderId));
@@ -139,11 +136,11 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
     }
 
     @Override
-    public List<OrderVo> getRechargeOrderList(String userId) {
+    public List<OrderVO> getRechargeOrderList(String userId) {
         return rechargeOrderMapper.getRechargeOrderList(userId);
     }
 
-    public OrderVo getOrderById(String orderId){
+    public OrderVO getOrderById(String orderId){
          return rechargeOrderMapper.queryOrder(orderId);
     }
 
