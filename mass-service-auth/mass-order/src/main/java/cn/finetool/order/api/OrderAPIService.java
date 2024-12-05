@@ -2,9 +2,8 @@ package cn.finetool.order.api;
 
 
 import cn.finetool.common.dto.CreateOrderDto;
-import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.po.RoomOrder;
-import cn.finetool.common.vo.OrderVo;
+import cn.finetool.common.vo.OrderVO;
 import cn.finetool.order.service.OrderService;
 import cn.finetool.order.service.OrderStatusService;
 import cn.finetool.order.service.RechargeOrderService;
@@ -44,7 +43,7 @@ public class OrderAPIService {
 
     /** ========= 查询充值订单 ========= */
     @GetMapping("/queryRechargeOrder/{orderId}")
-    public OrderVo queryRechargeOrder(@PathVariable("orderId") String orderId){
+    public OrderVO queryRechargeOrder(@PathVariable("orderId") String orderId){
         return rechargeOrderServiceImpl.getOrderById(orderId);
     }
 
@@ -76,13 +75,13 @@ public class OrderAPIService {
 
     /** ========= 获取 用户 充值订单列表 ========= */
     @GetMapping("/getRechargeOrderList")
-    public List<OrderVo> getRechargeOrderList(@RequestParam("userId") String userId){
+    public List<OrderVO> getRechargeOrderList(@RequestParam("userId") String userId){
         return rechargeOrderService.getRechargeOrderList(userId);
     }
 
     /** ========= 获取 用户 房间订单列表 ========= */
     @GetMapping("/getRoomOrderList")
-    public List<OrderVo> getRoomOrderList(@RequestParam("userId") String userId){
+    public List<OrderVO> getRoomOrderList(@RequestParam("userId") String userId){
         return roomOrderService.getRoomOrderList(userId);
     }
 

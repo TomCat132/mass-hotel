@@ -13,6 +13,7 @@ import cn.finetool.common.exception.BusinessRuntimeException;
 
 import cn.finetool.common.po.RechargePlans;
 
+import cn.finetool.common.util.JsonUtil;
 import cn.finetool.common.util.Response;
 import cn.finetool.recharge.mapper.RechargePlanMapper;
 import cn.finetool.recharge.service.RechargePlanService;
@@ -90,11 +91,9 @@ public class RechargePlanServiceImpl extends ServiceImpl<RechargePlanMapper, Rec
             System.out.println("Message content: " + messageContent);
             System.out.println("Message size: " + messageContent.getBytes().length + " bytes");
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonMessageDo = objectMapper.writeValueAsString(messageDo);
             log.info("活动充值方案倒计时: " + milliseconds + " ms");
             rabbitTemplate.convertAndSend(MqExchange.RECHARGE_PLAN_EXCHANGE,
-                    MqRoutingKey.RECHARGE_PLAN_ROUTING_KEY,jsonMessageDo,
+                    MqRoutingKey.RECHARGE_PLAN_ROUTING_KEY,JsonUtil.toJsonString(messageDo),
                     message -> {
                         log.info("设置消息过期时间: " + milliseconds + " ms");
                         message.getMessageProperties().setExpiration(String.valueOf(milliseconds));

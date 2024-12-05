@@ -14,8 +14,6 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.retry.annotation.Backoff;
@@ -24,6 +22,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -45,8 +44,8 @@ public class RechargePlanConsumer {
     @Retryable(value = BusinessRuntimeException.class, maxAttempts = 3, backoff = @Backoff(delay = 5000))
     public void rechargePlanConsumer(String messageDo, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
 
-        MessageDo messageInfo = OBJECT_MAPPER.readValue(messageDo, MessageDo.class);
-        Integer planId = (Integer) messageInfo.getMessageMap().get("planId");
+        MessageDo messageDoInfo = OBJECT_MAPPER.readValue(messageDo, MessageDo.class);
+        Integer planId = (Integer) messageDoInfo.getMessageMap().get("planId");
         log.info("开始消费充值方案过期消息,planId:{}", planId);
         // 更改充值方案状态
         boolean success = rechargePlanAPIService.updateRechargePlanStatus(planId, Status.RECHARGE_PLAN_DOWN.getCode());
