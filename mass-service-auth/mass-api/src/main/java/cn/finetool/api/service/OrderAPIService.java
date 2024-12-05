@@ -5,9 +5,8 @@ package cn.finetool.api.service;
 import cn.finetool.common.configuration.MultipartSupportConfig;
 import cn.finetool.common.dto.CreateOrderDto;
 import cn.finetool.common.po.OrderStatus;
-import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.po.RoomOrder;
-import cn.finetool.common.vo.OrderVo;
+import cn.finetool.common.vo.OrderVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,14 +17,14 @@ public interface OrderAPIService {
 
 
     @GetMapping("/queryRechargeOrder/{orderId}")
-    OrderVo queryRechargeOrder(@PathVariable("orderId") String orderId);
+    OrderVO queryRechargeOrder(@PathVariable("orderId") String orderId);
 
     @PutMapping("/handleRechargeOrder")
     void handleRechargeOrder(@RequestParam("orderId") String orderId);
 
     /**====== 获取 用户 充值订单列表 =====*/
     @GetMapping("/getRechargeOrderList")
-    List<OrderVo> getRechargeOrderList(@RequestParam("userId") String userId);
+    List<OrderVO> getRechargeOrderList(@RequestParam("userId") String userId);
 
     @PutMapping("/changeOrderStatus")
     void changeOrderStatus(@RequestParam("orderId") String orderId,
@@ -46,7 +45,7 @@ public interface OrderAPIService {
 
     /** ======== 获取 用户 房间预定订单列表 =======*/
     @GetMapping("/getRoomOrderList")
-    List<OrderVo> getRoomOrderList(@RequestParam("userId") String userId);
+    List<OrderVO> getRoomOrderList(@RequestParam("userId") String userId);
 
     /** ======== 逻辑删除 订单 =======*/
     @PutMapping("/deleteOrder")

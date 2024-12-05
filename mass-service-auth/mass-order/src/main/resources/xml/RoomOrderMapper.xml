@@ -4,12 +4,22 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="cn.finetool.order.mapper.RoomOrderMapper">
-    <select id="getRoomOrderList" resultType="cn.finetool.common.vo.OrderVo">
+    <select id="getRoomOrderList" resultType="cn.finetool.common.vo.OrderVO">
         SELECT  order1.order_id,order2.order_status,order1.user_pay_amount,order1.create_time
         FROM tb_room_order AS order1
                  JOIN tb_order_status AS order2 ON order1.order_id = order2.order_id
         WHERE order1.user_id = #{userId}
         AND order1.is_deleted = 0
+        ORDER BY order1.create_time DESC
+    </select>
+    <select id="queryMerchantRoomOrderList" resultType="cn.finetool.common.vo.OrderVO">
+        SELECT order1.order_id,order1.create_time,order1.user_id,order1.user_pay_amount,
+               order2.order_status,user.username,user.phone
+        FROM tb_room_order AS order1
+        JOIN tb_order_status AS order2 ON order1.order_id = order2.order_id
+        JOIN tb_user AS user ON order1.user_id = user.user_id
+        JOIN tb_room AS room ON order1.room_id = room.room_id
+        WHERE room.hotel_id = #{hotelId}
         ORDER BY order1.create_time DESC
     </select>
 </mapper>

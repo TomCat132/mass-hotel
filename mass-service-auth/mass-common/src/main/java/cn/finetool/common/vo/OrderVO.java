@@ -3,7 +3,6 @@ package cn.finetool.common.vo;
 import cn.finetool.common.configuration.CustomLocalDateTimeDeserializer;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-public class OrderVo implements Serializable {
+public class OrderVO implements Serializable {
 
     /**
      * 订单号ID

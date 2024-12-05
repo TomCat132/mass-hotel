@@ -3,7 +3,7 @@ package cn.finetool.order.service;
 import cn.finetool.common.dto.RechargeDto;
 import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.util.Response;
-import cn.finetool.common.vo.OrderVo;
+import cn.finetool.common.vo.OrderVO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -18,5 +18,5 @@ public interface RechargeOrderService extends IService<RechargeOrder> {
 
     void handleRechargeOrder(String orderId);
 
-    List<OrderVo> getRechargeOrderList(String userId);
+    List<OrderVO> getRechargeOrderList(String userId);
 }
