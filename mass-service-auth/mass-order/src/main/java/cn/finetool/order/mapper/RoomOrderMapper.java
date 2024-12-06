@@ -12,5 +12,5 @@ import java.util.List;
 public interface RoomOrderMapper extends BaseMapper<RoomOrder> {
     List<OrderVO> getRoomOrderList(@RequestParam("userId") String userId);
 
-    List<OrderVO> queryMerchantRoomOrderList(Integer hotelId);
+    List<OrderVO> queryMerchantRoomOrderList(String merchantId);
 }

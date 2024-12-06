@@ -23,9 +23,9 @@ public class OrderWebSource {
         return orderHandler.getAppRechargeOrderList();
     }
 
-    @GetMapping("/merchant/getOrderList/{hotelId}")
+    @GetMapping("/merchant/getOrderList/{merchantId}")
     @ApiOperation(value = "获取商户订单列表")
-    public Response getOrderOfMerchant(@PathVariable("hotelId") Integer hotelId){
-        return Response.success(orderHandler.getMerchantOrderList(hotelId));
+    public Response getOrderOfMerchant(@PathVariable("merchantId") String merchantId){
+        return Response.success(orderHandler.getMerchantOrderList(merchantId));
     }
 }

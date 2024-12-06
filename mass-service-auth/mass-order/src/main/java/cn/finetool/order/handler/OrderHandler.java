@@ -1,6 +1,5 @@
 package cn.finetool.order.handler;
 
-import cn.dev33.satoken.stp.StpUtil;
 import cn.finetool.common.enums.CodeSign;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.po.RechargeOrder;
@@ -17,8 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static cn.finetool.common.constant.RedisCache.USER_HOTEL_BINDING;
 
 @Service
 public class OrderHandler implements OrderService {
@@ -55,16 +52,15 @@ public class OrderHandler implements OrderService {
     }
 
     @Override
-    public List<OrderVO> getMerchantOrderList(Integer hotelId) {
+    public List<OrderVO> getMerchantOrderList(String merchantId) {
         List<OrderVO> merchantOrderList = new ArrayList<>();
         // （目前）查 room_order ， 后期可能有积分兑换的酒店入住订单
-        merchantOrderList.addAll(queryMerchantRoomOrderList(hotelId));
-
+        merchantOrderList.addAll(queryMerchantRoomOrderList(merchantId));
         return merchantOrderList;
     }
 
-    private List<OrderVO> queryMerchantRoomOrderList(Integer hotelId) {
-        List<OrderVO> roomOrderList = roomOrderMapper.queryMerchantRoomOrderList(hotelId);
+    private List<OrderVO> queryMerchantRoomOrderList(String merchantId) {
+        List<OrderVO> roomOrderList = roomOrderMapper.queryMerchantRoomOrderList(merchantId);
         roomOrderList.forEach( orderVO -> {
             orderVO.setOrderType(CodeSign.HotelOrderPrefix.getCode());
         });
