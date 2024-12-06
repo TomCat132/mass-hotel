@@ -14,6 +14,10 @@ package cn.finetool.common.util;
  */
 public class SnowflakeIdWorker {
 
+    private SnowflakeIdWorker(){
+
+    }
+
     // ==============================Fields===========================================
     /**
      * 开始时间戳 (2015-01-01)

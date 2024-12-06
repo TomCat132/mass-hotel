@@ -106,6 +106,11 @@ public class User implements Serializable {
     private BigDecimal account;
 
     /**
+     * 用户消费兑换券数量
+     */
+    private Integer consumeVoucherCount;
+
+    /**
      * 生成盐
      * @return
      */

@@ -15,7 +15,7 @@ public class CouponStrategy implements SaveVoucherStrategy{
     @Override
     public void save(VoucherDto voucherDto) {
         if (voucherDto.getVoucherType() == VoucherType.COUPON.getCode()){
-            couponService.save(voucherDto.getCoupon());
+            couponService.save(voucherDto.getVoucherCoupon());
         }
     }
 

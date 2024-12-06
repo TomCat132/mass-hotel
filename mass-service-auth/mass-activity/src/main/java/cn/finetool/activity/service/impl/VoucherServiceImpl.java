@@ -10,7 +10,6 @@ import cn.finetool.common.po.Voucher;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.util.SnowflakeIdWorker;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ import java.time.LocalDateTime;
 @Service
 public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> implements VoucherService {
 
-    private static final SnowflakeIdWorker workerID = new SnowflakeIdWorker(2,0);
+    private static final SnowflakeIdWorker WORKER_ID = new SnowflakeIdWorker(2,0);
 
     @Resource
     private SaveVoucherContext saveVoucherContext;
@@ -31,8 +30,8 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
     @Override
     public Response addVoucher(VoucherDto voucherDto) {
 
-        String voucherId = CodeSign.VoucherPrefix.getCode() + String.valueOf(workerID.nextId());
-        voucherDto.getCoupon().setVoucherId(voucherId);
+        String voucherId = CodeSign.VoucherPrefix.getCode() + String.valueOf(WORKER_ID.nextId());
+        voucherDto.getVoucherCoupon().setVoucherId(voucherId);
         LocalDateTime nowTime = LocalDateTime.now();
 
         Voucher voucher = new Voucher();

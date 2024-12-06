@@ -41,4 +41,16 @@ public class Voucher implements Serializable {
     @TableField("create_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime createTime;
+
+    /**
+     * 商户编号
+     */
+    @TableField("merchant_id")
+    private String merchantId;
+
+    /**
+     * 操作员编号
+     */
+    @TableField("user_id")
+    private String userId;
 }
