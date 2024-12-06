@@ -19,7 +19,8 @@
         JOIN tb_order_status AS order2 ON order1.order_id = order2.order_id
         JOIN tb_user AS user ON order1.user_id = user.user_id
         JOIN tb_room AS room ON order1.room_id = room.room_id
-        WHERE room.hotel_id = #{hotelId}
+        JOIN tb_hotel AS hotel ON room.hotel_id = hotel.hotel_id
+        WHERE hotel.merchant_id = #{merchantId}
         ORDER BY order1.create_time DESC
     </select>
 </mapper>

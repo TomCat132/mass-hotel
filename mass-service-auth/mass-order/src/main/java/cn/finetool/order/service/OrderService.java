@@ -10,5 +10,5 @@ public interface OrderService {
 
     Response getAppRechargeOrderList();
 
-    List<OrderVO> getMerchantOrderList(Integer hotelId);
+    List<OrderVO> getMerchantOrderList(String merchantId);
 }
