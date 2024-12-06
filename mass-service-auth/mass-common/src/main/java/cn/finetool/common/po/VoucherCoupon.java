@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Data
 @TableName("tb_voucher_coupon")
-public class Coupon implements Serializable {
+public class VoucherCoupon implements Serializable {
 
     @TableId("voucher_id")
     private String voucherId;
