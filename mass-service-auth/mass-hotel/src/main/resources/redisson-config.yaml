@@ -1,7 +1,7 @@
 #单节点模式配置
 singleServerConfig:
   #节点地址
-  address: redis://192.168.64.100:6379
+  address: redis://121.41.100.147:6379
   #发布和订阅连接的最小空闲连接数
   subscriptionConnectionMinimumIdleSize: 1
   #发布和订阅连接池大小
