@@ -17,6 +17,7 @@ spring:
       discovery:
         service: ${spring.application.name}
         group: MASS_HOTEL
+        namespace: public
       config:
         file-extension: yaml
         shared-configs: # 读取共享配置文件
