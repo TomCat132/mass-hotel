@@ -33,15 +33,8 @@ import java.util.Map;
 
 @Service
 public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder> implements RoomOrderService {
-
-    @Resource
-    HotelAPIService hotelAPIService;
-
-    @Resource
-    private RedissonClient redissonClient;
-
-    @Resource
-    private RabbitTemplate rabbitTemplate;
+    
+    
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;

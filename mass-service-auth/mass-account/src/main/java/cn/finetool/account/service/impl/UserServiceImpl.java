@@ -276,14 +276,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         StpUtil.login(accountInfo.getUserId());
         StpUtil.getTokenSession().set(SaSession.ROLE_LIST, roleList);
 
-        //保存用户所在酒店Id
-        Integer hotelId = systemMapper.getHotelId(accountInfo.getUserId());
-        redisTemplate.opsForValue().set(RedisCache.USER_HOTEL_BINDING + user.getUserId(), hotelId);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("userId", accountInfo.getUserId());
-        resultMap.put("hotelId", hotelId);
         resultMap.put("userRole", roleList);
+        //保存用户所在酒店Id
+        Integer hotelId = systemMapper.getHotelId(accountInfo.getUserId());
+        if (Objects.nonNull(hotelId)){
+            redisTemplate.opsForValue().set(RedisCache.USER_HOTEL_BINDING + user.getUserId(), hotelId);
+            resultMap.put("hotelId", hotelId);
+        }
+        
+
 
         return Response.success(resultMap);
     }
