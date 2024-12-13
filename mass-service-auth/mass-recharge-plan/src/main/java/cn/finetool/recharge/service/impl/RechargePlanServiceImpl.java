@@ -131,7 +131,7 @@ public class RechargePlanServiceImpl extends ServiceImpl<RechargePlanMapper, Rec
         if (CollectionUtils.isEmpty(rechargePlansList)){
           rechargePlansList = rechargePlanService.list(new LambdaQueryWrapper<RechargePlans>()
                     .eq(RechargePlans::getStatus, Status.RECHARGE_PLAN_UP.getCode())
-                    .eq(RechargePlans::getIsDelete,Status.IS_DELETED.getCode()));
+                    .eq(RechargePlans::getIsDelete,Status.NOT_DELETED.getCode()));
         }
 
         redisTemplate.opsForValue().set(RedisCache.VALID_RECHARGE_PLAN_LIST, rechargePlansList);
