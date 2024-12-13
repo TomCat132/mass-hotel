@@ -11,6 +11,9 @@ import lombok.EqualsAndHashCode;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 用户签到表
+ */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("tb_user_sign")

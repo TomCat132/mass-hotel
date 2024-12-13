@@ -10,6 +10,9 @@ import lombok.Data;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 用户优惠券
+ */
 @Data
 @TableName("tb_user_voucher")
 public class UserVoucher implements Serializable {

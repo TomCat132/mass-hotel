@@ -9,6 +9,9 @@ import lombok.Data;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 订单状态表
+ */
 @Data
 @TableName(value = "tb_order_status")
 public class OrderStatus implements Serializable {

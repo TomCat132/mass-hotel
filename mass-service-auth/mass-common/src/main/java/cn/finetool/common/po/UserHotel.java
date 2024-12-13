@@ -8,6 +8,10 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * 用户酒店关联表 
+ * user: PMS 系统用户
+ */
 @Data
 @TableName("sys_user_hotel")
 public class UserHotel implements java.io.Serializable {

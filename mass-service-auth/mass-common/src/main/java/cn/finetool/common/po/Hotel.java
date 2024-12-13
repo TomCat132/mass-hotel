@@ -9,6 +9,9 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 酒店信息表
+ */
 @Data
 @TableName("tb_hotel")
 public class Hotel {

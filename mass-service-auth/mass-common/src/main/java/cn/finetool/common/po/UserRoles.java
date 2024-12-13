@@ -11,12 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <p>
- * 
- * </p>
- *
- * @author 胡黄林
- * @since 2024-06-20
+ * 用户角色关系表
  */
 @Getter
 @Setter

@@ -10,6 +10,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * 优惠券
+ */
 @Data
 @TableName("tb_voucher_coupon")
 public class Coupon implements Serializable {

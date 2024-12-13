@@ -12,11 +12,8 @@ import lombok.Data;
 
 /**
  * <p>
- * 
+ * 系统角色表
  * </p>
- *
- * @author 胡黄林
- * @since 2024-06-20
  */
 @Data
 @TableName(value = "sys_role")

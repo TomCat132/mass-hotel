@@ -5,8 +5,9 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
-import java.util.Map;
-
+/**
+ * 房间信息表
+ */
 @Data
 @TableName(value = "tb_room_info")
 public class RoomInfo {

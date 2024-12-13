@@ -11,6 +11,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Date;
 
+/**
+ * 房间日期表
+ */
 @Data
 @TableName(value = "tb_room_date")
 public class RoomDate {

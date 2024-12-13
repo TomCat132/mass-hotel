@@ -16,11 +16,8 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- *
+ *  充值订单表
  * </p>
- *
- * @author rock
- * @since 2024-04-26
  */
 @Data
 @EqualsAndHashCode(callSuper = false)

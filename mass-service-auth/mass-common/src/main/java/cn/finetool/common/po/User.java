@@ -12,7 +12,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Random;
 
-
+/**
+ * <p>用户表</p>
+ * 
+ */
 @Data
 @TableName(value = "tb_user")
 public class User implements Serializable {

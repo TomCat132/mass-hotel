@@ -11,6 +11,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * 房间订单表
+ */
 @Data
 @TableName(value = "tb_room_order")
 public class RoomOrder implements Serializable {

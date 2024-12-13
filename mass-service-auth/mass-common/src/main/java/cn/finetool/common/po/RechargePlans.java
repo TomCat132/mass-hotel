@@ -13,11 +13,8 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- *
+ * 充值方案表
  * </p>
- *
- * @author rock
- * @since 2024-04-24
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
