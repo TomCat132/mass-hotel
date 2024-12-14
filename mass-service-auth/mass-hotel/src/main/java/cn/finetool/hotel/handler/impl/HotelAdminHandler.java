@@ -9,7 +9,7 @@ import cn.finetool.common.po.RoomInfo;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.vo.CheckRoomInfoVO;
 import cn.finetool.common.vo.CpMerchantVO;
-import cn.finetool.hotel.handler.HotelAdminHandler;
+import cn.finetool.hotel.handler.HotelAdminService;
 import cn.finetool.hotel.mapper.HotelMapper;
 import cn.finetool.hotel.mapper.RoomInfoMapper;
 import cn.finetool.hotel.mapper.RoomMapper;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class HotelAdminHandlerImpl implements HotelAdminHandler {
+public class HotelAdminHandler implements HotelAdminService {
 
     @Resource
     private HotelMapper hotelMapper;

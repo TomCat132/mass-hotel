@@ -6,9 +6,9 @@ import lombok.Getter;
 public enum VoucherType {
 
     COUPON(0, "优惠券"),
-    CONSUME(1,"消费券"),
-    SKILL(2,"秒杀券"),
-    SYSTEM(3,"系统券")
+    SYSTEM(1,"系统券"),
+    CONSUME(2,"消费券"),
+    SKILL(3,"秒杀券"),
     ;
 
     //错误码

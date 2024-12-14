@@ -2,6 +2,7 @@ package cn.finetool.api.service;
 
 
 import cn.finetool.common.configuration.MultipartSupportConfig;
+import cn.finetool.common.vo.RoomOrderBaseInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,4 +25,7 @@ public interface HotelAPIService {
                               @RequestParam("checkOutDate") LocalDate checkOutDate,
                               @RequestParam("status") Integer status);
 
+    @GetMapping("/getBookedRoomBaseInfo")
+    RoomOrderBaseInfo getBookedRoomBaseInfo(@RequestParam("orderId") String orderId,
+                                            @RequestParam("roomDateId") Integer roomDateId);
 }

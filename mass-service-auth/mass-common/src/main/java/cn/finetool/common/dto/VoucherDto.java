@@ -1,6 +1,8 @@
 package cn.finetool.common.dto;
 
+import cn.finetool.common.po.VoucherConsume;
 import cn.finetool.common.po.VoucherCoupon;
+import cn.finetool.common.po.VoucherSystem;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -47,5 +49,19 @@ public class VoucherDto implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime createTime;
 
+    /**
+     * 优惠券
+     */
     private VoucherCoupon voucherCoupon;
+
+    /**
+     * 系统活动券
+     */
+    private VoucherSystem voucherSystem;
+
+    /**
+     * 消费券
+     */
+    private VoucherConsume voucherConsume;
+    
 }

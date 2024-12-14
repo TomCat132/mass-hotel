@@ -1,5 +1,7 @@
 package cn.finetool.hotel.api;
 
+import cn.finetool.common.vo.RoomOrderBaseInfo;
+import cn.finetool.hotel.service.HotelService;
 import cn.finetool.hotel.service.RoomDateService;
 import cn.finetool.hotel.service.RoomService;
 import jakarta.annotation.Resource;
@@ -17,7 +19,10 @@ public class HotelAPIService {
 
     @Resource
     private RoomDateService roomDateService;
-
+    
+    @Resource
+    private HotelService hotelService;
+    
     /** ========== 查询该天日期房间类型的具体剩余数量 ===========*/
     @GetMapping("/queryResidualRoomInfo")
     public List<Integer> queryResidualRoomInfo(@RequestParam("roomId") String roomId,
@@ -34,4 +39,9 @@ public class HotelAPIService {
         roomDateService.updateRoomDateStatus(roomDateId,checkInDate,checkOutDate,status);
     }
 
+    @GetMapping("/getBookedRoomBaseInfo")
+    public RoomOrderBaseInfo getBookedRoomBaseInfo(@RequestParam("orderId") String orderId,
+                                                   @RequestParam("roomDateId") Integer roomDateId){
+        return hotelService.getBookedRoomBaseInfo(orderId,roomDateId);
+    } 
 }
