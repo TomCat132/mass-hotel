@@ -7,7 +7,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CouponStrategy implements SaveVoucherStrategy{
+public class CouponStrategy extends SaveVoucherStrategy{
 
     @Resource
     private CouponService couponService;
@@ -20,7 +20,7 @@ public class CouponStrategy implements SaveVoucherStrategy{
     }
 
     @Override
-    public void changeStatus(Integer voucherId, Integer status) {
+    public void changeStatus(String voucherId, Integer status) {
         couponService.update()
                 .set("status",status)
                 .eq("voucher_id",voucherId)

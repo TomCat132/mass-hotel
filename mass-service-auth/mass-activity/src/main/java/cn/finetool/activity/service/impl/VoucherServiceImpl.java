@@ -42,11 +42,11 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
         // 根据不同的活动券类型加入不同的表中
         saveVoucherContext.saveVoucher(voucherDto);
 
-        return Response.success("操作成功,请手动发放活动券");
+        return Response.success("操作成功");
     }
 
     @Override
-    public Response grantVoucher(Integer voucherId) {
+    public Response grantVoucher(String voucherId) {
 
         Voucher voucherInfo = voucherService.getOne(new LambdaQueryWrapper<Voucher>()
                 .eq(Voucher::getVoucherId, voucherId));
