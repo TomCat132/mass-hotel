@@ -28,7 +28,7 @@ public class VoucherController {
     @SaCheckRole(value = {"admin","super_admin"}, mode = SaMode.OR)
     @PutMapping("/admin/grant")
     @ApiOperation(value = "发放优惠券", notes = "发放优惠券")
-    public Response grantVoucher(@RequestParam("voucherId") Integer voucherId){
+    public Response grantVoucher(@RequestParam("voucherId") String voucherId){
         return voucherService.grantVoucher(voucherId);
     }
 }

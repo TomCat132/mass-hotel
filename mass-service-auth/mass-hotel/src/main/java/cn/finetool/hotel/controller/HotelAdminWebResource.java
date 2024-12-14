@@ -5,7 +5,7 @@ import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
 import cn.finetool.common.dto.PlanDto;
 import cn.finetool.common.util.Response;
-import cn.finetool.hotel.handler.HotelAdminHandler;
+import cn.finetool.hotel.handler.HotelAdminService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class HotelAdminWebResource {
 
     @Resource
-    private HotelAdminHandler hotelAdminHandler;
+    private HotelAdminService hotelAdminHandler;
 
     @SaCheckRole(value = {"admin", "super_admin"}, mode = SaMode.OR)
     @GetMapping("/getHotelReserveRoomBookingList")

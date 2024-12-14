@@ -28,4 +28,6 @@ public class RoomOrderController {
     public Response queryOrder(@PathVariable("orderId") String orderId) {
         return roomOrderService.queryOrder(orderId);
     }
+    
+
 }

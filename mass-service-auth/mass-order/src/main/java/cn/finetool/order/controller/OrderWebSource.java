@@ -28,4 +28,10 @@ public class OrderWebSource {
     public Response getOrderOfMerchant(@PathVariable("merchantId") String merchantId){
         return Response.success(orderHandler.getMerchantOrderList(merchantId));
     }
+
+    @ApiOperation(value = "获取房间预订基本信息", notes = "移动: 获取房间预订基本信息")
+    @GetMapping("/getRoomBookingBaseInfo/{orderId}")
+    public Response getRoomBookingBaseInfo(@PathVariable("orderId") String orderId){
+        return Response.success(orderHandler.getOrderBaseInfo(orderId));
+    }
 }

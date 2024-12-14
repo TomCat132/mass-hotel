@@ -4,6 +4,7 @@ import cn.finetool.common.dto.VoucherDto;
 import cn.finetool.common.enums.Status;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import java.util.LinkedHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -16,14 +17,18 @@ import java.util.Map;
 @Slf4j
 public class SaveVoucherContext {
 
-    private static final Map<Integer,SaveVoucherStrategy> strategies = new HashMap<>();
+    private final Map<Integer,SaveVoucherStrategy> strategies = new LinkedHashMap<>();
 
     @Resource
     private CouponStrategy couponStrategy;
+    
+    @Resource
+    private VoucherSystemStrategy voucherSystemStrategy;
 
     @PostConstruct
     public void addStrategy(){
         strategies.put(0, couponStrategy);
+        strategies.put(1, voucherSystemStrategy);
     }
 
     public void saveVoucher(VoucherDto voucherDto){
@@ -31,7 +36,7 @@ public class SaveVoucherContext {
         strategy.save(voucherDto);
     }
 
-    public void changStatus(Integer voucherType, Integer voucherId, Integer status) {
+    public void changStatus(Integer voucherType, String voucherId, Integer status) {
         SaveVoucherStrategy strategy = strategies.get(voucherType);
         strategy.changeStatus(voucherId,status);
     }

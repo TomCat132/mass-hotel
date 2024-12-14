@@ -9,5 +9,5 @@ public interface VoucherService extends IService<Voucher> {
 
     Response addVoucher(VoucherDto voucherDto);
 
-    Response grantVoucher(Integer voucherId);
+    Response grantVoucher(String voucherId);
 }

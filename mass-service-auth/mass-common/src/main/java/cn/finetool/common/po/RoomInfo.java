@@ -29,4 +29,9 @@ public class RoomInfo {
      * 房间状态 0：不可用 1：可用
      */
     private Integer status;
+
+    /**
+     * 0:普通 1:密码
+     */
+    private Integer type;
 }

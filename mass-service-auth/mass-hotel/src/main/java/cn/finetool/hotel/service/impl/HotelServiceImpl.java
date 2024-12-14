@@ -4,12 +4,21 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.dto.QueryRoomTypeDto;
 import cn.finetool.common.po.Hotel;
+import cn.finetool.common.po.Room;
+import cn.finetool.common.po.RoomBooking;
+import cn.finetool.common.po.RoomDate;
+import cn.finetool.common.po.RoomInfo;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.vo.HotelVo;
 import cn.finetool.common.vo.RoomInfoVo;
+import cn.finetool.common.vo.RoomOrderBaseInfo;
 import cn.finetool.hotel.mapper.HotelMapper;
+import cn.finetool.hotel.mapper.RoomBookingMapper;
 import cn.finetool.hotel.mapper.RoomDateMapper;
+import cn.finetool.hotel.mapper.RoomInfoMapper;
+import cn.finetool.hotel.mapper.RoomMapper;
 import cn.finetool.hotel.service.HotelService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -31,12 +40,16 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
-
     @Resource
     private HotelMapper hotelMapper;
-
     @Resource
     private RoomDateMapper roomDateMapper;
+    @Resource
+    private RoomInfoMapper roomInfoMapper;
+    @Resource
+    private RoomBookingMapper roomBookingMapper;
+    @Resource
+    private RoomMapper roomMapper;
 
     @Override
     public Response addHotelInfo(Hotel hotel) {
@@ -125,5 +138,29 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
 
 
         return Response.success(roomInfoVoList);
+    }
+
+    @Override
+    public RoomOrderBaseInfo getBookedRoomBaseInfo(String orderId, Integer roomDateId) {
+        RoomOrderBaseInfo roomOrderBaseInfo = new RoomOrderBaseInfo();
+        // 具体房间信息
+        RoomDate roomDate = roomDateMapper.selectOne(new QueryWrapper<RoomDate>()
+                .eq("id", roomDateId));
+        RoomInfo roomInfo = roomInfoMapper.selectOne(new QueryWrapper<RoomInfo>()
+                .eq("id", roomDate.getRiId()));
+        // 房间类型信息
+        Room room = roomMapper.selectOne(new QueryWrapper<Room>()
+                .eq("room_id", roomInfo.getRoomId()));
+        // 房间预定信息
+        RoomBooking roomBooking = roomBookingMapper.selectOne(new QueryWrapper<RoomBooking>()
+                .eq("order_id", orderId));
+        // 房间所属酒店信息
+        Hotel hotel = hotelMapper.selectOne(new QueryWrapper<Hotel>()
+                .eq("hotel_id", room.getHotelId()));
+        roomOrderBaseInfo.setRoomInfo(roomInfo);
+        roomOrderBaseInfo.setRoom(room);
+        roomOrderBaseInfo.setRoomBooking(roomBooking);
+        roomOrderBaseInfo.setHotel(hotel);
+        return roomOrderBaseInfo;
     }
 }

@@ -3,7 +3,7 @@ package cn.finetool.hotel.handler;
 import cn.finetool.common.dto.PlanDto;
 import cn.finetool.common.util.Response;
 
-public interface HotelAdminHandler {
+public interface HotelAdminService {
 
     /**
      * Web后台：用户端
