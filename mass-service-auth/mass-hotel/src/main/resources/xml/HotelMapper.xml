@@ -42,7 +42,7 @@
         SELECT *
         FROM tb_room_booking AS room_booking
                  JOIN tb_room_date AS room_date ON room_booking.room_date_id = room_date.id
-                 JOIN tb_room_info AS room_info ON room_booking.id = room_date.ri_id
+                 JOIN tb_room_info AS room_info ON room_info.id = room_date.ri_id
                  JOIN tb_room AS room ON room.room_id = room_info.room_id
         AND room.hotel_id = #{hotelId}
     </select>
