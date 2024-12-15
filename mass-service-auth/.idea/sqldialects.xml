@@ -4,6 +4,7 @@
     <file url="file://$PROJECT_DIR$/mass-account/src/main/resources/xml/SystemMapper.xml" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/mass-account/src/main/resources/xml/UserMapper.xml" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/mass-hotel/src/main/resources/xml/HotelMapper.xml" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/mass-hotel/src/main/resources/xml/RoomBookingMapper.xml" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/mass-hotel/src/main/resources/xml/RoomDateMapper.xml" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/mass-hotel/src/main/resources/xml/RoomInfoMapper.xml" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/mass-hotel/src/main/resources/xml/RoomMapper.xml" dialect="GenericSQL" />

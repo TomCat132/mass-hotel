@@ -7,7 +7,7 @@
     <update id="changeStatus">
         UPDATE tb_room_booking AS room_booking
         SET status = #{status}
-        WHERE room_booking.order_id = #{orderId}
+        WHERE room_booking.id = #{id}
     </update>
 
     <!--    HotelId,避免越权查询 -->

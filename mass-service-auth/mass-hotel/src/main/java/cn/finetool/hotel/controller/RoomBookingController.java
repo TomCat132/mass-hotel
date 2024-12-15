@@ -2,15 +2,11 @@ package cn.finetool.hotel.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
-import cn.dev33.satoken.stp.StpUtil;
-import cn.finetool.common.dto.ExamineDto;
-import cn.finetool.common.enums.Status;
 import cn.finetool.common.util.Response;
 import cn.finetool.hotel.service.RoomBookingService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
-import org.bouncycastle.util.Strings;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,11 +25,11 @@ public class RoomBookingController {
         return roomBookingService.queryRoomBooking(queryType, queryValue);
     }
 
-    @SaCheckRole(value = {"admin"})
-    @PutMapping("/startHandleCheckIn")
-    @ApiOperation(value = "开始办理入住", notes = "根据订单号开始处理入住")
-    public Response startHandleCheckIn(@RequestParam("orderId") String orderId){
-        return roomBookingService.startHandleCheckIn(orderId);
+    @SaCheckRole(value = {"admin","super_admin"}, mode = SaMode.OR)
+    @PostMapping("/startHandleCheckIn")
+    @ApiOperation(value = "开始办理入住", notes = "根据预定号开始处理入住")
+    public Response startHandleCheckIn(@RequestParam("id") Integer id){
+        return roomBookingService.startHandleCheckIn(id);
     }
 
     @SaCheckRole(value = {"admin"})
@@ -43,25 +39,35 @@ public class RoomBookingController {
         return roomBookingService.checkRoomDateInfo(id);
     }
 
-    @SaCheckRole(value = {"admin"})
+    @SaCheckRole(value = {"admin","super_admin"}, mode = SaMode.OR)
     @PutMapping("/deposit")
-    @ApiOperation(value = "缴纳押金", notes = "酒店前台: 缴纳押金")
+    @ApiOperation(value = "确认缴纳押金", notes = "PMS : 确认缴纳押金")
     public Response receiveDeposit(@RequestParam("id") String id){
         return roomBookingService.receiveDeposit(id);
     }
 
-    @SaCheckRole(value = {"admin"})
+    @SaCheckRole(value = {"admin","super_admin"}, mode = SaMode.OR)
     @PostMapping("/bindingDoorKey")
-    @ApiOperation(value = "绑定门禁卡", notes = "酒店前台: 绑定门禁卡")
+    @ApiOperation(value = "绑定门禁卡/发放随机密码", notes = "PMS : 绑定门禁卡/发放随机密码")
     public Response bindingDoorKey(@RequestParam("id") Integer id,
                                    @RequestParam("doorKey") String doorKey){
         return roomBookingService.bindingDoorKey(id,doorKey);
     }
+    
+    @SaCheckRole(value = {"admin","super_admin"}, mode = SaMode.OR)
+    @PutMapping("/unBindingDoorKey")
+    @ApiOperation(value = "解绑门禁卡", notes = "PMS : 解绑门禁卡")
+    public Response unBindingDoorKey(@RequestParam("id") Integer id){
+        return roomBookingService.unBindingDoorKey(id);
+    }
 
-    @SaCheckRole(value = {"admin"})
+    @SaCheckRole(value = {"admin","super_admin"}, mode = SaMode.OR)
     @PutMapping("/finishHandleCheckIn")
     @ApiOperation(value = "完成入住手续办理", notes = "根据订单号完成入住")
-    public Response finishHandleCheckIn(@RequestBody ExamineDto examineDto){
-        return roomBookingService.finishHandleCheckIn(examineDto);
+    public Response finishHandleCheckIn(@RequestParam("id") Integer id,
+                                        @RequestParam("type") Integer type,
+                                        //非必填参数
+                                        @RequestParam(required = false,value = "doorKey") String doorKey){
+        return roomBookingService.finishHandleCheckIn(id, type, doorKey);
     }
 }

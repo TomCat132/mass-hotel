@@ -47,4 +47,11 @@ public class HotelAdminWebResource {
     public Response merchantInfo(@PathVariable("merchantId") String merchantId) {
         return hotelAdminHandler.merchantInfo(merchantId);
     }
+    
+    @SaCheckRole(value = {"admin", "super_admin"}, mode = SaMode.OR)
+    @GetMapping("/getCheckInHandleBaseInfo/{id}")
+    @ApiOperation(value = "获取入住处理基本信息", notes = "PMS : 获取入住处理基本信息")
+    public Response getCheckInHandleBaseInfo(@PathVariable("id") Integer id){
+        return hotelAdminHandler.getCheckInHandleBaseInfo(id);
+    }
 }

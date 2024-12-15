@@ -60,6 +60,12 @@ public enum Status {
 
     IS_DELETED(1, "已删除"),
     NOT_DELETED(0, "未删除"),
+
+    /**
+     * 房间门类型: 0:门禁卡 1：密码门
+     */
+    ROOM_DOOR_TYPE_CARD(0, "门禁卡"),
+    ROOM_DOOR_TYPE_PASSWORD(1, "密码门"),
     ;
 
     private final int code;

@@ -23,4 +23,6 @@ public interface HotelAdminService {
     Response updateStatus(PlanDto planDto);
 
     Response merchantInfo(String merchantId);
+
+    Response getCheckInHandleBaseInfo(Integer id);
 }
