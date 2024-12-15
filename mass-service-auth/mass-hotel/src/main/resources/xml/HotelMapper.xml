@@ -5,7 +5,35 @@
 
 <mapper namespace="cn.finetool.hotel.mapper.HotelMapper">
 
+    <resultMap id="CheckRoomInfoVOResultMap" type="cn.finetool.common.vo.CheckRoomInfoVO">
+        <!-- 映射 CheckRoomInfoVO 的直接属性 -->
+        <result column="status" property="status"/>
+        <result column="room_info_id" property="roomInfoId"/>
 
+        <!-- 映射 RoomBooking 对象 -->
+        <association property="roomBooking" javaType="cn.finetool.common.po.RoomBooking">
+            <id column="id" property="id"/>
+            <result column="order_id" property="orderId"/>
+            <result column="room_date_id" property="roomDateId"/>
+            <result column="check_in_date" property="checkInDate"/>
+            <result column="check_out_date" property="checkOutDate"/>
+            <result column="security_deposit" property="securityDeposit"/>
+            <result column="roomBooking_status" property="status"/> <!-- 注意这里要避免与 CheckRoomInfoVO 的 status 冲突 -->
+            <result column="door_key" property="doorKey"/>
+            <result column="created_time" property="createdTime"/>
+            <result column="updated_time" property="updatedTime"/>
+        </association>
+
+        <!-- 映射 Room 对象 -->
+        <association property="room" javaType="cn.finetool.common.po.Room">
+            <id column="room_id" property="roomId"/>
+            <result column="hotel_id" property="hotelId"/>
+            <result column="room_type" property="roomType"/>
+            <result column="room_name" property="roomName"/>
+        </association>
+    </resultMap>
+
+    <!-- SQL 查询语句 -->
     <select id="getHotelGeoList" resultType="cn.finetool.common.vo.HotelVo">
         SELECT hotel_id,hotel_name,hotel_lng,hotel_lat
         FROM tb_hotel
@@ -18,40 +46,57 @@
         WHERE hotel_id = #{hotelId}
     </select>
 
-    <!-- 使用 聚合函数 需要对 非聚合字段进行分组    -->
     <select id="queryHotelRoomTypeList" resultType="cn.finetool.common.vo.RoomInfoVo">
         SELECT room.room_id,room.room_name,room.room_type,room.basic_price AS old_price,
                MIN(room_date.price) AS todayPrice,
                IFNULL(COUNT(DISTINCT room_date.ri_id), 0) room_count
         FROM tb_room room
-        LEFT JOIN tb_room_info AS room_info ON room_info.room_id = room.room_id
-        LEFT JOIN tb_room_date AS room_date ON room_date.ri_id = room_info.id
-        AND room_date.date BETWEEN #{checkInDate} AND #{checkOutDate}
-        AND room_date.status = 0
+                 LEFT JOIN tb_room_info AS room_info ON room_info.room_id = room.room_id
+                 LEFT JOIN tb_room_date AS room_date ON room_date.ri_id = room_info.id
+            AND room_date.date BETWEEN #{checkInDate} AND #{checkOutDate}
+            AND room_date.status = 0
         WHERE room.hotel_id = #{hotelId}
-        AND room_info.id NOT IN (
-                SELECT ri_id
-                FROM tb_room_date
-                WHERE date BETWEEN #{checkInDate} AND #{checkOutDate}
-                AND status != 0
+          AND room_info.id NOT IN (
+            SELECT ri_id
+            FROM tb_room_date
+            WHERE date BETWEEN #{checkInDate} AND #{checkOutDate}
+          AND status != 0
             )
         GROUP BY room.room_id,room.room_name,room.room_type,room.basic_price
         HAVING COUNT(DISTINCT room_date.date) = DATEDIFF(#{checkOutDate},#{checkInDate}) + 1;
     </select>
-    <select id="queryHotelReserveRoomBookingList" resultType="cn.finetool.common.vo.CheckRoomInfoVO">
-        SELECT *
+
+    <select id="queryHotelReserveRoomBookingList" resultMap="CheckRoomInfoVOResultMap">
+        SELECT
+            room_booking.id,
+            room_booking.order_id,
+            room_booking.room_date_id,
+            room_booking.check_in_date,
+            room_booking.check_out_date,
+            room_booking.security_deposit,
+            room_booking.status AS roomBooking_status,
+            room_booking.door_key,
+            room_booking.created_time,
+            room_booking.updated_time,
+            room.room_id,
+            room.hotel_id,
+            room.room_name,
+            room.room_type,
+            room_info.status AS status,
+            room_info.room_info_id 
         FROM tb_room_booking AS room_booking
                  JOIN tb_room_date AS room_date ON room_booking.room_date_id = room_date.id
                  JOIN tb_room_info AS room_info ON room_info.id = room_date.ri_id
                  JOIN tb_room AS room ON room.room_id = room_info.room_id
-        AND room.hotel_id = #{hotelId}
+        WHERE room.hotel_id = #{hotelId}
     </select>
 
     <select id="queryUserColumn" resultType="java.lang.String">
         SELECT user.phone
         FROM tb_user AS user
         JOIN tb_room_order AS room_order ON  user.user_id  = room_order.user_id
-        JOIN tb_room_booking AS room_booking ON room_order.order_id = room_booking.order_id
+            JOIN tb_room_booking AS room_booking ON room_order.order_id = room_booking.order_id
         WHERE room_booking.room_date_id = #{roomDateId}
     </select>
+
 </mapper>

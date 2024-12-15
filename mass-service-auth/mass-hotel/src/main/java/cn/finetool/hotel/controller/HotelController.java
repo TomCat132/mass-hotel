@@ -26,7 +26,7 @@ public class HotelController {
     @SaCheckRole("super_admin")
     @ApiOperation(value = "添加酒店信息", notes = "添加酒店信息")
     @PostMapping("/addHotelInfo")
-    public Response addHotelInfo(@RequestBody Hotel hotel){
+    public Response addHotelInfo(@RequestBody Hotel hotel)                                                                              {
         return hotelService.addHotelInfo(hotel);
     }
 

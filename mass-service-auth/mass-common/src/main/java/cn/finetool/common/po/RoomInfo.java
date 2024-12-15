@@ -21,7 +21,7 @@ public class RoomInfo {
     private String roomId;
 
     /**
-     * 具体房间Id
+     * 房间号
      */
     private String roomInfoId;
 

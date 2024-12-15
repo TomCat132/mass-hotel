@@ -47,6 +47,7 @@ public class HotelAdminHandler implements HotelAdminService {
                     Integer roomDateId = roombookingVO.getRoomBooking().getRoomDateId();
                     String phone = hotelMapper.queryUserColumn(roomDateId);
                     roombookingVO.setPhone(phone);
+                    // 找到房间号
                     return roombookingVO;
                 }).toList();
         return Response.success(roombookingList);
@@ -106,5 +107,10 @@ public class HotelAdminHandler implements HotelAdminService {
         }
 
         return Response.success(baseInfo);
+    }
+
+    @Override
+    public Response getCheckInHandleBaseInfo(Integer id) {
+        return null;
     }
 }

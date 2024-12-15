@@ -13,6 +13,6 @@ public interface RoomBookingMapper extends BaseMapper<RoomBooking> {
                                            @Param("queryValue") String queryValue,
                                            @Param("hotelId") String hotelId);
 
-    void changeStatus(@Param("orderId") String orderId,
+    void changeStatus(@Param("id") int id,
                       @Param("status") int status);
 }
