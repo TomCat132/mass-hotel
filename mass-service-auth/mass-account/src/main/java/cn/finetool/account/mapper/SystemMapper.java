@@ -5,5 +5,5 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface SystemMapper {
-    Integer getHotelId(@Param("userId") String userId);
+    String getMerchantId(@Param("userId") String userId);
 }

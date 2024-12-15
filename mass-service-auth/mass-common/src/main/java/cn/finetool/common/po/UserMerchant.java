@@ -9,12 +9,12 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 用户酒店关联表 
+ * 用户商户关联表 
  * user: PMS 系统用户
  */
 @Data
-@TableName("sys_user_hotel")
-public class UserHotel implements java.io.Serializable {
+@TableName("sys_user_merchant")
+public class UserMerchant implements java.io.Serializable {
 
     /**
      * 主键id
@@ -28,9 +28,9 @@ public class UserHotel implements java.io.Serializable {
     private String userId;
 
     /**
-     * 酒店id （主键）
+     *  商户ID （唯一）
      */
-    private Integer hotelId;
+    private String merchantId;
 
     /**
      * 创建时间

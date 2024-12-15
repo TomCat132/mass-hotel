@@ -9,5 +9,6 @@
     <file url="file://$PROJECT_DIR$/mass-hotel/src/main/resources/xml/RoomMapper.xml" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/mass-order/src/main/resources/xml/OrderStatusMapper.xml" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/mass-order/src/main/resources/xml/RechargeOrderMapper.xml" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/mass-order/src/main/resources/xml/RoomOrderMapper.xml" dialect="GenericSQL" />
   </component>
 </project>

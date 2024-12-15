@@ -33,6 +33,6 @@ public class RedisCache {
     public static final String RESERVE_ROOM = "reserve_room_roomId:";
 
     /** =========== 用户酒店绑定表缓存标记 ========== */
-    public static final String USER_HOTEL_BINDING = "user_hotel_binding_userId:";
+    public static final String USER_MERCHANT_BINDING = "user_merchant_binding_userId:";
 
 }
