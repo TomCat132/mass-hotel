@@ -66,6 +66,10 @@ public enum Status {
      */
     ROOM_DOOR_TYPE_CARD(0, "门禁卡"),
     ROOM_DOOR_TYPE_PASSWORD(1, "密码门"),
+    
+    ROOM_INFO_CAN_NOT_USE(0, "不可用"),
+    ROOM_INFO_CAN_USE(1, "可用"),
+    ROOM_INFO_CLEANING(2, "清洁中")
     ;
 
     private final int code;
