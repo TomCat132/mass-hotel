@@ -13,7 +13,6 @@ import cn.finetool.hotel.mapper.RoomBookingMapper;
 import cn.finetool.hotel.mapper.RoomInfoMapper;
 import cn.finetool.hotel.mapper.RoomMapper;
 import cn.finetool.hotel.service.RoomBookingService;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
@@ -42,7 +41,7 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
     public Response queryRoomBooking(Integer queryType, String queryValue) {
         // 通过userId 获取缓存的 hotelId
         String userId = StpUtil.getLoginIdAsString();
-        String hotelId = (String) redisTemplate.opsForValue().get(RedisCache.USER_HOTEL_BINDING + userId);
+        String hotelId = (String) redisTemplate.opsForValue().get(RedisCache.USER_MERCHANT_BINDING + userId);
         List<RoomBooking> roomBookingList = new ArrayList<>();
         // 查询时绑定hotelId,避免越权
         roomBookingList = roomBookingMapper.queryRoomBookingList(queryType, queryValue,hotelId);

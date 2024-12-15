@@ -6,9 +6,10 @@
 <mapper namespace="cn.finetool.account.mapper.SystemMapper">
 
 
-    <select id="getHotelId" resultType="java.lang.Integer">
-        SELECT hotel_id
-        FROM sys_user_hotel
+
+    <select id="getMerchantId" resultType="java.lang.String">
+        SELECT merchant_id
+        FROM sys_user_merchant
         WHERE user_id = #{userId}
     </select>
 </mapper>

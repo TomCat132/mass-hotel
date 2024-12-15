@@ -281,10 +281,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         resultMap.put("userId", accountInfo.getUserId());
         resultMap.put("userRole", roleList);
         //保存用户所在酒店Id
-        Integer hotelId = systemMapper.getHotelId(accountInfo.getUserId());
-        if (Objects.nonNull(hotelId)){
-            redisTemplate.opsForValue().set(RedisCache.USER_HOTEL_BINDING + user.getUserId(), hotelId);
-            resultMap.put("hotelId", hotelId);
+        String merchantId = systemMapper.getMerchantId(accountInfo.getUserId());
+        if (Objects.nonNull(merchantId)){
+            redisTemplate.opsForValue().set(RedisCache.USER_MERCHANT_BINDING + user.getUserId(), merchantId);
+            resultMap.put("merchantId", merchantId);
         }
         
 
