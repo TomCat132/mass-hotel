@@ -26,4 +26,6 @@ public interface RoomInfoMapper extends BaseMapper<RoomInfo> {
                                  @Param("checkOutDate") LocalDate checkOutDate);
 
 
+    void changeStatus(@Param("id") Integer id,
+                      @Param("status") int status);
 }
