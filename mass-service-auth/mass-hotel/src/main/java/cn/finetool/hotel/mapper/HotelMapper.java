@@ -24,7 +24,9 @@ public interface HotelMapper extends BaseMapper<Hotel> {
                                             @Param("checkOutDate") LocalDate checkOutDate);
 
 
-    List<CheckRoomInfoVO> queryHotelReserveRoomBookingList(@Param("hotelId") Integer hotelId);
+    List<CheckRoomInfoVO> queryHotelReserveRoomBookingList(@Param("merchantId") String merchantId);
 
     String queryUserColumn(@RequestParam("roomDateId") Integer roomDateId);
+
+    List<CheckRoomInfoVO> queryWillFinishOrderList(@Param("merchantId") String merchantId);
 }

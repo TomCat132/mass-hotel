@@ -3,18 +3,24 @@ package cn.finetool.hotel.handler.impl;
 import cn.finetool.api.service.RechargePlanAPIService;
 import cn.finetool.common.dto.PlanDto;
 import cn.finetool.common.enums.CodeSign;
+import cn.finetool.common.enums.Status;
 import cn.finetool.common.po.Hotel;
 import cn.finetool.common.po.Room;
+import cn.finetool.common.po.RoomBooking;
+import cn.finetool.common.po.RoomDate;
 import cn.finetool.common.po.RoomInfo;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.vo.CheckRoomInfoVO;
 import cn.finetool.common.vo.CpMerchantVO;
 import cn.finetool.hotel.handler.HotelAdminService;
 import cn.finetool.hotel.mapper.HotelMapper;
+import cn.finetool.hotel.mapper.RoomBookingMapper;
+import cn.finetool.hotel.mapper.RoomDateMapper;
 import cn.finetool.hotel.mapper.RoomInfoMapper;
 import cn.finetool.hotel.mapper.RoomMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,20 +33,22 @@ public class HotelAdminHandler implements HotelAdminService {
 
     @Resource
     private HotelMapper hotelMapper;
-
     @Resource
     private RoomMapper roomMapper;
-
     @Resource
     private RoomInfoMapper roomInfoMapper;
-
+    @Resource
+    private RoomBookingMapper roomBookingMapper;
+    @Resource
+    private RoomDateMapper roomDateMapper;
     @Resource
     private RechargePlanAPIService rechargePlanAPIService;
 
+
     @Override
-    public Response getHotelReserveRoomBookingList(Integer hotelId) {
+    public Response getHotelReserveRoomBookingList(String merchantId) {
         // 根据 HotelId 查询 所有预定房间信息
-        List<CheckRoomInfoVO> roombookingList = hotelMapper.queryHotelReserveRoomBookingList(hotelId);
+        List<CheckRoomInfoVO> roombookingList = hotelMapper.queryHotelReserveRoomBookingList(merchantId);
         roombookingList.stream()
                 .map(roombookingVO -> {
                     // 找到 phone
@@ -109,8 +117,29 @@ public class HotelAdminHandler implements HotelAdminService {
         return Response.success(baseInfo);
     }
 
+
+
     @Override
-    public Response getCheckInHandleBaseInfo(Integer id) {
-        return null;
+    public Response getWillFinishOrderList(String merchantId) {
+        List<CheckRoomInfoVO> willFinishOrderList = hotelMapper.queryWillFinishOrderList(merchantId);
+        willFinishOrderList = willFinishOrderList.stream()
+                .map(roombookingVO -> {
+                    // 找到 phone
+                    Integer roomDateId = roombookingVO.getRoomBooking().getRoomDateId();
+                    String phone = hotelMapper.queryUserColumn(roomDateId);
+                    roombookingVO.setPhone(phone);
+                    return roombookingVO;
+                }).toList();
+        return Response.success(willFinishOrderList);
+    }
+
+    @Override
+    public Response startFinishRoomOut(Integer id) {
+        roomBookingMapper.changeStatus(id, Status.ROOMBOOKING_CHECK_OUT.getCode());
+        RoomBooking roomBooking = roomBookingMapper.selectById(id);
+        RoomDate roomDate = roomDateMapper.selectById(roomBooking.getRoomDateId());
+        RoomInfo roomInfo = roomInfoMapper.selectById(roomDate.getRiId());
+        roomInfoMapper.changeStatus(id, Status.ROOM_INFO_CLEANING.getCode());
+        return Response.success("开始办理退房");
     }
 }
