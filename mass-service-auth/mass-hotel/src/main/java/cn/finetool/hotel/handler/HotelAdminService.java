@@ -8,10 +8,10 @@ public interface HotelAdminService {
     /**
      * Web后台：用户端
      *
-     * @param hotelId
+     * @param merchantId
      * @return
      */
-    Response getHotelReserveRoomBookingList(Integer hotelId);
+    Response getHotelReserveRoomBookingList(String merchantId);
 
     /**
      * Web后台：sys端
@@ -24,5 +24,7 @@ public interface HotelAdminService {
 
     Response merchantInfo(String merchantId);
 
-    Response getCheckInHandleBaseInfo(Integer id);
+    Response getWillFinishOrderList(String merchantId);
+
+    Response startFinishRoomOut(Integer id);
 }

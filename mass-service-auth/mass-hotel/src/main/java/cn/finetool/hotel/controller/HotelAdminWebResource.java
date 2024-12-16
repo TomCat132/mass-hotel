@@ -21,10 +21,10 @@ public class HotelAdminWebResource {
     private HotelAdminService hotelAdminHandler;
 
     @SaCheckRole(value = {"admin", "super_admin"}, mode = SaMode.OR)
-    @GetMapping("/getHotelReserveRoomBookingList")
+    @GetMapping("/getHotelReserveRoomBookingList/{merchantId}")
     @ApiOperation(value = "获取酒店房间预订列表")
-    public Response getHotelReserveRoomBookingList(@RequestParam("hotelId") Integer hotelId) {
-        return hotelAdminHandler.getHotelReserveRoomBookingList(hotelId);
+    public Response getHotelReserveRoomBookingList(@PathVariable("merchantId") String merchantId) {
+        return hotelAdminHandler.getHotelReserveRoomBookingList(merchantId);
     }
 
     @SaCheckRole(value = {"sys_admin"})
@@ -47,11 +47,17 @@ public class HotelAdminWebResource {
     public Response merchantInfo(@PathVariable("merchantId") String merchantId) {
         return hotelAdminHandler.merchantInfo(merchantId);
     }
-    
+
     @SaCheckRole(value = {"admin", "super_admin"}, mode = SaMode.OR)
-    @GetMapping("/getCheckInHandleBaseInfo/{id}")
-    @ApiOperation(value = "获取入住处理基本信息", notes = "PMS : 获取入住处理基本信息")
-    public Response getCheckInHandleBaseInfo(@PathVariable("id") Integer id){
-        return hotelAdminHandler.getCheckInHandleBaseInfo(id);
+    @GetMapping("/getWillFinishOrderList")
+    @ApiOperation(value = "退房办理订单信息列表", notes = "PMS : 退房办理订单信息列表")
+    public Response getWillFinishOrderList(@RequestParam("merchantId") String merchantId){
+        return hotelAdminHandler.getWillFinishOrderList(merchantId);
+    }
+    
+    @PutMapping("/finishRoomOut")
+    @ApiOperation(value = "开始办理退房", notes = "PMS : 开始办理退房")
+    public Response startFinishRoomOut(@RequestParam("id") Integer id){
+        return hotelAdminHandler.startFinishRoomOut(id);
     }
 }

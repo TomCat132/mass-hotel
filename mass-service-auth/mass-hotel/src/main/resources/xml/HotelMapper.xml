@@ -88,7 +88,9 @@
                  JOIN tb_room_date AS room_date ON room_booking.room_date_id = room_date.id
                  JOIN tb_room_info AS room_info ON room_info.id = room_date.ri_id
                  JOIN tb_room AS room ON room.room_id = room_info.room_id
-        WHERE room.hotel_id = #{hotelId}
+                 JOIN tb_hotel AS hotel ON hotel.hotel_id = room.hotel_id
+        WHERE hotel.merchant_id = #{merchantId}
+        AND room_booking.status IN (0, 1)
     </select>
 
     <select id="queryUserColumn" resultType="java.lang.String">
@@ -97,6 +99,32 @@
         JOIN tb_room_order AS room_order ON  user.user_id  = room_order.user_id
             JOIN tb_room_booking AS room_booking ON room_order.order_id = room_booking.order_id
         WHERE room_booking.room_date_id = #{roomDateId}
+    </select>
+    <select id="queryWillFinishOrderList" resultMap="CheckRoomInfoVOResultMap">
+        SELECT
+            room_booking.id,
+            room_booking.order_id,
+            room_booking.room_date_id,
+            room_booking.check_in_date,
+            room_booking.check_out_date,
+            room_booking.security_deposit,
+            room_booking.status AS roomBooking_status,
+            room_booking.door_key,
+            room_booking.created_time,
+            room_booking.updated_time,
+            room.room_id,
+            room.hotel_id,
+            room.room_name,
+            room.room_type,
+            room_info.status AS status,
+            room_info.room_info_id
+        FROM tb_room_booking AS room_booking
+                 JOIN tb_room_date AS room_date ON room_booking.room_date_id = room_date.id
+                 JOIN tb_room_info AS room_info ON room_info.id = room_date.ri_id
+                 JOIN tb_room AS room ON room.room_id = room_info.room_id
+                 JOIN tb_hotel AS hotel ON hotel.hotel_id = room.hotel_id
+        WHERE hotel.merchant_id = #{merchantId}
+          AND room_booking.status NOT IN (0, 1, 6, 7)
     </select>
 
 </mapper>

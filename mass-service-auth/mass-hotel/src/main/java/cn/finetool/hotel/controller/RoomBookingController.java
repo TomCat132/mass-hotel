@@ -32,10 +32,10 @@ public class RoomBookingController {
         return roomBookingService.startHandleCheckIn(id);
     }
 
-    @SaCheckRole(value = {"admin"})
-    @GetMapping("/checkRoomDateInfo")
+    @SaCheckRole(value = {"admin","super_admin"}, mode = SaMode.OR)
+    @GetMapping("/checkRoomDateInfo/{id}")
     @ApiOperation(value = "检查当日房间情况", notes = "酒店前台: 根据房间ID检查当日房间情况")
-    public Response checkRoomDateInfo(@RequestParam("id") Integer id){
+    public Response checkRoomDateInfo(@PathVariable("id") Integer id){
         return roomBookingService.checkRoomDateInfo(id);
     }
 
