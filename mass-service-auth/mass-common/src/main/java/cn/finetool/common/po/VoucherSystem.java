@@ -19,7 +19,7 @@ public class VoucherSystem implements Serializable {
      * 编号id
      */
     @TableId
-    private Integer voucherId;
+    private String voucherId;
 
     /**
      * 优惠券标题
