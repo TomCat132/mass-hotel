@@ -17,28 +17,32 @@ import java.util.Map;
 @Slf4j
 public class SaveVoucherContext {
 
-    private final Map<Integer,SaveVoucherStrategy> strategies = new LinkedHashMap<>();
+    private final Map<Integer, SaveVoucherStrategy> strategies = new LinkedHashMap<>();
 
     @Resource
     private CouponStrategy couponStrategy;
-    
     @Resource
     private VoucherSystemStrategy voucherSystemStrategy;
+    @Resource
+    private VoucherConsumeStrategy voucherConsumeStrategy;
 
     @PostConstruct
-    public void addStrategy(){
+    public void addStrategy() {
+        log.info("初始化 活动券保存策略");
         strategies.put(0, couponStrategy);
         strategies.put(1, voucherSystemStrategy);
+        strategies.put(2, voucherConsumeStrategy);
+        log.info("活动券保存策略初始化完成");
     }
 
-    public void saveVoucher(VoucherDto voucherDto){
+    public void saveVoucher(VoucherDto voucherDto) {
         SaveVoucherStrategy strategy = strategies.get(voucherDto.getVoucherType());
         strategy.save(voucherDto);
     }
 
     public void changStatus(Integer voucherType, String voucherId, Integer status) {
         SaveVoucherStrategy strategy = strategies.get(voucherType);
-        strategy.changeStatus(voucherId,status);
+        strategy.changeStatus(voucherId, status);
     }
 
     public void decreaseVoucherStock(Integer voucherType, String voucherId) {

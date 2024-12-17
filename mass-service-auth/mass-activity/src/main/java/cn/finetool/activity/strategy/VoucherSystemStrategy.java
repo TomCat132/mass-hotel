@@ -9,23 +9,24 @@ import java.util.Objects;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VoucherSystemStrategy extends SaveVoucherStrategy{
-    
+public class VoucherSystemStrategy extends SaveVoucherStrategy {
+
     @Resource
     private VoucherSystemMapper voucherSystemMapper;
-    
+
     @Override
     public void save(VoucherDto voucherDto) {
-        if (Objects.nonNull(voucherDto.getVoucherSystem())){
+        if (Objects.nonNull(voucherDto.getVoucherSystem())) {
+            voucherDto.getVoucherSystem().setVoucherId(voucherDto.getVoucherId());
             voucherSystemMapper.insert(voucherDto.getVoucherSystem());
         }
     }
-    
+
     @Override
     public void changeStatus(String voucherId, Integer status) {
         voucherSystemMapper.update(new UpdateWrapper<VoucherSystem>()
-                .set("status",status)
-                .eq("voucher_id",voucherId));
+                .set("status", status)
+                .eq("voucher_id", voucherId));
     }
 
 
