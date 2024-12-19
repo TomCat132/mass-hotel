@@ -10,4 +10,12 @@ public interface VoucherService extends IService<Voucher> {
     Response addVoucher(VoucherDto voucherDto);
 
     Response grantVoucher(String voucherId);
+
+    /**
+     * 获取所有类型的活动券列表
+     *
+     * @param merchantId
+     * @return
+     */
+    Response getAllCategoryVoucherList(String merchantId);
 }

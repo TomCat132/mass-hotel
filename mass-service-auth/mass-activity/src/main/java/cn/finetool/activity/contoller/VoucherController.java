@@ -18,17 +18,17 @@ public class VoucherController {
     @Resource
     private VoucherService voucherService;
 
-    @SaCheckRole(value = {"admin","super_admin"},mode = SaMode.OR)
+    @SaCheckRole(value = {"admin", "super_admin"}, mode = SaMode.OR)
     @PostMapping("/admin/add")
     @ApiOperation(value = "添加活动券", notes = "添加活动券")
-    public Response addVoucher(@RequestBody VoucherDto voucherDto){
+    public Response addVoucher(@RequestBody VoucherDto voucherDto) {
         return voucherService.addVoucher(voucherDto);
     }
 
-    @SaCheckRole(value = {"admin","super_admin","sys_admin"}, mode = SaMode.OR)
+    @SaCheckRole(value = {"admin", "super_admin", "sys_admin"}, mode = SaMode.OR)
     @PutMapping("/admin/grant")
     @ApiOperation(value = "发放优惠券", notes = "发放优惠券")
-    public Response grantVoucher(@RequestParam("voucherId") String voucherId){
+    public Response grantVoucher(@RequestParam("voucherId") String voucherId) {
         return voucherService.grantVoucher(voucherId);
     }
 }

@@ -1,7 +1,6 @@
 package cn.finetool.hotel.strategy.discountStrategy;
 
 
-
 import cn.finetool.common.dto.RoomBookingDto;
 import cn.finetool.hotel.strategy.memberLevelDiscountStrategy.MemberLevelDiscount;
 import cn.finetool.hotel.strategy.memberLevelDiscountStrategy.MemberLevelDiscountStrategy;
@@ -20,7 +19,7 @@ public class MemberDiscountStrategy implements RoomPricingStrategy {
     public BigDecimal calculatePrice(RoomBookingDto roomBookingDto) {
         BigDecimal tempPrice = roomBookingDto.getTempPrice();
         Integer memberLevel = roomBookingDto.getMemberLevel();
-        if (memberLevel != 0){
+        if (memberLevel != 0) {
             MemberLevelDiscountStrategy strategy = memberLevelDiscount.getStrategy(memberLevel);
             return strategy.calculatePrice(tempPrice);
         }

@@ -15,7 +15,6 @@ public class OrderTypeStrategyFactory {
 
     @Resource
     private RechargeOrderStrategy rechargeOrderStrategy;
-
     @Resource
     private RoomReserveOrderStrategy roomReserveOrderStrategy;
 

@@ -20,9 +20,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = BusinessRuntimeException.class)
     @ResponseBody
-    public Response businessRunTimeException(HttpServletRequest req,BusinessRuntimeException e) {
-        if (e.isHasBusinessError()){
-            return Response.error(e.getBusinessError().getCode(),e.getMessage());
+    public Response businessRunTimeException(HttpServletRequest req, BusinessRuntimeException e) {
+        if (e.isHasBusinessError()) {
+            return Response.error(e.getBusinessError().getCode(), e.getMessage());
         }
         return Response.error(e.getMessage());
     }

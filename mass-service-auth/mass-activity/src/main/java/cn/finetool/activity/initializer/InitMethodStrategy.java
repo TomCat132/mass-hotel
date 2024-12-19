@@ -1,7 +1,5 @@
 package cn.finetool.activity.initializer;
 
-import cn.finetool.activity.mapper.VoucherConsumeMapper;
-import cn.finetool.activity.service.VoucherService;
 import cn.finetool.activity.service.impl.VoucherServiceImpl;
 import cn.finetool.common.dto.VoucherDto;
 import cn.finetool.common.enums.VoucherType;

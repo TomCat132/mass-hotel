@@ -33,7 +33,7 @@ public class AliPayServiceImpl implements AliPayService {
     private OrderTypeStrategyFactory orderTypeStrategyFactory;
 
     @Resource
-    private RedisTemplate<String,Object> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public String tradePay(OrderPayDto orderPayDto) {
@@ -43,7 +43,7 @@ public class AliPayServiceImpl implements AliPayService {
         JSONObject biz_content = new JSONObject();
         /******必传参数******/
         //商户订单号，商家自定义，保持唯一性
-        biz_content.put("out_trade_no",orderPayDto.getOrderType() + "_" + orderPayDto.getOrderId());
+        biz_content.put("out_trade_no", orderPayDto.getOrderType() + "_" + orderPayDto.getOrderId());
         //支付金额
         BigDecimal payAmount = orderPayDto.getUserPayAmount();
         biz_content.put("total_amount", payAmount);
@@ -88,7 +88,7 @@ public class AliPayServiceImpl implements AliPayService {
         String orderId = parts[1];
         OrderTypeStrategy strategy = orderTypeStrategyFactory.getStrategy(Integer.valueOf(orderType));
         Object orderInfo = strategy.queryOrder(orderId);
-        if (orderInfo == null){
+        if (orderInfo == null) {
             log.info("订单不存在");
             return "failure";
         }
@@ -96,32 +96,32 @@ public class AliPayServiceImpl implements AliPayService {
         int totalAmount = new BigDecimal(total_amount).intValue();
         // 校验金额是否一致
         boolean equals = strategy.equalsPayAmount(orderId, totalAmount);
-        if (!equals){
+        if (!equals) {
             log.info("支付金额不一致");
             return "failure";
         }
         // 判断通知中的 seller_id 是否为 out_trade_no这笔单据对应的操作方
         String sellerId = params.get("seller_id");
-        if (!sellerId.equals(config.getProperty("alipay.seller-id"))){
+        if (!sellerId.equals(config.getProperty("alipay.seller-id"))) {
             log.info("商户ID不一致");
             return "failure";
         }
         // 验证 app_id 是否为商户本身
         String appId = params.get("app_id");
-        if (!appId.equals(config.getProperty("alipay.app-id"))){
+        if (!appId.equals(config.getProperty("alipay.app-id"))) {
             log.info("应用ID不一致");
             return "failure";
         }
         // 交易通知状态 TRADE_SUCCESS
         String trade_status = params.get("trade_status");
-        if (!trade_status.equals("TRADE_SUCCESS")){
+        if (!trade_status.equals("TRADE_SUCCESS")) {
             log.info("支付未成功");
             return "failure";
         }
         // 校验订单是否支付
         //!!! 接口的幂等性，需要商户自己保证
         boolean success = strategy.verifyOrderIsPayAmount(orderId);
-        if (success){
+        if (success) {
             log.info("订单已经支付");
             return "success";
         }

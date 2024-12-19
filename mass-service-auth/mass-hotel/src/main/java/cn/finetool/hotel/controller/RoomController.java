@@ -17,22 +17,22 @@ public class RoomController {
     @Resource
     RoomService roomService;
 
-//    @SaCheckRole("hotel_admin")
+    //    @SaCheckRole("hotel_admin")
     @ApiOperation(value = "添加房间信息", notes = "添加房间信息")
     @PostMapping("/add")
-    public Response addRoomInfo(@RequestBody RoomDto roomDto){
+    public Response addRoomInfo(@RequestBody RoomDto roomDto) {
         return roomService.addRoomInfo(roomDto);
     }
 
     @ApiOperation(value = "查询房间类型信息", notes = "查询房间类型信息")
     @GetMapping("/query")
-    public Response queryRoomInfo(@RequestParam("roomId") String roomId){
+    public Response queryRoomInfo(@RequestParam("roomId") String roomId) {
         return roomService.queryRoomInfo(roomId);
     }
 
     @ApiOperation(value = "计算实际需支付金额", notes = "计算实际需支付金额")
     @PostMapping("/calculatePrice")
-    public Response calculatePrice(@RequestBody RoomBookingDto roombookingDto){
+    public Response calculatePrice(@RequestBody RoomBookingDto roombookingDto) {
         return roomService.calculatePrice(roombookingDto);
     }
 

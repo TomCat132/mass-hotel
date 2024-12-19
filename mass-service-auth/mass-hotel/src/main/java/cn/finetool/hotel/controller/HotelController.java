@@ -26,7 +26,7 @@ public class HotelController {
     @SaCheckRole("super_admin")
     @ApiOperation(value = "添加酒店信息", notes = "添加酒店信息")
     @PostMapping("/addHotelInfo")
-    public Response addHotelInfo(@RequestBody Hotel hotel)                                                                              {
+    public Response addHotelInfo(@RequestBody Hotel hotel) {
         return hotelService.addHotelInfo(hotel);
     }
 
@@ -35,13 +35,13 @@ public class HotelController {
     @GetMapping("/getNearByHotelList")
     public Response getNearByHotelList(@RequestParam("userLng") Double userLng,
                                        @RequestParam("userLat") Double userLat,
-                                       @RequestParam("queryRange") Double queryRange){
+                                       @RequestParam("queryRange") Double queryRange) {
         return hotelService.getNearByHotelList(userLng, userLat, queryRange);
     }
 
     @ApiOperation(value = "查看酒店所有类型的房间信息", notes = "查看酒店所有类型的房间信息")
     @GetMapping("/getHotelRoomTypeList")
-    public Response getHotelRoomTypeList(@ModelAttribute QueryRoomTypeDto queryRoomTypeDto){
+    public Response getHotelRoomTypeList(@ModelAttribute QueryRoomTypeDto queryRoomTypeDto) {
         return hotelService.getHotelRoomTypeList(queryRoomTypeDto);
     }
 

@@ -31,16 +31,20 @@ public class AliPayController {
     @Resource
     private AliPayService aliPayService;
 
-    /**======== 支付宝页面调用接口 ======== */
+    /**
+     * ======== 支付宝页面调用接口 ========
+     */
     @PostMapping("/window")
-    public Response tradePay(@RequestBody OrderPayDto orderPayDto){
+    public Response tradePay(@RequestBody OrderPayDto orderPayDto) {
         String form = aliPayService.tradePay(orderPayDto);
         return Response.success(form);
     }
 
-    /**======== 支付宝支付异步回调接口 ======== */
+    /**
+     * ======== 支付宝支付异步回调接口 ========
+     */
     @PostMapping("/notify")
-    public Response tradeNotify(@RequestParam Map<String,String> params){
+    public Response tradeNotify(@RequestParam Map<String, String> params) {
         log.info("支付宝支付回调参数：{}", params);
         String result = "failure";
 
@@ -50,10 +54,10 @@ public class AliPayController {
                     config.getProperty("alipay.alipay-public-key"),
                     AlipayConstants.CHARSET_UTF8,
                     AlipayConstants.SIGN_TYPE_RSA2);
-        }catch (AlipayApiException e){
+        } catch (AlipayApiException e) {
             throw new BusinessRuntimeException(BusinessErrors.ALI_PAY_ERROR, e.getMessage());
         }
-        if (!signVerified){
+        if (!signVerified) {
             return Response.error(BusinessErrors.ALI_PAY_VERIFY_ERROR.getCode(),
                     BusinessErrors.ALI_PAY_VERIFY_ERROR.getMsg());
         }

@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class RoomReserveOrderStrategy implements OrderTypeStrategy{
+public class RoomReserveOrderStrategy implements OrderTypeStrategy {
 
     private static final Map<String, OrderStatus> ORDER_STATUS_MAP = new ConcurrentHashMap<>();
 
@@ -24,29 +24,29 @@ public class RoomReserveOrderStrategy implements OrderTypeStrategy{
     private OrderAPIService orderAPIService;
 
     @Resource
-    private RedisTemplate<String,Object> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public Object queryOrder(String orderId) {
-        OrderStatus orderStatus =  orderAPIService.queryOrder(orderId);
+        OrderStatus orderStatus = orderAPIService.queryOrder(orderId);
         ORDER_STATUS_MAP.put(orderId, orderStatus);
         return orderStatus;
     }
 
     @Override
     public boolean equalsPayAmount(String orderId, Integer userPayAmount) {
-         RoomOrder orderInfo = orderAPIService.queryOrderInfo(orderId);
-         ROOM_ORDER_MAP.put(orderId,orderInfo);
-         if (!userPayAmount.equals(orderInfo.getUserPayAmount().intValue())){
-             return false;
-         }
-         return true;
+        RoomOrder orderInfo = orderAPIService.queryOrderInfo(orderId);
+        ROOM_ORDER_MAP.put(orderId, orderInfo);
+        if (!userPayAmount.equals(orderInfo.getUserPayAmount().intValue())) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public boolean verifyOrderIsPayAmount(String orderId) {
         OrderStatus orderStatus = ORDER_STATUS_MAP.get(orderId);
-        if (orderStatus.getOrderStatus() == Status.ORDER_SUCCESS.getCode()){
+        if (orderStatus.getOrderStatus() == Status.ORDER_SUCCESS.getCode()) {
             ROOM_ORDER_MAP.remove(orderId);
             ORDER_STATUS_MAP.remove(orderId);
             return true;
@@ -57,7 +57,7 @@ public class RoomReserveOrderStrategy implements OrderTypeStrategy{
     @Override
     public void handleOrder(String orderId) {
         // 处理订单 (更改订单状态)
-        orderAPIService.changeOrderStatus(orderId,Status.ORDER_SUCCESS.getCode(),null);
+        orderAPIService.changeOrderStatus(orderId, Status.ORDER_SUCCESS.getCode(), null);
     }
 
     @Override
