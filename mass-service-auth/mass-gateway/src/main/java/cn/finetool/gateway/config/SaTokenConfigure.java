@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Slf4j
 @Configuration
-public class SaTokenConfigure{
+public class SaTokenConfigure {
 
     @Bean
     public SaReactorFilter getSaReactorFilter() {

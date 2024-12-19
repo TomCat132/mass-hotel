@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/hotel/admin")
-//@Consumes({MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE})
 @Api(value = "酒店后台管理系统Web资源接口")
 public class HotelAdminWebResource {
 
@@ -51,13 +50,13 @@ public class HotelAdminWebResource {
     @SaCheckRole(value = {"admin", "super_admin"}, mode = SaMode.OR)
     @GetMapping("/getWillFinishOrderList")
     @ApiOperation(value = "退房办理订单信息列表", notes = "PMS : 退房办理订单信息列表")
-    public Response getWillFinishOrderList(@RequestParam("merchantId") String merchantId){
+    public Response getWillFinishOrderList(@RequestParam("merchantId") String merchantId) {
         return hotelAdminHandler.getWillFinishOrderList(merchantId);
     }
-    
+
     @PutMapping("/finishRoomOut")
     @ApiOperation(value = "开始办理退房", notes = "PMS : 开始办理退房")
-    public Response startFinishRoomOut(@RequestParam("id") Integer id){
+    public Response startFinishRoomOut(@RequestParam("id") Integer id) {
         return hotelAdminHandler.startFinishRoomOut(id);
     }
 }

@@ -23,15 +23,13 @@ public class RoomOrderConsumer {
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
-
     @Resource
     private OrderAPIService orderAPIService;
-
     @Resource
     private HotelAPIService hotelAPIService;
 
     @RabbitListener
-    public void roomOrderConsumer(MessageDo messageDo, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag){
+    public void roomOrderConsumer(MessageDo messageDo, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) {
 
         String orderId = (String) messageDo.getMessageMap().get("orderId");
 
@@ -43,14 +41,14 @@ public class RoomOrderConsumer {
 
         Boolean timeoutOrder = redisTemplate.hasKey(RedisCache.ROOM_RESERVED_ORDER_IS_TIMEOUT + orderId);
 
-        if (Boolean.TRUE.equals(timeoutOrder)){
+        if (Boolean.TRUE.equals(timeoutOrder)) {
             log.info("订单：{} 未超时", orderId);
-        } else{
+        } else {
             log.info("订单：{} 超时未支付，取消订单", orderId);
             // 更新订单状态 恢复房间状态
-            orderAPIService.changeOrderStatus(orderId, Status.ORDER_CANCEL.getCode(),null);
+            orderAPIService.changeOrderStatus(orderId, Status.ORDER_CANCEL.getCode(), null);
 
-            hotelAPIService.updateRoomDateStatus(roomDateId, checkInDate,checkOutDate,Status.ROOM_DATE_CAN_USE.getCode());
+            hotelAPIService.updateRoomDateStatus(roomDateId, checkInDate, checkOutDate, Status.ROOM_DATE_CAN_USE.getCode());
 
             redisTemplate.delete(RedisCache.ROOM_RESERVED_ORDER_IS_TIMEOUT + orderId);
 

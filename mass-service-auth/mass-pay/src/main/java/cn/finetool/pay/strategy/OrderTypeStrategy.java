@@ -4,7 +4,7 @@ public interface OrderTypeStrategy {
 
     Object queryOrder(String orderId);
 
-    boolean equalsPayAmount(String orderId,Integer userPayAmount);
+    boolean equalsPayAmount(String orderId, Integer userPayAmount);
 
     boolean verifyOrderIsPayAmount(String orderId);
 

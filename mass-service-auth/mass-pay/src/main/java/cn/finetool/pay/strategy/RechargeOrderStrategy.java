@@ -14,24 +14,22 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class RechargeOrderStrategy implements OrderTypeStrategy{
+public class RechargeOrderStrategy implements OrderTypeStrategy {
 
     private static final Map<String, OrderVO> RECHARGE_ORDER_MAP = new ConcurrentHashMap<>();
 
     @Resource
     private OrderAPIService orderAPIService;
-
     @Resource
     private UserAPIService userAPIService;
-
     @Resource
-    private RedisTemplate<String,Object> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
     // TODO: 冷热数据分离，待修改
     @Override
     public Object queryOrder(String orderId) {
         OrderVO rechargeOrder = orderAPIService.queryRechargeOrder(orderId);
-        RECHARGE_ORDER_MAP.put(orderId,rechargeOrder);
+        RECHARGE_ORDER_MAP.put(orderId, rechargeOrder);
         return rechargeOrder;
 
     }
@@ -39,7 +37,7 @@ public class RechargeOrderStrategy implements OrderTypeStrategy{
     @Override
     public boolean equalsPayAmount(String orderId, Integer userPayAmount) {
         OrderVO rechargeOrder = RECHARGE_ORDER_MAP.get(orderId);
-        if (userPayAmount != rechargeOrder.getUserPayAmount().intValue()){
+        if (userPayAmount != rechargeOrder.getUserPayAmount().intValue()) {
             RECHARGE_ORDER_MAP.remove(orderId);
             return false;
         }
@@ -49,7 +47,7 @@ public class RechargeOrderStrategy implements OrderTypeStrategy{
     @Override
     public boolean verifyOrderIsPayAmount(String orderId) {
         OrderVO rechargeOrder = RECHARGE_ORDER_MAP.get(orderId);
-        if (rechargeOrder.getOrderStatus() == Status.ORDER_SUCCESS.getCode()){
+        if (rechargeOrder.getOrderStatus() == Status.ORDER_SUCCESS.getCode()) {
             RECHARGE_ORDER_MAP.remove(orderId);
             return true;
         }
@@ -63,7 +61,7 @@ public class RechargeOrderStrategy implements OrderTypeStrategy{
 
         OrderVO rechargeOrder = RECHARGE_ORDER_MAP.get(orderId);
         // 更新用户信息
-        userAPIService.updateUserInfo(rechargeOrder.getUserId(),rechargeOrder.getTotalAmount());
+        userAPIService.updateUserInfo(rechargeOrder.getUserId(), rechargeOrder.getTotalAmount());
     }
 
     @Override

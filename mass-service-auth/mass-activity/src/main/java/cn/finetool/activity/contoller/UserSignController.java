@@ -20,13 +20,13 @@ public class UserSignController {
 
     @ApiOperation(value = "用户签到", notes = "用户签到")
     @PostMapping
-    public Response userSign(){
+    public Response userSign() {
         return userSignService.userSign();
     }
 
     @ApiOperation(value = "查询用户是否签到", notes = "查询用户是否签到")
     @GetMapping("/signed")
-    public boolean isUserSign(){
+    public boolean isUserSign() {
         return userSignService.isUserSign();
     }
 

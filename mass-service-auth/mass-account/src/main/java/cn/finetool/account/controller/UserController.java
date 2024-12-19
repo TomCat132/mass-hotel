@@ -25,53 +25,52 @@ public class UserController {
 
     @ApiOperation(value = "注册用户", notes = "注册用户")
     @PostMapping("/register")
-    public Response<User> register(@RequestBody User user){
+    public Response<User> register(@RequestBody User user) {
         return userService.register(user);
     }
 
     @ApiOperation(value = "用户登录", notes = "用户登录")
     @PostMapping("/login")
-    public Response login(@RequestBody User user){
+    public Response login(@RequestBody User user) {
         return userService.login(user);
     }
 
     @ApiOperation(value = "用户获取个人信息", notes = "用户获取个人信息")
     @GetMapping
-    public Response<User> getUserInfo(){
+    public Response<User> getUserInfo() {
         return userService.getUserInfo();
     }
 
     @ApiOperation(value = "用户退出登录", notes = "用户退出登录")
     @PostMapping("/logout")
-    public Response logout(){
+    public Response logout() {
         return userService.logout();
     }
 
     @ApiOperation(value = "修改头像", notes = "修改头像")
     @PostMapping("/editavatar")
-    public Response editAvatar(@RequestParam("file") MultipartFile file, HttpServletRequest request){
-        return userService.editAvatar(file,request);
+    public Response editAvatar(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+        return userService.editAvatar(file, request);
     }
 
     @ApiOperation(value = "修改密码", notes = "修改密码")
     @PutMapping("/update-pwd")
-    public Response editPassword(@RequestBody PasswordDto passwordDto){
+    public Response editPassword(@RequestBody PasswordDto passwordDto) {
         return userService.editPassword(passwordDto);
     }
 
     @ApiOperation(value = "管理员登录", notes = "管理员登录")
     @PostMapping("/admin/login")
-    public Response adminLogin(@RequestBody User user){
+    public Response adminLogin(@RequestBody User user) {
         return userService.adminLogin(user);
     }
 
-    @SaCheckRole(value = {"user"},mode = SaMode.OR)
+    @SaCheckRole(value = {"user"}, mode = SaMode.OR)
     @ApiOperation(value = "用户领取优惠券", notes = "用户领取优惠券")
     @PostMapping("/getVoucher")
-    public Response getVoucher(@RequestParam("voucherId") String voucherId){
+    public Response getVoucher(@RequestParam("voucherId") String voucherId) {
         return userService.getVoucher(voucherId);
     }
-
 
     @GetMapping("/orderlist")
     @ApiOperation(value = "获取所有类型的订单列表", notes = "获取所有类型的订单列表")
@@ -81,13 +80,13 @@ public class UserController {
 
     @PutMapping("/deleteOrderById/{orderId}")
     @ApiOperation(value = "删除订单", notes = "删除订单")
-    public Response deleteOrderById(@PathVariable("orderId") String orderId){
+    public Response deleteOrderById(@PathVariable("orderId") String orderId) {
         return userService.deleteOrderById(orderId);
     }
 
     @PostMapping("/checkPwd")
     @ApiOperation(value = "校验密码", notes = "校验密码")
-    public Response checkPwd(@RequestParam("oldPwd") String oldPwd){
+    public Response checkPwd(@RequestParam("oldPwd") String oldPwd) {
         return userService.checkPwd(oldPwd);
     }
 

@@ -13,23 +13,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- *  全局异常处理
+ * 全局异常处理
  */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = BusinessRuntimeException.class)
     @ResponseBody
-    public Response businessRunTimeException(HttpServletRequest req,BusinessRuntimeException e) {
-        if (e.isHasBusinessError()){
-            return Response.error(e.getBusinessError().getCode(),e.getMessage());
+    public Response businessRunTimeException(HttpServletRequest req, BusinessRuntimeException e) {
+        if (e.isHasBusinessError()) {
+            return Response.error(e.getBusinessError().getCode(), e.getMessage());
         }
-       return Response.error(e.getMessage());
+        return Response.error(e.getMessage());
     }
 
     @ExceptionHandler(value = NotRoleException.class)
     @ResponseBody
-    public Response businessRunTimeException(HttpServletRequest req,Exception e) {
+    public Response businessRunTimeException(HttpServletRequest req, Exception e) {
         return Response.error("权限不足");
     }
 

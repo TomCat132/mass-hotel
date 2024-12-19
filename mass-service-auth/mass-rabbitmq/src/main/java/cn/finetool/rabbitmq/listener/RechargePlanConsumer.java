@@ -31,11 +31,9 @@ public class RechargePlanConsumer {
 
     @Resource
     private RechargePlanAPIService rechargePlanAPIService;
-
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     /**
      * ============ 充值方案过期消费者 ==========

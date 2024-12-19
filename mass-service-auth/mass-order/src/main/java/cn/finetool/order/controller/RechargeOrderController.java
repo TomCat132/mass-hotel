@@ -24,13 +24,13 @@ public class RechargeOrderController {
     @ApiOperation(value = "创建充值订单", notes = "创建充值订单")
     @PostMapping("/createOrder")
     @Transactional
-    public Response createOrder(@RequestBody RechargeDto rechargeDto){
+    public Response createOrder(@RequestBody RechargeDto rechargeDto) {
         return rechargeOrderService.createOrder(rechargeDto);
     }
 
     @ApiOperation(value = "查询订单订单详情", notes = "查询订单详情")
     @GetMapping("/queryOrder/{orderId}")
-    public Response queryOrder(@PathVariable("orderId") String orderId){
+    public Response queryOrder(@PathVariable("orderId") String orderId) {
         return rechargeOrderService.queryOrder(orderId);
     }
 

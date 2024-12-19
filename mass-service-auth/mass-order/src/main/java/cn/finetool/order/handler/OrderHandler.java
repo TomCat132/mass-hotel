@@ -27,31 +27,27 @@ public class OrderHandler implements OrderService {
 
     @Resource
     private RechargeOrderMapper rechargeOrderMapper;
-
     @Resource
     private RoomOrderMapper roomOrderMapper;
-    
     @Resource
     private OrderStatusMapper orderStatusMapper;
-    
     @Resource
     private HotelAPIService hotelAPIService;
-
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
-
+    
     @Override
     public void deleteOrder(String orderId) {
         //截取订单号前4位,比较查询订单类型
         String prefix = orderId.substring(0, 4);
-        if (prefix.equals(CodeSign.RechargeOrderPrefix.getCode())){
+        if (prefix.equals(CodeSign.RechargeOrderPrefix.getCode())) {
             rechargeOrderMapper.update(new UpdateWrapper<RechargeOrder>()
                     .set("is_deleted", Status.IS_DELETED.getCode())
-                    .eq("order_id",orderId));
-        } else if(prefix.equals(CodeSign.HotelOrderPrefix.getCode())){
+                    .eq("order_id", orderId));
+        } else if (prefix.equals(CodeSign.HotelOrderPrefix.getCode())) {
             roomOrderMapper.update(new UpdateWrapper<RoomOrder>()
                     .set("is_deleted", Status.IS_DELETED.getCode())
-                    .eq("order_id",orderId));
+                    .eq("order_id", orderId));
         }
     }
 
@@ -78,16 +74,16 @@ public class OrderHandler implements OrderService {
         OrderStatus orderStatus = orderStatusMapper.selectOne(new QueryWrapper<OrderStatus>()
                 .eq("order_id", orderId));
         // 酒店相关信息
-        roomOrderBaseInfo = hotelAPIService.getBookedRoomBaseInfo(orderId,roomOrder.getRoomDateId());
+        roomOrderBaseInfo = hotelAPIService.getBookedRoomBaseInfo(orderId, roomOrder.getRoomDateId());
         roomOrderBaseInfo.setRoomOrder(roomOrder);
         roomOrderBaseInfo.setOrderStatus(orderStatus);
-        
+
         return roomOrderBaseInfo;
     }
 
     private List<OrderVO> queryMerchantRoomOrderList(String merchantId) {
         List<OrderVO> roomOrderList = roomOrderMapper.queryMerchantRoomOrderList(merchantId);
-        roomOrderList.forEach( orderVO -> {
+        roomOrderList.forEach(orderVO -> {
             orderVO.setOrderType(CodeSign.HotelOrderPrefix.getCode());
         });
         return roomOrderList;

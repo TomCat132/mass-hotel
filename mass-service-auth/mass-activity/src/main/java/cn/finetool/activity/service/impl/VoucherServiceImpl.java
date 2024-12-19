@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> implements VoucherService {
 
-    private static final SnowflakeIdWorker WORKER_ID = new SnowflakeIdWorker(2,0);
+    private static final SnowflakeIdWorker WORKER_ID = new SnowflakeIdWorker(2, 0);
 
     @Resource
     private SaveVoucherContext saveVoucherContext;
@@ -36,29 +36,28 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
     @Override
     @Transactional
     public Response addVoucher(VoucherDto voucherDto) {
-        
-        
+
 
         String voucherId = CodeSign.VoucherPrefix.getCode() + String.valueOf(WORKER_ID.nextId());
         voucherDto.setVoucherId(voucherId);
         LocalDateTime nowTime = LocalDateTime.now();
-        
+
         saveVoucherContext.saveVoucher(voucherDto);
-        
+
         Voucher voucher = new Voucher();
         voucher.setVoucherId(voucherId);
         voucher.setCreateTime(nowTime);
         voucher.setVoucherType(voucherDto.getVoucherType());
         String userId = StpUtil.getLoginIdAsString();
         String merchantId = accountAPIService.queryMerchantOfUser(userId);
-        if (Strings.isBlank(merchantId)){
+        if (Strings.isBlank(merchantId)) {
             throw new BusinessRuntimeException("用户未关联商户");
         }
         voucher.setUserId(userId);
         voucher.setMerchantId(merchantId);
         save(voucher);
         // 根据不同的活动券类型加入不同的表中
-       
+
 
         return Response.success("操作成功");
     }
@@ -71,5 +70,10 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
 
         saveVoucherContext.changStatus(voucherInfo.getVoucherType(), voucherId, Status.VOUCHER_SEND.getCode());
         return Response.success("已发放");
+    }
+
+    @Override
+    public Response getAllCategoryVoucherList(String merchantId) {
+        return null;
     }
 }

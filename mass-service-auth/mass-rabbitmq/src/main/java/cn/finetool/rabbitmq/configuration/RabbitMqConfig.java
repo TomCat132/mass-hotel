@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-
 @Slf4j
 @Configuration
 public class RabbitMqConfig implements CommandLineRunner {
@@ -25,45 +24,51 @@ public class RabbitMqConfig implements CommandLineRunner {
     private AmqpAdmin amqpAdmin;
 
     @Bean
-    public Binding RoomReserveOrderBinding(){
+    public Binding RoomReserveOrderBinding() {
         return BindingBuilder.bind(RoomReserveOrderQueue())
                 .to(RoomReserveOrderExchange())
                 .with(MqRoutingKey.ROOM_RESERVE_ORDER_ROUTING_KEY).noargs();
     }
 
     @Bean
-    public Queue RoomReserveOrderQueue(){
+    public Queue RoomReserveOrderQueue() {
         log.info("创建房间预定订单队列");
         return new Queue(MqQueue.ROOM_RESERVE_ORDER_QUEUE, true, false, false);
     }
 
     @Bean
-    public CustomExchange RoomReserveOrderExchange(){
+    public CustomExchange RoomReserveOrderExchange() {
         log.info("创建房间预定订单交换机");
-        Map<String,Object> args = new HashMap<>();
+        Map<String, Object> args = new HashMap<>();
         args.put("x-delayed-type", "direct");
-        return new CustomExchange(MqExchange.ROOM_DATE_RESERVE_ORDER_EXCHANGE,"x-delayed-message",
-                true,false,args);
+        return new CustomExchange(MqExchange.ROOM_DATE_RESERVE_ORDER_EXCHANGE, "x-delayed-message",
+                true, false, args);
     }
 
 
-    /** ============充值订单 交换机 ========== */
+    /**
+     * ============充值订单 交换机 ==========
+     */
     @Bean
-    public CustomExchange orderExchange(){
+    public CustomExchange orderExchange() {
         log.info("创建订单交换机");
         Map<String, Object> args = new HashMap<>();
         args.put("x-delayed-type", "direct");
         return new CustomExchange(MqExchange.ORDER_EXCHANGE, "x-delayed-message", true, false, args);
     }
 
-    /** ============ 充值订单 队列 ========== */
+    /**
+     * ============ 充值订单 队列 ==========
+     */
     @Bean
-    public Queue orderQueue(){
+    public Queue orderQueue() {
         log.info("创建订单队列");
         return new Queue(MqQueue.RECHARGE_ORDER_QUEUE, true, false, false);
     }
 
-    /** ============ 充值订单路由键 ========== */
+    /**
+     * ============ 充值订单路由键 ==========
+     */
     @Bean
     public Binding orderBinding() {
         log.info("创建订单队列绑定到订单交换机");
@@ -73,10 +78,11 @@ public class RabbitMqConfig implements CommandLineRunner {
     }
 
 
-
-
 //=======================================================================================================
-    /**============= 充值方案(活动) 队列 ============== */
+
+    /**
+     * ============= 充值方案(活动) 队列 ==============
+     */
     @Bean
     public Queue RechargeQueue() {
         Map<String, Object> args = new HashMap<>();
@@ -87,7 +93,9 @@ public class RabbitMqConfig implements CommandLineRunner {
     }
 
 
-    /**============= 充值方案(活动) 死信队列 ============== */
+    /**
+     * ============= 充值方案(活动) 死信队列 ==============
+     */
     @Bean
     public Queue RechargeDlxQueue() {
         log.info("创建充值方案(活动)死信队列");
@@ -95,7 +103,9 @@ public class RabbitMqConfig implements CommandLineRunner {
     }
 
 
-    /**============= 充值方案(活动) 死信交换机 ============== */
+    /**
+     * ============= 充值方案(活动) 死信交换机 ==============
+     */
     @Bean
     public DirectExchange RechargeDlxExchange() {
         log.info("创建充值方案(活动)死信交换机");
@@ -103,7 +113,9 @@ public class RabbitMqConfig implements CommandLineRunner {
     }
 
 
-    /**============= 充值方案(活动) 死信队列绑定到死信交换机 ============== */
+    /**
+     * ============= 充值方案(活动) 死信队列绑定到死信交换机 ==============
+     */
     @Bean
     public Binding DlxRechargeBinding() {
         return BindingBuilder.bind(RechargeDlxQueue())
@@ -111,14 +123,18 @@ public class RabbitMqConfig implements CommandLineRunner {
                 .with(MqRoutingKey.RECHARGE_PLAN_DLX_ROUTING_KEY);
     }
 
-    /**============= 充值方案(活动) 交换机 ============== */
+    /**
+     * ============= 充值方案(活动) 交换机 ==============
+     */
     @Bean
     public DirectExchange RechargeExchange() {
         log.info("创建充值方案(活动)交换机");
         return new DirectExchange(MqExchange.RECHARGE_PLAN_EXCHANGE);
     }
 
-    /**============= 充值方案(活动) 队列绑定到 充值方案(活动) 交换机 ============== */
+    /**
+     * ============= 充值方案(活动) 队列绑定到 充值方案(活动) 交换机 ==============
+     */
     @Bean
     public Binding RechargeBinding() {
         return BindingBuilder.bind(RechargeQueue())

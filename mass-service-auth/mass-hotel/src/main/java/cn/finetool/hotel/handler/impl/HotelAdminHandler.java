@@ -118,7 +118,6 @@ public class HotelAdminHandler implements HotelAdminService {
     }
 
 
-
     @Override
     public Response getWillFinishOrderList(String merchantId) {
         List<CheckRoomInfoVO> willFinishOrderList = hotelMapper.queryWillFinishOrderList(merchantId);
