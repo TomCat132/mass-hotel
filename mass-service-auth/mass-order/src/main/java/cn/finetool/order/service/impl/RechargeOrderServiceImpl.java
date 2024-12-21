@@ -1,7 +1,6 @@
 package cn.finetool.order.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.finetool.common.Do.MessageDo;
 import cn.finetool.common.constant.MqExchange;
 import cn.finetool.common.constant.MqRoutingKey;
 import cn.finetool.common.constant.MqTTL;
@@ -15,6 +14,8 @@ import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.OrderStatus;
 import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.util.CommonsUtils;
+import cn.finetool.common.util.JsonUtil;
+import cn.finetool.common.util.MqUtils;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.vo.OrderVO;
 import cn.finetool.order.mapper.RechargeOrderMapper;
@@ -22,6 +23,7 @@ import cn.finetool.order.service.OrderStatusService;
 import cn.finetool.order.service.RechargeOrderService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -45,7 +47,6 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
 
     @Resource
     private OrderStatusService orderStatusService;
-
     @Resource
     private RabbitTemplate rabbitTemplate;
 
@@ -53,7 +54,7 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
     private RedisTemplate<String, Object> redisTemplate;
 
     @Override
-    public Response createOrder(RechargeDto rechargeDto) {
+    public Response createOrder(RechargeDto rechargeDto) throws JsonProcessingException {
 
         String loginId = (String) StpUtil.getLoginId();
 
@@ -61,8 +62,8 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
         OrderStatus orderInfo = orderStatusService.getOne(new LambdaQueryWrapper<OrderStatus>()
                 .eq(OrderStatus::getUserId, loginId)
                 .eq(OrderStatus::getOrderStatus, Status.ORDER_WAIT.getCode()));
-        if (orderInfo != null){
-            throw new BusinessRuntimeException(BusinessErrors.ORDER_CREATE_REQUEST_FAIL,"您有未支付的订单，请先支付或取消订单");
+        if (orderInfo != null) {
+            throw new BusinessRuntimeException(BusinessErrors.ORDER_CREATE_REQUEST_FAIL, "您有未支付的订单，请先支付或取消订单");
         }
 
         String orderId = CodeSign.RechargeOrderPrefix.getCode() + CommonsUtils.getWorkerID();
@@ -70,7 +71,7 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
         RechargeOrder rechargeOrder = new RechargeOrder();
         rechargeOrder.setOrderId(orderId);
         rechargeOrder.setUserId(loginId);
-        if (rechargeDto.getPlanId() != null){
+        if (rechargeDto.getPlanId() != null) {
             rechargeOrder.setPlanId(rechargeDto.getPlanId());
         }
         rechargeOrder.setCreateTime(LocalDateTime.now());
@@ -83,24 +84,24 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
         orderStatus.setUserId(loginId);
         orderStatus.setOrderStatus(Status.ORDER_WAIT.getCode());
         orderStatusService.save(orderStatus);
-
         //  发送消息通知
-        MessageDo messageDo = new MessageDo();
-        Map<String,Object> map = new HashMap<>();
-        map.put("orderId",rechargeOrder.getOrderId());
-        messageDo.setMessageMap(map);
-
-        rabbitTemplate.convertAndSend(MqExchange.ORDER_EXCHANGE,
-                MqRoutingKey.ORDER_ROUTING_KEY, messageDo,
+        Map<String, Object> messageBody = new HashMap<>();
+        messageBody.put("orderId", rechargeOrder.getOrderId());
+        MqUtils.sendMessage(rabbitTemplate,
+                MqExchange.ORDER_EXCHANGE,
+                MqRoutingKey.ORDER_ROUTING_KEY,
+                messageBody,
                 message -> {
-                     message.getMessageProperties().getHeaders().put("x-delay",MqTTL.FIVE_MINUTES);
-                     return message;
+                    message.getMessageProperties().setContentType("application/json;charset=UTF-8");
+                    message.getMessageProperties().getHeaders().put("x-delay", MqTTL.FIVE_MINUTES);
+                    return message;
                 });
-
+        log.info("messageBody:{}", messageBody);
+        log.info("messageBody:{}", JsonUtil.toJsonString(messageBody));
         log.info("订单创建成功，订单号：{}", rechargeOrder.getOrderId());
 
         // 缓存标记,决定之后是否需要取消订单
-        redisTemplate.opsForValue().set(RedisCache.RECHARGE_ORDER_IS_TIMEOUT + rechargeOrder.getOrderId(),"");
+        redisTemplate.opsForValue().set(RedisCache.RECHARGE_ORDER_IS_TIMEOUT + rechargeOrder.getOrderId(), "");
 
         return Response.success(rechargeOrder.getOrderId());
     }
@@ -108,7 +109,7 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
     @Override
     public void updateOrderStatus(String orderId, Integer orderStatus) {
 
-        rechargeOrderMapper.updateOrderStatus(orderId,orderStatus,LocalDateTime.now());
+        rechargeOrderMapper.updateOrderStatus(orderId, orderStatus, LocalDateTime.now());
     }
 
     @Override
@@ -119,9 +120,9 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
         OrderStatus orderStatus = orderStatusService.getOne(new LambdaQueryWrapper<OrderStatus>()
                 .eq(OrderStatus::getOrderId, orderId));
 
-        Map<String,Object> orderInfo = new HashMap<>();
-        orderInfo.put("order",rechargeOrder);
-        orderInfo.put("orderStatus",orderStatus);
+        Map<String, Object> orderInfo = new HashMap<>();
+        orderInfo.put("order", rechargeOrder);
+        orderInfo.put("orderStatus", orderStatus);
 
         return Response.success(orderInfo);
     }
@@ -131,8 +132,8 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
         LocalDateTime payTime = LocalDateTime.now();
         rechargeOrderMapper.handleRechargeOrder
                 (orderId, payTime,
-                PayType.ALI_PAY.getCode(),
-                Status.ORDER_SUCCESS.getCode());
+                        PayType.ALI_PAY.getCode(),
+                        Status.ORDER_SUCCESS.getCode());
     }
 
     @Override
@@ -140,8 +141,8 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
         return rechargeOrderMapper.getRechargeOrderList(userId);
     }
 
-    public OrderVO getOrderById(String orderId){
-         return rechargeOrderMapper.queryOrder(orderId);
+    public OrderVO getOrderById(String orderId) {
+        return rechargeOrderMapper.queryOrder(orderId);
     }
 
 

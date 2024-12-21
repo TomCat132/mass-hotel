@@ -1,10 +1,8 @@
 package cn.finetool.recharge.service.impl;
 
-import cn.finetool.common.Do.MessageDo;
 import cn.finetool.common.constant.MqExchange;
 import cn.finetool.common.constant.MqRoutingKey;
 import cn.finetool.common.constant.RedisCache;
-import cn.finetool.common.dto.PlanDto;
 import cn.finetool.common.enums.BusinessErrors;
 import cn.finetool.common.enums.OrderType;
 import cn.finetool.common.enums.RechargePlanType;
@@ -14,6 +12,7 @@ import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.RechargePlans;
 
 import cn.finetool.common.util.JsonUtil;
+import cn.finetool.common.util.MqUtils;
 import cn.finetool.common.util.Response;
 import cn.finetool.recharge.mapper.RechargePlanMapper;
 import cn.finetool.recharge.service.RechargePlanService;
@@ -21,7 +20,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
 
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +37,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.util.CollectionUtils;
+
+import static cn.finetool.common.util.Response.success;
 
 @Service
 @Slf4j
@@ -76,35 +76,29 @@ public class RechargePlanServiceImpl extends ServiceImpl<RechargePlanMapper, Rec
             }
             rechargePlanService.save(rechargePlans);
 
-            MessageDo messageDo = new MessageDo();
             // 活动充值方案倒计时  单位 : ms
             long milliseconds = Duration.between(nowTime, expirationDate).toMillis();
+            
+            Map<String, Object> messageBody = new HashMap<>();
+            messageBody.put("planId", rechargePlans.getPlanId());
+            messageBody.put("orderType", OrderType.RECHARGE_ORDER.code());
 
-            Map<String, Object> messageMap = new HashMap<>();
-            messageMap.put("planId", rechargePlans.getPlanId());
-            messageMap.put("orderType", OrderType.RECHARGE_ORDER.getValue());
-            messageDo.setMessageMap(messageMap);
-
-            String messageContent = new ObjectMapper().writeValueAsString(messageDo);
-            System.out.println("Message content: " + messageContent);
-            System.out.println("Message size: " + messageContent.getBytes().length + " bytes");
-
-            log.info("活动充值方案倒计时: " + milliseconds + " ms");
-            rabbitTemplate.convertAndSend(MqExchange.RECHARGE_PLAN_EXCHANGE,
-                    MqRoutingKey.RECHARGE_PLAN_ROUTING_KEY, JsonUtil.toJsonString(messageDo),
+            log.info("message:{}", messageBody);
+            MqUtils.sendMessage(rabbitTemplate,
+                    MqExchange.RECHARGE_PLAN_EXCHANGE,
+                    MqRoutingKey.RECHARGE_PLAN_ROUTING_KEY,
+                    JsonUtil.toJsonString(messageBody),
                     message -> {
-                        log.info("设置消息过期时间: " + milliseconds + " ms");
-                        message.getMessageProperties().setExpiration(String.valueOf(milliseconds));
-                        message.getMessageProperties().setAppId(String.valueOf(rechargePlans.getPlanId()));
-
+                        log.info("活动充值方案倒计时消息发送成功,下架倒计时:{}ms", milliseconds);
+                        message.getMessageProperties().getHeaders().put("x-delay", milliseconds);
+                        message.getMessageProperties().setContentType("application/json");
                         return message;
                     });
-            return Response.success("活动充值方案添加成功");
+            return success("活动充值方案添加成功");
         }
 
-
         rechargePlanService.save(rechargePlans);
-        return Response.success("充值方案添加成功");
+        return success("充值方案添加成功");
     }
 
     /**
@@ -135,7 +129,7 @@ public class RechargePlanServiceImpl extends ServiceImpl<RechargePlanMapper, Rec
 
         redisTemplate.opsForValue().set(RedisCache.VALID_RECHARGE_PLAN_LIST, rechargePlansList);
 
-        return Response.success(rechargePlansList);
+        return success(rechargePlansList);
     }
 
     @Override
@@ -144,7 +138,7 @@ public class RechargePlanServiceImpl extends ServiceImpl<RechargePlanMapper, Rec
                 .set("is_delete", Status.IS_DELETED.getCode())
                 .eq("plan_id", id)
                 .update();
-        return Response.success(null);
+        return success(null);
     }
 
 }

@@ -14,5 +14,11 @@ public class MqRoutingKey {
 
     /** ========== 房间预订订单 队列 路由 ========== */
     public static final String ROOM_RESERVE_ORDER_ROUTING_KEY = "room_reserve_order_routing_key";
+    
+    /** ========== 活动券上架 队列 路由 ========== */
+    public static final String VOUCHER_UP_ROUTING_KEY = "voucher_up_routing_key";
+    
+    /** ========== 活动券下架 队列 路由 ========== */
+    public static final String VOUCHER_DOWN_ROUTING_KEY = "voucher_down_routing_key";
 
 }

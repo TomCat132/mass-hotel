@@ -8,30 +8,20 @@ public enum OrderType {
 
     CONSUME_ROOM_ORDER(1, "入驻订单"); // 入驻类型订单
 
-    private int value;
-    private String desc;
+    private final int code;
+    private final String desc;
 
     OrderType(int value, String desc) {
-        this.value = value;
+        this.code = value;
         this.desc = desc;
     }
 
-    public int getValue() {
-        return value;
+    public int code() {
+        return this.code;
     }
 
-    public String getDesc() {
-        return desc;
+    public String desc() {
+        return this.desc;
     }
-
-    public static OrderType valueOf(int value) {
-        for (OrderType orderType : OrderType.values()) {
-            if (orderType.getValue() == value) {
-                return orderType;
-            }
-        }
-        return null;
-    }
-
 }
 

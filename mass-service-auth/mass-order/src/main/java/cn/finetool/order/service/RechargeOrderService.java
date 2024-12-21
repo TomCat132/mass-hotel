@@ -6,11 +6,12 @@ import cn.finetool.common.util.Response;
 import cn.finetool.common.vo.OrderVO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 
 public interface RechargeOrderService extends IService<RechargeOrder> {
 
-    Response createOrder(RechargeDto rechargeDto);
+    Response createOrder(RechargeDto rechargeDto) throws JsonProcessingException;
 
     void updateOrderStatus(String orderId, Integer orderStatus);
 

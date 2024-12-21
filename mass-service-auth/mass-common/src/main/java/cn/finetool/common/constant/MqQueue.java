@@ -13,4 +13,10 @@ public class MqQueue {
 
     /** ======== 房间预订订单队列 ======== */
     public static final String ROOM_RESERVE_ORDER_QUEUE = "room_reserve_order_queue";
+    
+    /** ======== 活动券有效期队列 ======== */
+    public static final String VOUCHER_UP_QUEUE = "voucher_up_queue";
+    
+    /** ======== 活动券失效队列 ======== */
+    public static final String VOUCHER_DOWN_QUEUE = "voucher_down_queue";
 }

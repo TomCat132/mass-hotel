@@ -13,4 +13,10 @@ public class MqExchange {
 
     /** ========= 房间预订订单交换机 =========== */
     public static final String ROOM_DATE_RESERVE_ORDER_EXCHANGE = "room_date_reserve_order_exchange";
+    
+    /** ========= 活动券上架交换机 =========== */
+    public static final String VOUCHER_UP_EXCHANGE = "voucher_up_exchange";
+    
+    /** ========= 活动券下架交换机 =========== */
+    public static final String VOUCHER_DOWN_EXCHANGE = "voucher_down_exchange";
 }
