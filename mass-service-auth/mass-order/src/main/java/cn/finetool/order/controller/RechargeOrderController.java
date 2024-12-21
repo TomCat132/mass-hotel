@@ -6,6 +6,7 @@ import cn.finetool.common.dto.RechargeDto;
 import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.util.Response;
 import cn.finetool.order.service.RechargeOrderService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
@@ -24,7 +25,7 @@ public class RechargeOrderController {
     @ApiOperation(value = "创建充值订单", notes = "创建充值订单")
     @PostMapping("/createOrder")
     @Transactional
-    public Response createOrder(@RequestBody RechargeDto rechargeDto) {
+    public Response createOrder(@RequestBody RechargeDto rechargeDto) throws JsonProcessingException {
         return rechargeOrderService.createOrder(rechargeDto);
     }
 

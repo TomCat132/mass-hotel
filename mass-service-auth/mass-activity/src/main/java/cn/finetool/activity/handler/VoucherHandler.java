@@ -1,4 +1,4 @@
-package cn.finetool.activity.service.impl;
+package cn.finetool.activity.handler;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.finetool.activity.mapper.VoucherMapper;
@@ -12,17 +12,22 @@ import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.Voucher;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.util.SnowflakeIdWorker;
+import cn.finetool.common.util.Strings;
+import cn.finetool.common.vo.VoucherVO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.Resource;
-import org.apache.logging.log4j.util.Strings;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> implements VoucherService {
+public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implements VoucherService {
 
     private static final SnowflakeIdWorker WORKER_ID = new SnowflakeIdWorker(2, 0);
 
@@ -31,11 +36,13 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
     @Resource
     private VoucherService voucherService;
     @Resource
+    private VoucherMapper voucherMapper;
+    @Resource
     private AccountAPIService accountAPIService;
 
     @Override
     @Transactional
-    public Response addVoucher(VoucherDto voucherDto) {
+    public Response addVoucher(VoucherDto voucherDto) throws JsonProcessingException {
 
 
         String voucherId = CodeSign.VoucherPrefix.getCode() + String.valueOf(WORKER_ID.nextId());
@@ -68,12 +75,22 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
         Voucher voucherInfo = voucherService.getOne(new LambdaQueryWrapper<Voucher>()
                 .eq(Voucher::getVoucherId, voucherId));
 
-        saveVoucherContext.changStatus(voucherInfo.getVoucherType(), voucherId, Status.VOUCHER_SEND.getCode());
+        saveVoucherContext.changStatus(voucherInfo.getVoucherType(), voucherId, Status.VOUCHER_UP.getCode());
         return Response.success("已发放");
     }
 
     @Override
     public Response getAllCategoryVoucherList(String merchantId) {
-        return null;
+        // 查询商户的优惠券
+        List<VoucherVO> voucherList = voucherMapper.findMerchantVoucherListById(merchantId);
+        if (Objects.nonNull(voucherList)) {
+            return Response.success(voucherList);
+        }
+        return Response.success(Collections.emptyList());
+    }
+
+    @Override
+    public void updateVoucherStatus(Integer voucherType, String voucherId, Integer status) {
+        saveVoucherContext.changStatus(voucherType, voucherId, status);
     }
 }

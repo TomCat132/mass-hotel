@@ -1,6 +1,6 @@
 package cn.finetool.activity.initializer;
 
-import cn.finetool.activity.service.impl.VoucherServiceImpl;
+import cn.finetool.activity.handler.VoucherHandler;
 import cn.finetool.common.dto.VoucherDto;
 import cn.finetool.common.enums.VoucherType;
 import cn.finetool.common.po.VoucherConsume;
@@ -13,11 +13,11 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 @Component
-@DependsOn({"voucherServiceImpl"})
+@DependsOn({"voucherHandler"})
 public class InitMethodStrategy {
     public static final Logger logger = LoggerFactory.getLogger(InitMethodStrategy.class);
     @Resource
-    private VoucherServiceImpl voucherService;
+    private VoucherHandler voucherService;
 
     // 每月1日00:00:00执行
 //    @Scheduled(cron = "0 0 1 * *?")

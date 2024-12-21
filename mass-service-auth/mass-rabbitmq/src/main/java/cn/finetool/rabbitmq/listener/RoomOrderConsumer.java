@@ -2,11 +2,12 @@ package cn.finetool.rabbitmq.listener;
 
 import cn.finetool.api.service.HotelAPIService;
 import cn.finetool.api.service.OrderAPIService;
+import cn.finetool.common.constant.MqQueue;
 import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.enums.Status;
-import cn.finetool.rabbitmq.domain.MessageDo;
 import com.rabbitmq.client.Channel;
 import jakarta.annotation.Resource;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
@@ -28,16 +29,16 @@ public class RoomOrderConsumer {
     @Resource
     private HotelAPIService hotelAPIService;
 
-    @RabbitListener
-    public void roomOrderConsumer(MessageDo messageDo, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) {
+    @RabbitListener(queues = MqQueue.ROOM_RESERVE_ORDER_QUEUE)
+    public void roomOrderConsumer(Map<String, Object> message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) {
 
-        String orderId = (String) messageDo.getMessageMap().get("orderId");
+        String orderId = (String) message.get("orderId");
 
-        LocalDate checkInDate = (LocalDate) messageDo.getMessageMap().get("checkInDate");
+        LocalDate checkInDate = (LocalDate) message.get("checkInDate");
 
-        LocalDate checkOutDate = (LocalDate) messageDo.getMessageMap().get("checkOutDate");
+        LocalDate checkOutDate = (LocalDate) message.get("checkOutDate");
 
-        Integer roomDateId = (Integer) messageDo.getMessageMap().get("roomDateId");
+        Integer roomDateId = (Integer) message.get("roomDateId");
 
         Boolean timeoutOrder = redisTemplate.hasKey(RedisCache.ROOM_RESERVED_ORDER_IS_TIMEOUT + orderId);
 

@@ -33,11 +33,13 @@ public enum Status {
      * 优惠券状态
      */
     VOUCHER_PREPARE(0, "待发放"),
-    VOUCHER_SEND(1, "已发放"),
+    VOUCHER_UP(1, "已上架"),
+    VOUCHER_DOWN(2, "已下架"),
     VOUCHER_CAN_USE(2, "可使用"),
     VOUCHER_USED(3, "已使用"),
     VOUCHER_EXPIRED(4, "已过期"),
     VOUCHER_INVALID(5, "无效"),
+    VOUCHER_COLD(6, "已冻结"),
     /**
      * 房间入住表  状态：0：已预定 1：办理中 2：入住中 3：已取消 4：已退房 5:已更换
      */
@@ -82,6 +84,10 @@ public enum Status {
 
     public int code() {
         return this.code;
+    }
+    
+    public String desc() {
+        return this.desc;
     }
 
 }

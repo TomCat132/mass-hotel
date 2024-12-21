@@ -2,7 +2,6 @@ package cn.finetool.hotel.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.finetool.api.service.OrderAPIService;
-import cn.finetool.common.Do.MessageDo;
 import cn.finetool.common.constant.MqExchange;
 import cn.finetool.common.constant.MqRoutingKey;
 import cn.finetool.common.constant.MqTTL;
@@ -12,6 +11,7 @@ import cn.finetool.common.dto.RoomBookingDto;
 import cn.finetool.common.enums.CodeSign;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.po.*;
+import cn.finetool.common.util.MqUtils;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.util.SnowflakeIdWorker;
 import cn.finetool.hotel.mapper.RoomInfoMapper;
@@ -142,17 +142,17 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
                 orderAPIService.createRoomOrder(orderDto);
 
                 // 发送过期消息
-                MessageDo messageDo = new MessageDo();
-                Map<String, Object> messageMap = new HashMap<>();
-                messageMap.put("orderId", roomOrderId);
-                messageMap.put("roomDateId", canUserRoomDateId);
-                messageMap.put("checkInDate", roomOrder.getCheckInDate());
-                messageMap.put("checkOutDate", roomOrder.getCheckInDate());
-                messageDo.setMessageMap(messageMap);
-
+                Map<String, Object> messageBody = new HashMap<>();
+                messageBody.put("orderId", roomOrderId);
+                messageBody.put("roomDateId", canUserRoomDateId);
+                messageBody.put("checkInDate", roomOrder.getCheckInDate());
+                messageBody.put("checkOutDate", roomOrder.getCheckInDate());
                 // 发送消息实现订单 防止超时取消
-                rabbitTemplate.convertAndSend(MqExchange.ROOM_DATE_RESERVE_ORDER_EXCHANGE,
-                        MqRoutingKey.ORDER_ROUTING_KEY, messageDo, message -> {
+                MqUtils.sendMessage(rabbitTemplate, 
+                        MqExchange.ROOM_DATE_RESERVE_ORDER_EXCHANGE,
+                        MqRoutingKey.ORDER_ROUTING_KEY,
+                        messageBody, 
+                        message -> {
                             message.getMessageProperties().getHeaders().put("x-delay", MqTTL.FIVE_MINUTES);
                             return message;
                         });
@@ -164,8 +164,7 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
         } finally {
             lock.unlock();
         }
-
-        return Response.error(400, "房间已被预订，请选择其他房间~");
+        throw new RuntimeException("预定房间失败，房间已被预订，请选择其他房间~");
     }
 
 

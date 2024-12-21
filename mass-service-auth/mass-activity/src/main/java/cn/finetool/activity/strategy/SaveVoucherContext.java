@@ -2,6 +2,7 @@ package cn.finetool.activity.strategy;
 
 import cn.finetool.common.dto.VoucherDto;
 import cn.finetool.common.enums.Status;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import java.util.LinkedHashMap;
@@ -35,7 +36,7 @@ public class SaveVoucherContext {
         log.info("活动券保存策略初始化完成");
     }
 
-    public void saveVoucher(VoucherDto voucherDto) {
+    public void saveVoucher(VoucherDto voucherDto) throws JsonProcessingException {
         SaveVoucherStrategy strategy = strategies.get(voucherDto.getVoucherType());
         strategy.save(voucherDto);
     }

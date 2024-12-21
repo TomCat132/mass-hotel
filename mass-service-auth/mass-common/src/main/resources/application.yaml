@@ -1,5 +1,6 @@
 mass-hotel:
-  host: 121.41.100.42
+  #  host: 121.41.100.147
+  host: 192.168.64.100
   minio:
     port: 9005
     bucket: mass-hotel

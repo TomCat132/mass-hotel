@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,10 +12,10 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitTemplateConfig {
 
     @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate();
         rabbitTemplate.setConnectionFactory(connectionFactory);
-        rabbitTemplate.setMessageConverter(messageConverter);
+        rabbitTemplate.setMessageConverter(jsonMessageConverter());
         rabbitTemplate.setMandatory(true);
 
         // 推送到server回调 - 生产者确认机制
@@ -42,7 +41,7 @@ public class RabbitTemplateConfig {
     }
 
     @Bean
-    public MessageConverter jsonMessageConverter() {
+    public Jackson2JsonMessageConverter jsonMessageConverter() {
         Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter();
         converter.setClassMapper(trustedClassMapper());
         return converter;
@@ -51,7 +50,7 @@ public class RabbitTemplateConfig {
     @Bean
     public TrustedClassMapper trustedClassMapper() {
         TrustedClassMapper classMapper = new TrustedClassMapper();
-        classMapper.addTrustedPackages("cn.finetool.api.Do");
+        classMapper.addTrustedPackages("*");  // 或者指定特定的包
         return classMapper;
     }
 }

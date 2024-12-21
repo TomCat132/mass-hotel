@@ -34,6 +34,10 @@ public class VoucherCoupon implements Serializable {
 
     @TableField("voucher_amount")
     private BigDecimal voucherAmount;
+    
+    @TableField("begin_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private LocalDateTime beginTime;
 
     @TableField("end_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")

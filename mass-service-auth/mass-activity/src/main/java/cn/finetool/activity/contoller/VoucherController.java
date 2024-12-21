@@ -5,6 +5,7 @@ import cn.dev33.satoken.annotation.SaMode;
 import cn.finetool.activity.service.VoucherService;
 import cn.finetool.common.dto.VoucherDto;
 import cn.finetool.common.util.Response;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
@@ -21,7 +22,7 @@ public class VoucherController {
     @SaCheckRole(value = {"admin", "super_admin"}, mode = SaMode.OR)
     @PostMapping("/admin/add")
     @ApiOperation(value = "添加活动券", notes = "添加活动券")
-    public Response addVoucher(@RequestBody VoucherDto voucherDto) {
+    public Response addVoucher(@RequestBody VoucherDto voucherDto) throws JsonProcessingException {
         return voucherService.addVoucher(voucherDto);
     }
 
