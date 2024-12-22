@@ -1,8 +1,8 @@
 server:
   port: 8080
 mass-hotel:
-  host: 121.41.100.147
-#  host: 192.168.64.100
+#  host: 121.41.100.147
+  host: 192.168.64.100
   db:
     port: 3306
     database: mass_hotel

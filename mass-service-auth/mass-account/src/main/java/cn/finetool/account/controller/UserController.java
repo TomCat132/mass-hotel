@@ -79,7 +79,7 @@ public class UserController {
     }
 
     @PutMapping("/deleteOrderById/{orderId}")
-    @ApiOperation(value = "删除订单", notes = "删除订单")
+    @ApiOperation(value = "用户删除订单", notes = "GUEST: 删除订单")
     public Response deleteOrderById(@PathVariable("orderId") String orderId) {
         return userService.deleteOrderById(orderId);
     }

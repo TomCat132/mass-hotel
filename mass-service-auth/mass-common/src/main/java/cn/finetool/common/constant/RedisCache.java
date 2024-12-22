@@ -35,4 +35,6 @@ public class RedisCache {
     /** =========== 用户酒店绑定表缓存标记 ========== */
     public static final String USER_MERCHANT_BINDING = "user_merchant_binding_userId:";
 
+    /** =========== 房间订单超时标记 ========== */
+    public static final String ROOM_BOOKING_TIMEOUT_REMIND = "room_booking_timeout_remind_order_id:";
 }

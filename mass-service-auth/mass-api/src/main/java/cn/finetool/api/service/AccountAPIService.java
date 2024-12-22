@@ -1,6 +1,7 @@
 package cn.finetool.api.service;
 
 import cn.finetool.common.configuration.MultipartSupportConfig;
+import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,4 +12,8 @@ public interface AccountAPIService {
     /**====== 查询用户所在商户 =====*/
     @GetMapping("/queryMerchantOfUser")
     String queryMerchantOfUser(@RequestParam("userId") String userId);
+
+    /**====== 查询商户员工编号ID =====*/
+    @GetMapping("/findMerchantEmployee")
+    List<String> findMerchantEmployee(@RequestParam("merchantId") String merchantId);
 }

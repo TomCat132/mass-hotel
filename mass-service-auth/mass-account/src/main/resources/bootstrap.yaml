@@ -16,7 +16,8 @@ spring:
     active: dev
   cloud:
     nacos:
-      server-addr: 121.41.100.147:8848
+#      server-addr: 121.41.100.147:8848
+      server-addr: 192.168.64.100:8848
       discovery:
         service: ${spring.application.name}
         group: MASS_HOTEL

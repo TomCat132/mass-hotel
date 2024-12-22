@@ -22,16 +22,12 @@ public class OrderAPIService {
 
     @Resource
     private RechargeOrderService rechargeOrderService;
-
     @Resource
     private OrderStatusService orderStatusService;
-
     @Resource
     private RechargeOrderServiceImpl rechargeOrderServiceImpl;
-
     @Resource
     private RoomOrderServiceImpl roomOrderService;
-
     @Resource
     public OrderService orderHandler;
 
@@ -57,8 +53,8 @@ public class OrderAPIService {
     @PutMapping("/changeOrderStatus")
     public void changeOrderStatus(@RequestParam("orderId") String orderId,
                                   @RequestParam("orderStatus") Integer orderStatus,
-                                  @RequestParam(value = "payType",required = false) Integer payType){
-        orderStatusService.changeOrderStatus(orderId, orderStatus,payType);
+                                  @RequestParam(value = "payType", required = false) Integer payType){
+        orderStatusService.changeOrderStatus(orderId, orderStatus, payType);
     }
 
     /** ========= 查询 房间订单信息 ========= */
@@ -85,9 +81,9 @@ public class OrderAPIService {
         return roomOrderService.getRoomOrderList(userId);
     }
 
-    /** ========= 删除订单 ========= */
+    /** ======== 逻辑删除 订单 =======*/
     @PutMapping("/deleteOrder")
-    public void deleteOrder(@RequestParam("orderId") String orderId){
+    void deleteOrder(@RequestParam("orderId") String orderId){
         orderHandler.deleteOrder(orderId);
     }
 

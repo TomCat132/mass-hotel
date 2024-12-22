@@ -3,6 +3,7 @@ package cn.finetool.order.controller;
 import cn.finetool.common.dto.OrderPayDto;
 import cn.finetool.common.util.Response;
 import cn.finetool.order.service.RoomOrderService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
@@ -19,7 +20,7 @@ public class RoomOrderController {
 
     @PostMapping("/createRoomOrderInfo")
     @ApiOperation(value = "支付房间订单", notes = "支付房间订单")
-    public Response accountPayRoomOrder(@RequestBody OrderPayDto orderPayDto) {
+    public Response accountPayRoomOrder(@RequestBody OrderPayDto orderPayDto) throws JsonProcessingException {
         return roomOrderService.accountPayRoomOrder(orderPayDto);
     }
 

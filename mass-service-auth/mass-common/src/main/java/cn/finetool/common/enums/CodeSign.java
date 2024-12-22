@@ -21,4 +21,12 @@ public enum CodeSign {
         this.code = code;
         this.desc = desc;
     }
+    
+    public int code(){
+        return this.code;
+    }
+    
+    public String desc(){
+        return this.desc;
+    }
 }

@@ -98,6 +98,22 @@
             <version>${mybatis-plus.version}</version>
         </dependency>
 
+        <!-- 集成beetl -->
+        <dependency>
+            <groupId>com.ibeetl</groupId>
+            <artifactId>beetl-framework-starter</artifactId>
+            <version>1.2.30.RELEASE</version>
+        </dependency>
+
+        <!-- 集成hutool工具类简便操作 -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.3.10</version>
+        </dependency>
+
+
+
         <dependency>
             <groupId>cn.finetool.mass</groupId>
             <artifactId>mass-common</artifactId>

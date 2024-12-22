@@ -15,7 +15,7 @@ import org.springframework.context.annotation.ComponentScan;
 @Slf4j
 @EnableFeignClients(basePackages = "cn.finetool")
 @ComponentScan(basePackages = {"cn.finetool"})
-@MapperScan(basePackages = "cn.finetool.recharge.mapper")
+@MapperScan(basePackages = {"cn.finetool.recharge.mapper", "cn.finetool.api.mapper"})
 public class RechargePlanApplication {
     public static void main(String[] args) {
         SpringApplication.run(RechargePlanApplication.class, args);

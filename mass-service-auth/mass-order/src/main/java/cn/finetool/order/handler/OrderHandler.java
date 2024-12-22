@@ -7,6 +7,7 @@ import cn.finetool.common.po.OrderStatus;
 import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.po.RoomOrder;
 import cn.finetool.common.util.Response;
+import cn.finetool.common.util.Strings;
 import cn.finetool.common.vo.OrderVO;
 import cn.finetool.common.vo.RoomOrderBaseInfo;
 import cn.finetool.order.mapper.OrderStatusMapper;
@@ -16,6 +17,8 @@ import cn.finetool.order.mapper.RoomOrderMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import jakarta.annotation.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,7 @@ import java.util.List;
 @Service
 public class OrderHandler implements OrderService {
 
+    public static final Logger LOGGER = LoggerFactory.getLogger(OrderHandler.class);
     @Resource
     private RechargeOrderMapper rechargeOrderMapper;
     @Resource
@@ -40,14 +44,16 @@ public class OrderHandler implements OrderService {
     public void deleteOrder(String orderId) {
         //截取订单号前4位,比较查询订单类型
         String prefix = orderId.substring(0, 4);
-        if (prefix.equals(CodeSign.RechargeOrderPrefix.getCode())) {
+        if (Strings.equals(prefix, CodeSign.RechargeOrderPrefix.code())) {
             rechargeOrderMapper.update(new UpdateWrapper<RechargeOrder>()
                     .set("is_deleted", Status.IS_DELETED.getCode())
                     .eq("order_id", orderId));
-        } else if (prefix.equals(CodeSign.HotelOrderPrefix.getCode())) {
+            LOGGER.info("用户逻辑删除充值订单:{}", orderId);
+        } else if (Strings.equals(prefix, CodeSign.HotelOrderPrefix.code())) {
             roomOrderMapper.update(new UpdateWrapper<RoomOrder>()
                     .set("is_deleted", Status.IS_DELETED.getCode())
                     .eq("order_id", orderId));
+            LOGGER.info("用户逻辑删除房间预定订单:{}", orderId);
         }
     }
 
@@ -79,6 +85,11 @@ public class OrderHandler implements OrderService {
         roomOrderBaseInfo.setOrderStatus(orderStatus);
 
         return roomOrderBaseInfo;
+    }
+
+    @Override
+    public String findMerchantIdByOrderId(String orderId) {
+        return roomOrderMapper.findMerchantIdByOrderId(orderId);
     }
 
     private List<OrderVO> queryMerchantRoomOrderList(String merchantId) {

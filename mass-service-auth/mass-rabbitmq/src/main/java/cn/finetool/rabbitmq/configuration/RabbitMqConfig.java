@@ -25,6 +25,27 @@ public class RabbitMqConfig implements CommandLineRunner {
     @Resource
     private AmqpAdmin amqpAdmin;
     
+    /** ============ 房间预定超时1小时提醒 路由绑定 ========== */
+    @Bean
+    public Binding RoomBookingTimeoutBinding(){
+        return BindingBuilder.bind(RoomBookingTimeoutQueue())
+                .to(RoomBookingTimeoutExchange())
+                .with(MqRoutingKey.ROOM_BOOKING_TIMEOUT_ROUTING_KEY).noargs();
+    }
+
+    /** ============ 房间预定超时1小时提醒 交换机 ========== */
+    @Bean
+    public CustomExchange RoomBookingTimeoutExchange(){
+        return new CustomExchange(MqExchange.ROOM_BOOKING_TIMEOUT_EXCHANGE,"x-delayed-message",
+                true,false, Collections.singletonMap("x-delayed-type", "direct"));
+    }
+
+    /** ============ 预定房间超时1小时提醒 队列 ========== */
+    @Bean
+    public Queue RoomBookingTimeoutQueue(){
+        return new Queue(MqQueue.ROOM_BOOKING_TIMEOUT_QUEUE, true, false, false);
+    }
+    
     /** ============ 活动券下架 队列绑定 ========== */
     @Bean
     public Binding VoucherDownBinding(){
@@ -72,14 +93,6 @@ public class RabbitMqConfig implements CommandLineRunner {
         return new Queue(MqQueue.VOUCHER_UP_QUEUE, true, false, false);
     }
 
-    /** ============ 房间预定订单 路由绑定 ========== */
-    @Bean
-    public Binding RoomReserveOrderBinding(){
-        return BindingBuilder.bind(RoomReserveOrderQueue())
-                .to(RoomReserveOrderExchange())
-                .with(MqRoutingKey.ROOM_RESERVE_ORDER_ROUTING_KEY).noargs();
-    }
-
     /** ============ 房间预定订单 队列 ========== */
     @Bean
     public Queue RoomReserveOrderQueue(){
@@ -93,8 +106,16 @@ public class RabbitMqConfig implements CommandLineRunner {
         log.info("创建房间预定订单交换机");
         Map<String,Object> args = new HashMap<>();
         args.put("x-delayed-type", "direct");
-        return new CustomExchange(MqExchange.ROOM_DATE_RESERVE_ORDER_EXCHANGE,"x-delayed-message",
+        return new CustomExchange(MqExchange.ROOM_RESERVE_ORDER_EXCHANGE,"x-delayed-message",
                 true,false,args);
+    }
+
+    /** ============ 房间预定订单 路由绑定 ========== */
+    @Bean
+    public Binding RoomReserveOrderBinding(){
+        return BindingBuilder.bind(RoomReserveOrderQueue())
+                .to(RoomReserveOrderExchange())
+                .with(MqRoutingKey.ROOM_RESERVE_ORDER_ROUTING_KEY).noargs();
     }
 
 

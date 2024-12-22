@@ -14,4 +14,6 @@ public interface OrderService {
     List<OrderVO> getMerchantOrderList(String merchantId);
 
     RoomOrderBaseInfo getOrderBaseInfo(String orderId);
+
+    String findMerchantIdByOrderId(String orderId);
 }

@@ -145,11 +145,11 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
                 Map<String, Object> messageBody = new HashMap<>();
                 messageBody.put("orderId", roomOrderId);
                 messageBody.put("roomDateId", canUserRoomDateId);
-                messageBody.put("checkInDate", roomOrder.getCheckInDate());
-                messageBody.put("checkOutDate", roomOrder.getCheckInDate());
+                messageBody.put("checkInDate", String.valueOf(roomOrder.getCheckInDate()));
+                messageBody.put("checkOutDate", String.valueOf(roomOrder.getCheckInDate()));
                 // 发送消息实现订单 防止超时取消
                 MqUtils.sendMessage(rabbitTemplate, 
-                        MqExchange.ROOM_DATE_RESERVE_ORDER_EXCHANGE,
+                        MqExchange.ROOM_RESERVE_ORDER_EXCHANGE,
                         MqRoutingKey.ORDER_ROUTING_KEY,
                         messageBody, 
                         message -> {
