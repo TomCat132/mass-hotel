@@ -1,17 +1,17 @@
 package cn.finetool.api.handler;
 
 import cn.finetool.api.mapper.MessageBoxMapper;
+import cn.finetool.common.enums.SystemTag;
 import cn.finetool.common.po.MessageBox;
-import cn.finetool.common.util.SnowflakeIdWorker;
+import cn.finetool.common.util.MessageBoxUtil;
 import jakarta.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MessageHandler {
     
-    public static final SnowflakeIdWorker ID_WORKER = new SnowflakeIdWorker(10, 0);
+   
     @Resource
     private MessageBoxMapper messageBoxMapper;
 
@@ -22,8 +22,19 @@ public class MessageHandler {
      * @param messageContent: 消息内容
      * @param affairId: 事项ID
      */
-    public void sendMessageToUser(String senderId, String acceptId, String messageContent, String affairId) {
-        MessageBox messageBox = createMessageBox(senderId, acceptId, messageContent, affairId);
+    public void sendMessage(String senderId, String acceptId, String messageContent, String affairId) {
+        MessageBox messageBox = MessageBoxUtil.createMessageBox(senderId, acceptId, messageContent, affairId);
+        messageBoxMapper.insert(messageBox);
+    }
+
+    /**
+     * 系统消息提醒
+     * @param acceptId
+     * @param messageContent
+     * @param affairId
+     */
+    public void sendMessage(String acceptId, String messageContent, String affairId){
+        MessageBox messageBox = MessageBoxUtil.createMessageBox(SystemTag.SYSTEM_SENDER.desc(), acceptId, messageContent, affairId);
         messageBoxMapper.insert(messageBox);
     }
 
@@ -34,23 +45,21 @@ public class MessageHandler {
      * @param messageContent: 消息内容
      * @param affairId: 事项ID
      */
-    public void sendMessageToMultipleUsers(String senderId, List<String> acceptIds, String messageContent, String affairId) {
+    public void sendMessage(String senderId, List<String> acceptIds, String messageContent, String affairId) {
         for (String acceptId : acceptIds) {
-            MessageBox messageBox = createMessageBox(senderId, acceptId, messageContent, affairId);
+            MessageBox messageBox = MessageBoxUtil.createMessageBox(senderId, acceptId, messageContent, affairId);
             messageBoxMapper.insert(messageBox);
         }
     }
-    
-    public static MessageBox createMessageBox(String senderId, String acceptId, String messageContent, String affairId){
-        MessageBox messageBox = new MessageBox();
-        messageBox.setMessageId(String.valueOf(ID_WORKER.nextId()));
-        messageBox.setSenderId(senderId);
-        messageBox.setMessageContent(messageContent);
-        messageBox.setAffairId(affairId);
-        messageBox.setAcceptId(acceptId);
-        messageBox.setSenderTime(LocalDateTime.now());
-        messageBox.setIsDelete(0);
-        messageBox.setStatus(0);
-        return messageBox;
+
+    public void sendMessage(List<String> acceptIds, String messageContent, String affairId) {
+        for (String acceptId : acceptIds) {
+            MessageBox messageBox = MessageBoxUtil.createMessageBox(SystemTag.SYSTEM_SENDER.desc(), acceptId, messageContent, affairId);
+            messageBoxMapper.insert(messageBox);
+        }
     }
+
+
+
+
 }

@@ -9,7 +9,6 @@ import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.enums.SystemTag;
 import cn.finetool.common.util.JsonUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rabbitmq.client.Channel;
 import jakarta.annotation.Resource;
 import java.time.format.DateTimeFormatter;
@@ -105,14 +104,14 @@ public class RoomOrderConsumer {
             channel.basicAck(tag, false);
         } else {
             // 发送消息超时提醒 To: 用户 
-            messageHandler.sendMessageToUser(SystemTag.SYSTEM_SENDER.desc(),
+            messageHandler.sendMessage(SystemTag.SYSTEM_SENDER.desc(),
                     acceptId,
                     "您预定的房间尚未办理入住, 请及时办理哦~",
                     orderId);
             // 发送消息超时提醒 To: 商户
             // 查询商户的所有员工编号
             List<String> acceptIds = accountAPIService.findMerchantEmployee(merchantId);
-            messageHandler.sendMessageToMultipleUsers(SystemTag.SYSTEM_SENDER.code(),
+            messageHandler.sendMessage(SystemTag.SYSTEM_SENDER.code(),
                     acceptIds,
                     "房间预定订单:" + orderId + " 长时间未办理入住, 可前往提醒",
                     orderId);

@@ -7,6 +7,7 @@ import cn.finetool.common.vo.OrderVO;
 import cn.finetool.order.service.OrderService;
 import cn.finetool.order.service.OrderStatusService;
 import cn.finetool.order.service.RechargeOrderService;
+import cn.finetool.order.service.RoomOrderService;
 import cn.finetool.order.service.impl.RechargeOrderServiceImpl;
 import cn.finetool.order.service.impl.RoomOrderServiceImpl;
 import jakarta.annotation.Resource;
@@ -27,7 +28,7 @@ public class OrderAPIService {
     @Resource
     private RechargeOrderServiceImpl rechargeOrderServiceImpl;
     @Resource
-    private RoomOrderServiceImpl roomOrderService;
+    private RoomOrderService roomOrderService;
     @Resource
     public OrderService orderHandler;
 

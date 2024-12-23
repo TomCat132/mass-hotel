@@ -1,6 +1,8 @@
 package cn.finetool.order.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.finetool.api.handler.MessageHandler;
+import cn.finetool.api.service.AccountAPIService;
 import cn.finetool.api.service.UserAPIService;
 import cn.finetool.common.constant.MqExchange;
 import cn.finetool.common.constant.MqRoutingKey;
@@ -26,7 +28,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.Resource;
-import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -59,6 +60,10 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
     private RabbitTemplate rabbitTemplate;
     @Resource
     private OrderService orderService;
+    @Resource
+    private MessageHandler messageHandler;
+    @Resource
+    private AccountAPIService accountAPIService;
 
 
     @Override
@@ -100,8 +105,6 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
         //根据订单号查询订单所属的 merchantId
         String merchantId = orderService.findMerchantIdByOrderId(orderPayDto.getOrderId());
         messageBody.put("merchantId",merchantId);
-        
-
         MqUtils.sendMessage(rabbitTemplate,
                 MqExchange.ROOM_BOOKING_TIMEOUT_EXCHANGE,
                 MqRoutingKey.ROOM_BOOKING_TIMEOUT_ROUTING_KEY,
@@ -110,9 +113,14 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
                     message.getMessageProperties().getHeaders().put("x-delay", MqTTL.ONE_HOUR);
                     return message;
                 });
-        LOGGER.info("房间预定成功,发送超时提醒消息,orderId：{}",orderPayDto.getOrderId());
         String key = RedisCache.ROOM_BOOKING_TIMEOUT_REMIND + orderPayDto.getOrderId();
         redisTemplate.opsForValue().set(key,"");
+        // 系统消息提醒
+        String messageContent1 = "您预定的房间订单:" + orderPayDto.getOrderId() + "已成功支付";
+        messageHandler.sendMessage(userId, messageContent1, orderPayDto.getOrderId());
+        List<String> acceptIds = accountAPIService.findMerchantEmployee(merchantId);
+        String messageContent2 = "您有新的房间订单:" + orderPayDto.getOrderId() + "，请及时处理";
+        messageHandler.sendMessage(acceptIds, messageContent2, orderPayDto.getOrderId());
         return success("支付成功");
     }
 
