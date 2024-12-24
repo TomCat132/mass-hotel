@@ -90,6 +90,7 @@
     <inspection_tool class="SpringBootApplicationYaml" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="SpringJavaInjectionPointsAutowiringInspection" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="UNCHECKED_WARNING" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="UnusedReturnValue" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="VulnerableLibrariesLocal" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="isIgnoringEnabled" value="true" />
       <option name="ignoredModules">
@@ -105,6 +106,7 @@
           <option value="mass-oss" />
           <option value="mass-oss" />
           <option value="mass-oss" />
+          <option value="mass-common" />
         </list>
       </option>
       <option name="ignoredPackages">
@@ -120,10 +122,12 @@
           <option value="com.mysql:mysql-connector-j:8.0.33" />
           <option value="com.squareup.okio:okio:1.17.2" />
           <option value="org.apache.httpcomponents:httpclient:4.5.3" />
+          <option value="org.redisson:redisson:3.16.6" />
         </list>
       </option>
       <option name="ignoredReasons">
         <list>
+          <option value="Not exploitable" />
           <option value="Not exploitable" />
           <option value="Not exploitable" />
           <option value="Not exploitable" />

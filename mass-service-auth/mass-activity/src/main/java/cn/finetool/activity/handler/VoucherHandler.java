@@ -76,15 +76,7 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
         return success("操作成功");
     }
 
-    @Override
-    public Response grantVoucher(String voucherId) {
 
-        Voucher voucherInfo = voucherService.getOne(new LambdaQueryWrapper<Voucher>()
-                .eq(Voucher::getVoucherId, voucherId));
-
-        saveVoucherContext.changStatus(voucherInfo.getVoucherType(), voucherId, Status.VOUCHER_UP.getCode());
-        return success("已发放");
-    }
 
     @Override
     public Response getAllCategoryVoucherList(String merchantId) {

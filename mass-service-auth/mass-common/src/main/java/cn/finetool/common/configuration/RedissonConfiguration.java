@@ -1,4 +1,4 @@
-package cn.finetool.hotel.configuraition;
+package cn.finetool.common.configuration;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;

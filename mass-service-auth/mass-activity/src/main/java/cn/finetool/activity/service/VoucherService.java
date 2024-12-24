@@ -9,9 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public interface VoucherService extends IService<Voucher> {
 
     Response addVoucher(VoucherDto voucherDto) throws JsonProcessingException;
-
-    Response grantVoucher(String voucherId);
-
+    
     /**
      * 获取所有类型的活动券列表
      *

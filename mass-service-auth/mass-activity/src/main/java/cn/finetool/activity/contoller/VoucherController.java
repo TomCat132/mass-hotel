@@ -25,11 +25,5 @@ public class VoucherController {
     public Response addVoucher(@RequestBody VoucherDto voucherDto) throws JsonProcessingException {
         return voucherService.addVoucher(voucherDto);
     }
-
-    @SaCheckRole(value = {"admin", "super_admin", "sys_admin"}, mode = SaMode.OR)
-    @PutMapping("/admin/grant")
-    @ApiOperation(value = "发放优惠券", notes = "发放优惠券")
-    public Response grantVoucher(@RequestParam("voucherId") String voucherId) {
-        return voucherService.grantVoucher(voucherId);
-    }
+    
 }

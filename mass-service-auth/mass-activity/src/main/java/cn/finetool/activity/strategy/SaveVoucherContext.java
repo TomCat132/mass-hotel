@@ -1,7 +1,6 @@
 package cn.finetool.activity.strategy;
 
 import cn.finetool.common.dto.VoucherDto;
-import cn.finetool.common.enums.Status;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
@@ -9,9 +8,6 @@ import java.util.LinkedHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Component
@@ -46,8 +42,8 @@ public class SaveVoucherContext {
         strategy.changeStatus(voucherId, status);
     }
 
-    public void decreaseVoucherStock(Integer voucherType, String voucherId) {
+    public boolean decreaseVoucherStock(Integer voucherType, String voucherId, String userId) {
         SaveVoucherStrategy strategy = strategies.get(voucherType);
-        strategy.decreaseVoucherStock(voucherId);
+        return strategy.decreaseVoucherStock(voucherId, userId);
     }
 }

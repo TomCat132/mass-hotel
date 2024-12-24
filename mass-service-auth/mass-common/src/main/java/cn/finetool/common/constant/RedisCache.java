@@ -37,4 +37,7 @@ public class RedisCache {
 
     /** =========== 房间订单超时标记 ========== */
     public static final String ROOM_BOOKING_TIMEOUT_REMIND = "room_booking_timeout_remind_order_id:";
+
+    /** =========== 优惠券分布式所 ========== */
+    public static final String CouponLock = "coupon_lock_voucherId";
 }
