@@ -20,5 +20,22 @@ public enum VoucherType {
         this.code = code;
         this.msg = msg;
     }
+    
+    public Integer code(){
+        return this.code;
+    }
+    
+    public String desc(){
+        return this.msg;
+    }
+    
+    public static String toDesc(int code){
+        for(VoucherType voucherType : VoucherType.values()){
+            if(voucherType.code() == code){
+                return voucherType.desc();
+            }
+        }
+        return "未知";
+    }
 
 }

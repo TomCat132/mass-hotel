@@ -71,7 +71,14 @@ public enum Status {
     
     ROOM_INFO_CAN_NOT_USE(0, "不可用"),
     ROOM_INFO_CAN_USE(1, "可用"),
-    ROOM_INFO_CLEANING(2, "清洁中")
+    ROOM_INFO_CLEANING(2, "清洁中"),
+    
+    MESSAGE_UNREAD(0, "未读"),
+    MESSAGE_READ(1, "已读"),
+    
+    /**
+     * 房间类型
+     */
     ;
 
     private final int code;

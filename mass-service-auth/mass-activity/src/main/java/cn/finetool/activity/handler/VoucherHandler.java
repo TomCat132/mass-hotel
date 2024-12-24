@@ -21,10 +21,13 @@ import jakarta.annotation.Resource;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import org.springframework.transaction.annotation.Transactional;
+
+import static cn.finetool.common.util.Response.success;
 
 @Service
 public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implements VoucherService {
@@ -49,24 +52,28 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
         voucherDto.setVoucherId(voucherId);
         LocalDateTime nowTime = LocalDateTime.now();
 
+        String userId = StpUtil.getLoginIdAsString();
+        String merchantId = accountAPIService.queryMerchantOfUser(userId);
+        voucherDto.setMerchantId(merchantId);
+        if (Strings.isBlank(merchantId)) {
+            throw new BusinessRuntimeException("用户未关联商户");
+        }
+        
         saveVoucherContext.saveVoucher(voucherDto);
 
         Voucher voucher = new Voucher();
         voucher.setVoucherId(voucherId);
         voucher.setCreateTime(nowTime);
         voucher.setVoucherType(voucherDto.getVoucherType());
-        String userId = StpUtil.getLoginIdAsString();
-        String merchantId = accountAPIService.queryMerchantOfUser(userId);
-        if (Strings.isBlank(merchantId)) {
-            throw new BusinessRuntimeException("用户未关联商户");
-        }
+
+
         voucher.setUserId(userId);
         voucher.setMerchantId(merchantId);
         save(voucher);
         // 根据不同的活动券类型加入不同的表中
 
 
-        return Response.success("操作成功");
+        return success("操作成功");
     }
 
     @Override
@@ -76,17 +83,15 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
                 .eq(Voucher::getVoucherId, voucherId));
 
         saveVoucherContext.changStatus(voucherInfo.getVoucherType(), voucherId, Status.VOUCHER_UP.getCode());
-        return Response.success("已发放");
+        return success("已发放");
     }
 
     @Override
     public Response getAllCategoryVoucherList(String merchantId) {
         // 查询商户的优惠券
         List<VoucherVO> voucherList = voucherMapper.findMerchantVoucherListById(merchantId);
-        if (Objects.nonNull(voucherList)) {
-            return Response.success(voucherList);
-        }
-        return Response.success(Collections.emptyList());
+        voucherList = voucherList.stream().sorted((o1, o2) -> o2.getCreateTime().compareTo(o1.getCreateTime())).toList();
+        return success(voucherList);
     }
 
     @Override

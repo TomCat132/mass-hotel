@@ -1,5 +1,5 @@
 server:
-  port: 5672
+  port: 8088
 mass-hotel:
   #  host: 121.41.100.147
   host: 192.168.64.100

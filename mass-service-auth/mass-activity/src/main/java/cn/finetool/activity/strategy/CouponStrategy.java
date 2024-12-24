@@ -49,6 +49,8 @@ public class CouponStrategy extends SaveVoucherStrategy {
         Map<String, Object> messageBody = new HashMap<>();
         messageBody.put("voucherId", voucherDto.getVoucherId());
         messageBody.put("voucherType", voucherDto.getVoucherType());
+        messageBody.put("voucherTitle", voucherDto.getVoucherCoupon().getVoucherTitle());
+        messageBody.put("merchantId", voucherDto.getMerchantId());
         // 发送消息到MQ
         // 计算时间差  开始时间 - 当前时间 = 结果（ms）
         long delayUpTime = Duration.between(nowTime, voucherCoupon.getBeginTime()).toMillis();

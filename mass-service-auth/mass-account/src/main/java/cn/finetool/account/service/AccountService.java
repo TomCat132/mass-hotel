@@ -1,5 +1,6 @@
 package cn.finetool.account.service;
 
+import cn.finetool.common.util.Response;
 import java.util.List;
 
 public interface AccountService {
@@ -9,4 +10,13 @@ public interface AccountService {
 
     /**====== 查询商户员工编号 =====*/
     List<String> findMerchantEmployee(String merchantId);
+
+    /**====== 查询用户消息列表 =====*/
+    Response getUserMessageBoxList();
+
+    /**====== 获取未读消息数量 =====*/
+    Response getUnreadMessageCount();
+
+    /**====== 标记所有消息为已读 =====*/
+    Response tagAllMessageRead();
 }

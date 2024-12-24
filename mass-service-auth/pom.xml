@@ -40,6 +40,7 @@
         <hibernate.version>6.2.7.Final</hibernate.version>
         <alipay-sdk.version>4.34.8.ALL</alipay-sdk.version>
         <redisson.version>3.16.6</redisson.version>
+        <org.apache.commons>4.4</org.apache.commons>
     </properties>
 
     <parent>
@@ -52,6 +53,12 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${org.apache.commons}</version>
+            </dependency>
 
             <dependency>
                 <groupId>junit</groupId>
@@ -125,7 +132,7 @@
                 <artifactId>mysql-connector-j</artifactId>
                 <version>${mysql.version}</version>
             </dependency>
-
+            
 
 
         </dependencies>
