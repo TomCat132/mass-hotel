@@ -14,13 +14,14 @@ import cn.finetool.api.service.OssAPIService;
 import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.dto.PasswordDto;
 import cn.finetool.common.enums.BusinessErrors;
-import cn.finetool.common.enums.CodeSign;
+import cn.finetool.common.enums.SysEnum;
 import cn.finetool.common.enums.RoleType;
 import cn.finetool.common.exception.BusinessRuntimeException;
 
 import cn.finetool.common.po.*;
 
 import cn.finetool.common.util.CommonsUtils;
+import cn.finetool.common.util.IpUtil;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.util.SnowflakeIdWorker;
 import cn.finetool.common.vo.OrderVO;
@@ -32,6 +33,8 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -42,43 +45,36 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static cn.finetool.common.util.Response.success;
+
 
 @Service
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     private static final SnowflakeIdWorker IdWorker = new SnowflakeIdWorker(0, 0);
-
+    public static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     @Resource
     private UserService userService;
-
     @Resource
     private UserRolesService userRolesService;
-
     @Resource
     private RoleService roleService;
-
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
-
     @Resource
     private OrderAPIService orderAPIService;
-
     @Resource
     private OssAPIService ossAPIService;
-
     @Autowired
     private UserMapper userMapper;
-
     @Resource
     private RoleMapper roleMapper;
-
     @Resource
     private SystemMapper systemMapper;
-
     @Resource
     private ActivityAPIService activityAPIService;
-
+    
     @Override
     public Response register(User user) {
         if (StringUtils.isAnyEmpty(user.getUsername(), user.getPhone(), user.getPassword())) {
@@ -99,14 +95,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setPassword(CommonsUtils.encodeMD5(user.getPassword() + salty));
         user.setRegistrationTime(LocalDateTime.now());
         // 设置用户ID 前缀标志 1010
-        user.setUserId(CodeSign.UserPrefix.getCode() + String.valueOf(IdWorker.nextId()));
+        user.setUserId(SysEnum.UserPrefix.getCode() + String.valueOf(IdWorker.nextId()));
         user.setSalty(salty);
 
         save(user);
         // 默认为 用户 角色
         userRolesService.saveUserRoles(RoleType.USER.getCode(), user.getUserId());
 
-        return Response.success(user);
+        return success(user);
     }
 
     @Override
@@ -141,10 +137,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             roleList.add(roleInfo.getRoleKey());
         });
 
-        //
+        //登录成功，记录IP 
+        String IP = IpUtil.getClientIp();
+        LOGGER.info("用户{}登录成功，IP：{}", DBUser.getUsername(), IP);
         StpUtil.getTokenSession().set(SaSession.ROLE_LIST, roleList);
-
-        return Response.success("登录成功");
+        return success("登录成功");
     }
 
 
@@ -154,14 +151,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .eq(User::getUserId, StpUtil.getLoginIdAsString()));
         userInfo.setPassword(null);
         userInfo.setSalty(null);
-        return Response.success(userInfo);
+        return success(userInfo);
     }
 
     @Override
     public Response logout() {
         try {
             StpUtil.logout();
-            return Response.success("已退出");
+            return success("已退出");
         } catch (BusinessRuntimeException e) {
             throw new BusinessRuntimeException(BusinessErrors.TOKEN_IS_INVALID, "未登录");
         }
@@ -180,7 +177,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                     .set("avatar_key", fileUrl)
                     .eq("user_id", StpUtil.getLoginIdAsString())
                     .update();
-            return Response.success("修改成功");
+            return success("修改成功");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -207,16 +204,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new BusinessRuntimeException(BusinessErrors.DATA_DUPLICATION, "新密码不能与旧密码相同");
         }
 
-
         userService.update()
                 .set("password", CommonsUtils.encodeMD5(passwordDto.getNewPassword() + user.getSalty()))
                 .eq("user_id", StpUtil.getLoginIdAsString())
                 .update();
-
         StpUtil.logout();
-        ;
 
-        return Response.success("密码修改成功，请重新登陆");
+        return success("密码修改成功，请重新登陆");
     }
 
     @Override
@@ -231,16 +225,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         //查询充值订单
         List<OrderVO> rechargeOrderList = orderAPIService.getRechargeOrderList(StpUtil.getLoginIdAsString());
         if (Objects.nonNull(rechargeOrderList)) {
-            orderList.addAll(rechargeOrderList.stream().peek(orderVo -> orderVo.setOrderType(CodeSign.RechargeOrderPrefix.getCode())).toList());
+            orderList.addAll(rechargeOrderList.stream().peek(orderVo -> orderVo.setOrderType(SysEnum.RechargeOrderPrefix.getCode())).toList());
         }
         //查询房间预定订单
         List<OrderVO> roomOrderList = orderAPIService.getRoomOrderList(StpUtil.getLoginIdAsString());
         if (Objects.nonNull(roomOrderList)) {
-            orderList.addAll(roomOrderList.stream().peek(orderVo -> orderVo.setOrderType(CodeSign.HotelOrderPrefix.getCode())).toList());
+            orderList.addAll(roomOrderList.stream().peek(orderVo -> orderVo.setOrderType(SysEnum.HotelOrderPrefix.getCode())).toList());
         }
         // 根据订单状态、订单时间排序，优先级：0：未支付 再按时间 降序
         orderList.sort(Comparator.comparing(OrderVO::getOrderStatus).reversed().thenComparing(OrderVO::getCreateTime).reversed());
-        return Response.success(orderList);
+        return success(orderList);
     }
 
     @Override
@@ -289,7 +283,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         
 
 
-        return Response.success(resultMap);
+        return success(resultMap);
     }
 
     @Override
@@ -310,7 +304,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Response deleteOrderById(String orderId) {
         orderAPIService.deleteOrder(orderId);
-        return Response.success("订单删除成功");
+        return success("订单删除成功");
     }
 
     @Override
@@ -321,7 +315,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return Response.error("false");
         }
 
-        return Response.success("true");
+        return success("true");
     }
 
 

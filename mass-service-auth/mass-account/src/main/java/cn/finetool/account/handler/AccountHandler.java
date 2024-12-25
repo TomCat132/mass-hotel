@@ -48,7 +48,8 @@ public class AccountHandler implements AccountService {
     @Override
     public Response getUserMessageBoxList() {
         List<MessageBox> messageBoxList = messageBoxMapper.selectList(new QueryWrapper<MessageBox>()
-                .eq("accept_id", StpUtil.getLoginIdAsString()));
+                .eq("accept_id", StpUtil.getLoginIdAsString())
+                .orderByDesc("sender_time"));
         if (CollectionUtils.isNotEmpty(messageBoxList)){
             return success(messageBoxList);
         }
