@@ -44,4 +44,9 @@ public class RoomBookingDto implements Serializable {
      * 用户应该支付价格
      */
     private BigDecimal userPayAmount;
+
+    /**
+     * 活动券编号
+     */
+    private String voucherId;
 }

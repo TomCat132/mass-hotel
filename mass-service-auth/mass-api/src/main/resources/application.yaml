@@ -9,9 +9,12 @@ sa-token:
   # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
   is-concurrent: false
   # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
-  is-share: true
+  is-share: false
   # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）
-  token-style: random-32
+  token-style: uuid
+  # 是否尝试从 cookie 里读取 Token，此值为 false 后，StpUtil.login(id) 登录时也不会再往前端注入Cookie
+  #  注意：当使用 redis 作为缓存数据时要将 此关闭，否则不会将redis作为缓存，而是继续使用cookie
+  is-read-cookie: false
   # 是否输出操作日志
   is-log: true
 

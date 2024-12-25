@@ -18,12 +18,15 @@ public class RoomPricingContext {
 
     @Resource
     private MemberDiscountStrategy memberDiscountStrategy;
+    @Resource
+    private VoucherDisCountStrategy voucherDisCountStrategy;
 
     /** ======== 价格计算策略 ======= */
     @PostConstruct
     public void addStrategy(){
         log.info("添加价格计算策略");
         strategies.add(memberDiscountStrategy);
+        strategies.add(voucherDisCountStrategy);
     }
 
     public BigDecimal calculatePrice(RoomBookingDto roomBookingDto){

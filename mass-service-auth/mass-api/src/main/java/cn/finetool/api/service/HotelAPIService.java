@@ -2,10 +2,14 @@ package cn.finetool.api.service;
 
 
 import cn.finetool.common.configuration.MultipartSupportConfig;
+import cn.finetool.common.dto.OrderPayDto;
 import cn.finetool.common.vo.RoomOrderBaseInfo;
+import java.math.BigDecimal;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
@@ -28,4 +32,20 @@ public interface HotelAPIService {
     @GetMapping("/getBookedRoomBaseInfo")
     RoomOrderBaseInfo getBookedRoomBaseInfo(@RequestParam("orderId") String orderId,
                                             @RequestParam("roomDateId") Integer roomDateId);
+
+    /**
+     * 根据房间日期ID获取房间价格
+     * @param roomDateId
+     * @return
+     */
+    @GetMapping("/getRoomDatePriceById")
+    BigDecimal getRoomDatePriceById(@RequestParam("roomDateId") Integer roomDateId);
+
+    /**
+     * 校验计算订单金额
+     * @param orderPayDto
+     * @return
+     */
+    @PostMapping("/caculatePayAmount")
+    BigDecimal caculatePayAmount(@RequestBody OrderPayDto orderPayDto);
 }

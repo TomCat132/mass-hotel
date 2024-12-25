@@ -18,7 +18,6 @@ public class OrderPayDto implements Serializable {
      */
     private BigDecimal userPayAmount;
 
-
     /**
      * 订单标题
      */
@@ -31,4 +30,9 @@ public class OrderPayDto implements Serializable {
 
     /** ==== 账户支付参数  ===== */
     private Integer payType;
+
+    /**
+     * 活动券编号
+     */
+    private String voucherId;
 }

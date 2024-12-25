@@ -2,6 +2,7 @@ package cn.finetool.hotel.handler;
 
 import cn.finetool.common.dto.PlanDto;
 import cn.finetool.common.util.Response;
+import java.math.BigDecimal;
 
 public interface HotelAdminService {
 
@@ -27,4 +28,11 @@ public interface HotelAdminService {
     Response getWillFinishOrderList(String merchantId);
 
     Response startFinishRoomOut(Integer id);
+
+    /**
+     * 根据房间日期ID获取房间价格
+     * @param roomDateId
+     * @return
+     */
+    BigDecimal getRoomDatePriceById(Integer roomDateId);
 }

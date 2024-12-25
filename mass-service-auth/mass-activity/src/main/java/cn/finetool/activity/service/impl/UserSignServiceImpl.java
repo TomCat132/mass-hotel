@@ -7,6 +7,7 @@ import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.enums.BusinessErrors;
 import cn.finetool.common.po.UserSign;
 import cn.finetool.common.util.Response;
+import cn.finetool.common.util.TimeUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
@@ -43,19 +44,18 @@ public class UserSignServiceImpl extends ServiceImpl<UserSignMapper, UserSign> i
         }
         LocalDateTime nowTime = LocalDateTime.now();
         LocalDate clickTime = nowTime.toLocalDate();
-
-
+        
         redisTemplate.opsForValue().setBit(clickTime.getYear() + RedisCache.USER_SIGN_TABLE + userId
                 ,nowTime.getDayOfYear(),true
                 );
-        redisTemplate.opsForList().leftPush(RedisCache.USER_SIGN_KEY_PREFIX + userId ,nowTime);
+        redisTemplate.opsForList().leftPush(RedisCache.USER_SIGN_KEY_PREFIX + userId , TimeUtil.format(nowTime));
 
 
         return Response.success("签到成功");
     }
-
+    
     // 已优化
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 100000)
     public void saveUserSignToDatabase(){
         log.info("检查签到数据是否达标=================");
         Set<String> keys = redisTemplate.keys(RedisCache.USER_SIGN_KEY_PREFIX + "*");
@@ -66,9 +66,12 @@ public class UserSignServiceImpl extends ServiceImpl<UserSignMapper, UserSign> i
                 for (Object signTime : signTimes){
                     UserSign userSign = new UserSign();
                     userSign.setUserId(userId);
-                    userSign.setSignTime((LocalDateTime) signTime);
+                    LocalDateTime signedTime = TimeUtil.parse((String) signTime);
+                    LocalDate localDate = signedTime.toLocalDate();
+                    userSign.setSignTime(signedTime);
+                    userSign.setSignDate(localDate);
                     userSignBatch.add(userSign);
-                    if (userSignBatch.size() >= 2){
+                    if (userSignBatch.size() >= 1000){
                         userSignService.saveBatch(userSignBatch);
                         userSignBatch.clear();
                         // 删除 list 数据

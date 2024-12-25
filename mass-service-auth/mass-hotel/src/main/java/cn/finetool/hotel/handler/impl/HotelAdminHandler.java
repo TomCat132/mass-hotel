@@ -2,7 +2,7 @@ package cn.finetool.hotel.handler.impl;
 
 import cn.finetool.api.service.RechargePlanAPIService;
 import cn.finetool.common.dto.PlanDto;
-import cn.finetool.common.enums.CodeSign;
+import cn.finetool.common.enums.SysEnum;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.po.Hotel;
 import cn.finetool.common.po.Room;
@@ -20,7 +20,7 @@ import cn.finetool.hotel.mapper.RoomInfoMapper;
 import cn.finetool.hotel.mapper.RoomMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.math.BigDecimal;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ public class HotelAdminHandler implements HotelAdminService {
                     CpMerchantVO merchantVO = new CpMerchantVO();
                     merchantVO.setMerchantId(hotel.getMerchantId());
                     merchantVO.setMerchantName(hotel.getHotelName());
-                    merchantVO.setMerchantType(CodeSign.MERCHANT_HotelPrefix.getCode());
+                    merchantVO.setMerchantType(SysEnum.MERCHANT_HotelPrefix.getCode());
                     merchantVO.setCity(hotel.getCity());
                     merchantVO.setAddress(hotel.getAddress());
                     merchantVO.setPhoneNumber(hotel.getPhoneNumber());
@@ -93,7 +93,7 @@ public class HotelAdminHandler implements HotelAdminService {
         //截取 merchantId 前缀
         Long prefix = Long.valueOf(merchantId.substring(0, 4));
         Object baseInfo = null;
-        if (prefix == CodeSign.MERCHANT_HotelPrefix.getCode()) {
+        if (prefix == SysEnum.MERCHANT_HotelPrefix.getCode()) {
             //根据 merchantId 查询 hotel 信息、room 信息
             Hotel hotel = hotelMapper.selectOne(new QueryWrapper<Hotel>().eq("merchant_id", merchantId));
             List<Room> roomList = new ArrayList<>();
@@ -109,7 +109,7 @@ public class HotelAdminHandler implements HotelAdminService {
 
             Map<String, Object> result = new HashMap<>();
             result.put("hotel", hotel);
-            result.put("merchantType", CodeSign.MERCHANT_HotelPrefix.getCode());
+            result.put("merchantType", SysEnum.MERCHANT_HotelPrefix.getCode());
 
             baseInfo = result;
         }
@@ -140,5 +140,11 @@ public class HotelAdminHandler implements HotelAdminService {
         RoomInfo roomInfo = roomInfoMapper.selectById(roomDate.getRiId());
         roomInfoMapper.changeStatus(id, Status.ROOM_INFO_CLEANING.getCode());
         return Response.success("开始办理退房");
+    }
+
+    @Override
+    public BigDecimal getRoomDatePriceById(Integer roomDateId) {
+        RoomDate roomDate = roomDateMapper.selectById(roomDateId);
+        return roomDate.getPrice();
     }
 }

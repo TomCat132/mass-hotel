@@ -15,6 +15,7 @@ import cn.finetool.common.util.MqUtils;
 import cn.finetool.common.util.Strings;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -45,6 +46,15 @@ public class CouponStrategy extends SaveVoucherStrategy {
     private VoucherService voucherService;
     @Resource
     private AccountAPIService accountAPIService;
+
+    @PostConstruct
+    public void init() {
+        if (redissonClient != null) {
+            LOGGER.info("=====RedissonClient is initialized successfully.");
+        } else {
+            LOGGER.error("Failed to initialize RedissonClient.");
+        }
+    }
 
     @Override
     public void save(VoucherDto voucherDto) throws JsonProcessingException {

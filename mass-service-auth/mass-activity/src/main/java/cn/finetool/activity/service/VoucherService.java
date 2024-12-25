@@ -24,4 +24,22 @@ public interface VoucherService extends IService<Voucher> {
      * @param status      状态
      */
     void updateVoucherStatus(Integer voucherType, String voucherId, Integer status);
+
+    /**
+     * 获取有效的活动券列表
+     */
+    Response getValidVoucherList();
+
+    /**
+     * 根据活动券编号获取活动券基本信息
+     * @param voucherId
+     */
+    VoucherDto getVoucherBaseInfo(String voucherId);
+
+    /**
+     * 更新活动券状态为：已使用
+     * @param voucherId
+     * @param status
+     */
+    void usedVoucher(String voucherId, Integer status);
 }

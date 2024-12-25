@@ -26,4 +26,10 @@ public class ActivityWebSource {
     public Response getAllCategoryVoucherList(@RequestParam("merchantId") String merchantId) {
         return voucherService.getAllCategoryVoucherList(merchantId);
     }
+    
+    @GetMapping("/voucher-list")
+    @ApiOperation(value = "获取有效的所有活动券列表", notes = "PMS: 获取有效的所有活动券列表")
+    public Response getValidVoucherList(){
+        return voucherService.getValidVoucherList();
+    }
 }

@@ -1,10 +1,13 @@
 package cn.finetool.hotel.api;
 
+import cn.finetool.common.dto.OrderPayDto;
 import cn.finetool.common.vo.RoomOrderBaseInfo;
+import cn.finetool.hotel.handler.HotelAdminService;
 import cn.finetool.hotel.service.HotelService;
 import cn.finetool.hotel.service.RoomDateService;
 import cn.finetool.hotel.service.RoomService;
 import jakarta.annotation.Resource;
+import java.math.BigDecimal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -16,12 +19,12 @@ public class HotelAPIService {
 
     @Resource
     private RoomService roomService;
-
     @Resource
     private RoomDateService roomDateService;
-    
     @Resource
     private HotelService hotelService;
+    @Resource
+    private HotelAdminService hotelAdminService;
     
     /** ========== 查询该天日期房间类型的具体剩余数量 ===========*/
     @GetMapping("/queryResidualRoomInfo")
@@ -43,5 +46,25 @@ public class HotelAPIService {
     public RoomOrderBaseInfo getBookedRoomBaseInfo(@RequestParam("orderId") String orderId,
                                                    @RequestParam("roomDateId") Integer roomDateId){
         return hotelService.getBookedRoomBaseInfo(orderId,roomDateId);
-    } 
+    }
+
+    /**
+     * 根据房间日期ID获取房间价格
+     * @param roomDateId
+     * @return
+     */
+    @GetMapping("/getRoomDatePriceById")
+    BigDecimal getRoomDatePriceById(@RequestParam("roomDateId") Integer roomDateId){
+        return hotelAdminService.getRoomDatePriceById(roomDateId);
+    }
+
+    /**
+     * 校验计算订单金额
+     * @param orderPayDto
+     * @return
+     */
+    @PostMapping("/caculatePayAmount")
+    BigDecimal caculatePayAmount(@RequestBody OrderPayDto orderPayDto){
+        return hotelService.caculatePayAmount(orderPayDto);
+    }
 }

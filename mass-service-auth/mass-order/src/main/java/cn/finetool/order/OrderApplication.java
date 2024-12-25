@@ -9,12 +9,12 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
 
-@SpringBootApplication
+@Slf4j
 @EnableDiscoveryClient
 @EnableFeignClients(basePackages = "cn.finetool")
 @MapperScan(basePackages = {"cn.finetool.api.mapper", "cn.finetool.order.mapper"})
 @ComponentScan(basePackages = {"cn.finetool"})
-@Slf4j
+@SpringBootApplication(scanBasePackages = {"cn.finetool.common", "cn.finetool.api"})
 public class OrderApplication {
     public static void main(String[] args) {
         SpringApplication.run(OrderApplication.class, args);

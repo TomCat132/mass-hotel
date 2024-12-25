@@ -1,7 +1,7 @@
 package cn.finetool.order.handler;
 
 import cn.finetool.api.service.HotelAPIService;
-import cn.finetool.common.enums.CodeSign;
+import cn.finetool.common.enums.SysEnum;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.po.OrderStatus;
 import cn.finetool.common.po.RechargeOrder;
@@ -44,12 +44,12 @@ public class OrderHandler implements OrderService {
     public void deleteOrder(String orderId) {
         //截取订单号前4位,比较查询订单类型
         String prefix = orderId.substring(0, 4);
-        if (Strings.equals(prefix, CodeSign.RechargeOrderPrefix.code())) {
+        if (Strings.equals(prefix, SysEnum.RechargeOrderPrefix.code())) {
             rechargeOrderMapper.update(new UpdateWrapper<RechargeOrder>()
                     .set("is_deleted", Status.IS_DELETED.getCode())
                     .eq("order_id", orderId));
             LOGGER.info("用户逻辑删除充值订单:{}", orderId);
-        } else if (Strings.equals(prefix, CodeSign.HotelOrderPrefix.code())) {
+        } else if (Strings.equals(prefix, SysEnum.HotelOrderPrefix.code())) {
             roomOrderMapper.update(new UpdateWrapper<RoomOrder>()
                     .set("is_deleted", Status.IS_DELETED.getCode())
                     .eq("order_id", orderId));
@@ -95,7 +95,7 @@ public class OrderHandler implements OrderService {
     private List<OrderVO> queryMerchantRoomOrderList(String merchantId) {
         List<OrderVO> roomOrderList = roomOrderMapper.queryMerchantRoomOrderList(merchantId);
         roomOrderList.forEach(orderVO -> {
-            orderVO.setOrderType(CodeSign.HotelOrderPrefix.getCode());
+            orderVO.setOrderType(SysEnum.HotelOrderPrefix.getCode());
         });
         return roomOrderList;
     }

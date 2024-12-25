@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RedissonConfiguration {
 
-    @Bean
+    @Bean("redissonClient")
     public RedissonClient redissonClient() {
         Config config = new Config();
         config.useSingleServer().setAddress("redis://192.168.64.100:6379");

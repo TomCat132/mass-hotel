@@ -9,7 +9,6 @@ import org.apache.ibatis.annotations.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Mapper
 public interface RechargeOrderMapper extends BaseMapper<RechargeOrder> {
 
     void updateOrderStatus(String orderId, Integer orderStatus,

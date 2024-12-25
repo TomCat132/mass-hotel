@@ -5,6 +5,7 @@ import cn.finetool.activity.service.UserVoucherService;
 import cn.finetool.activity.service.VoucherService;
 import cn.finetool.activity.strategy.SaveVoucherContext;
 import cn.finetool.api.handler.MessageHandler;
+import cn.finetool.common.enums.Status;
 import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.UserVoucher;
 import cn.finetool.common.po.Voucher;
@@ -44,6 +45,7 @@ public class UserVoucherServiceImpl extends ServiceImpl<UserVoucherMapper, UserV
             UserVoucher userVoucher = new UserVoucher();
             userVoucher.setVoucherId(voucherId);
             userVoucher.setUserId(userId);
+            userVoucher.setStatus(Status.VOUCHER_CAN_USE.code());
             save(userVoucher);
 
             return Response.success("领取成功");

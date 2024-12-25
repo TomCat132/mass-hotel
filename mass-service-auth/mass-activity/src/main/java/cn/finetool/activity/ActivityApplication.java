@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 
@@ -16,11 +15,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @Slf4j
 @MapperScan(basePackages = {"cn.finetool.api.mapper", "cn.finetool.activity.mapper"})
-@ComponentScan(basePackages = {"cn.finetool.api.handler", "cn.finetool.activity"})
-@SpringBootApplication(scanBasePackages = {"cn.finetool.activity", "cn.finetool.common", "cn.finetool.api"})
+@ComponentScan(basePackages = {"cn.finetool.api.handler", "cn.finetool.activity", "cn.finetool.common"})
+@SpringBootApplication(scanBasePackages = {"cn.finetool.api", "cn.finetool.activity", "cn.finetool.common"})
 public class ActivityApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ActivityApplication.class, args);
-        log.info("ActivityApplication started successfully!");
+       SpringApplication.run(ActivityApplication.class, args);
     }
+
+
 }

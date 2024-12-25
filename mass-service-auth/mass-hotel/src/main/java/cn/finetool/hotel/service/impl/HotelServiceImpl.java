@@ -1,7 +1,9 @@
 package cn.finetool.hotel.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.finetool.api.service.OrderAPIService;
 import cn.finetool.common.constant.RedisCache;
+import cn.finetool.common.dto.OrderPayDto;
 import cn.finetool.common.dto.QueryRoomTypeDto;
 import cn.finetool.common.po.Hotel;
 import cn.finetool.common.po.Room;
@@ -22,6 +24,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.*;
 import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -50,6 +53,10 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
     private RoomBookingMapper roomBookingMapper;
     @Resource
     private RoomMapper roomMapper;
+    @Resource
+    private RoomServiceImpl roomManager;
+    @Resource
+    private OrderAPIService orderAPIService;
 
     @Override
     public Response addHotelInfo(Hotel hotel) {
@@ -162,5 +169,10 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
         roomOrderBaseInfo.setRoomBooking(roomBooking);
         roomOrderBaseInfo.setHotel(hotel);
         return roomOrderBaseInfo;
+    }
+
+    @Override
+    public BigDecimal caculatePayAmount(OrderPayDto orderPayDto) {
+        return null;
     }
 }

@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
 
-@Mapper
 public interface OrderStatusMapper extends BaseMapper<OrderStatus> {
     void changeOrderStatus(@Param("orderId") String orderId,
                            @Param("orderStatus") Integer orderStatus,

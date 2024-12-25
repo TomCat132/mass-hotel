@@ -4,7 +4,7 @@ package cn.finetool.common.enums;
 import lombok.Getter;
 
 @Getter
-public enum CodeSign {
+public enum SysEnum {
 
     MERCHANT_HotelPrefix(1001, "酒店前缀标志"),
     UserPrefix(1010, "用户前缀标志"),
@@ -17,7 +17,7 @@ public enum CodeSign {
 
     private final String desc;
 
-    CodeSign(int code, String desc) {
+    SysEnum(int code, String desc) {
         this.code = code;
         this.desc = desc;
     }

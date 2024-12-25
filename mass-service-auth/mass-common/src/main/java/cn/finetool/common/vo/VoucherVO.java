@@ -1,6 +1,7 @@
 package cn.finetool.common.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -63,4 +64,9 @@ public class VoucherVO implements java.io.Serializable {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime endTime;
+
+    /**
+     * 优惠券规则
+     */
+    private BigDecimal voucherRule;
 }
