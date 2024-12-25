@@ -70,14 +70,15 @@ public class RoomOrderConsumer {
             channel.basicNack(tag, false, true);
         } else {
             LOGGER.info("订单：{} 超时未支付，取消订单", orderId);
-            // 更新订单状态 恢复房间状态
+            // 更新订单状态 
             orderAPIService.changeOrderStatus(orderId, Status.ORDER_CANCEL.getCode(), null);
-
+            // 恢复房间状态
             hotelAPIService.updateRoomDateStatus(roomDateId, checkInDate, checkOutDate, Status.ROOM_DATE_CAN_USE.getCode());
-
+            // 删除redis标记
             redisTemplate.delete(RedisCache.ROOM_RESERVED_ORDER_IS_TIMEOUT + orderId);
-
             try {
+                // 发送消息 To: 用户
+                
                 channel.basicAck(tag, false);
             } catch (IOException e) {
                 // 消息消费失败，重试
