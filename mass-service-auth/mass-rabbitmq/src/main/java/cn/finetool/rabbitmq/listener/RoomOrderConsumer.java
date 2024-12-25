@@ -8,7 +8,10 @@ import cn.finetool.common.constant.MqQueue;
 import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.enums.SystemTag;
+import cn.finetool.common.po.RoomBooking;
+import cn.finetool.common.po.RoomOrder;
 import cn.finetool.common.util.JsonUtil;
+import cn.finetool.common.util.Strings;
 import com.rabbitmq.client.Channel;
 import jakarta.annotation.Resource;
 import java.time.format.DateTimeFormatter;
@@ -45,21 +48,22 @@ public class RoomOrderConsumer {
 
     /**
      * 房间预定订单超时未支付，取消订单
+     *
      * @param messageBody: 消息体
-     * @param channel : 消息通道
-     * @param tag: 消息标签
+     * @param channel      : 消息通道
+     * @param tag:         消息标签
      */
     @SneakyThrows
     @RabbitListener(queues = MqQueue.ROOM_RESERVE_ORDER_QUEUE, concurrency = "10")
-    public void roomOrderConsumer(String messageBody, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag)  {
+    public void roomOrderConsumer(String messageBody, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) {
 
         Map<String, Object> message = JsonUtil.fromJsonString(messageBody, Map.class);
 
         String orderId = (String) message.get("orderId");
 
         //传过来的是时间 yyyy-MM-dd 字符串,获取到之后穿换位LocalDate
-        LocalDate checkInDate = LocalDate.parse((String)message.get("checkInDate"), DateTimeFormatter.ISO_LOCAL_DATE);
-        LocalDate checkOutDate = LocalDate.parse((String)message.get("checkOutDate"), DateTimeFormatter.ISO_LOCAL_DATE);
+        LocalDate checkInDate = LocalDate.parse((String) message.get("checkInDate"), DateTimeFormatter.ISO_LOCAL_DATE);
+        LocalDate checkOutDate = LocalDate.parse((String) message.get("checkOutDate"), DateTimeFormatter.ISO_LOCAL_DATE);
         Integer roomDateId = (Integer) message.get("roomDateId");
 
         Boolean timeoutOrder = redisTemplate.hasKey(RedisCache.ROOM_RESERVED_ORDER_IS_TIMEOUT + orderId);
@@ -78,7 +82,7 @@ public class RoomOrderConsumer {
             redisTemplate.delete(RedisCache.ROOM_RESERVED_ORDER_IS_TIMEOUT + orderId);
             try {
                 // 发送消息 To: 用户
-                
+
                 channel.basicAck(tag, false);
             } catch (IOException e) {
                 // 消息消费失败，重试
@@ -90,17 +94,25 @@ public class RoomOrderConsumer {
             }
         }
     }
-    
+
+    /**
+     * 超时1小时未办理入住，提醒用户及商户
+     *
+     * @param messageBody：消息体
+     * @param channel：消息通道
+     * @param tag             ： 消息标签
+     * @throws IOException
+     */
     @RabbitListener(queues = MqQueue.ROOM_BOOKING_TIMEOUT_QUEUE)
     public void roomBookingTimeoutConsumer(String messageBody, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
-        
+
         Map<String, Object> message = JsonUtil.fromJsonString(messageBody, Map.class);
-        
+
         String orderId = (String) message.get("orderId");
         String merchantId = (String) message.get("merchantId");
         String acceptId = (String) message.get("acceptId");
         Object obj = redisTemplate.opsForValue().get(RedisCache.ROOM_BOOKING_TIMEOUT_REMIND + orderId);
-        if (Objects.isNull(obj)){
+        if (Objects.isNull(obj)) {
             LOGGER.info("房间预定订单:{} ,已完成入住办理", orderId);
             channel.basicAck(tag, false);
         } else {
@@ -118,6 +130,35 @@ public class RoomOrderConsumer {
                     orderId);
             channel.basicAck(tag, false);
         }
-        
+    }
+
+    /**
+     * 订单结束（提前1小时） 提醒
+     *
+     * @param messageBody
+     * @param channel
+     * @param tag
+     */
+    @RabbitListener(queues = MqQueue.ROOM_ORDER_ENDING_REMIND_QUEUE)
+    public void roomOrderEndingRemindConsumer(String messageBody, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
+        Map<String, Object> message = JsonUtil.fromJsonString(messageBody, Map.class);
+        String merchantId = (String) message.get("merchantId");
+        String orderId = (String) message.get("orderId");
+        RoomBooking roomBooking = (RoomBooking) message.get("roomBooking");
+        // 检查订单状态是否已经结束
+        if (Strings.equals(roomBooking.getStatus(), Status.ROOMBOOKING_CHECK_OUT.code())) {
+            LOGGER.info("订单：{} 已结束", orderId);
+            channel.basicAck(tag, false);
+        }
+        if (Strings.equals(roomBooking.getStatus(), Status.ROOMBOOKING_CHECK_IN.code())) {
+            // 发送消息提醒 To: 商户
+            List<String> acceptIds = accountAPIService.findMerchantEmployee(merchantId);
+            String messageContent1 = "订单:【" + orderId + "】 即将超时，请及时提醒用户";
+            messageHandler.sendMessage(acceptIds, messageContent1, orderId);
+            // 发送消息提醒 To: 用户
+            String messageContent2 = "您预定的房间即将超时，请及时办理入住";
+            RoomOrder roomOrder = orderAPIService.queryOrderInfo(orderId);
+            messageHandler.sendMessage(roomOrder.getUserId(), messageContent2, orderId);
+        }
     }
 }
