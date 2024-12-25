@@ -19,4 +19,7 @@ public interface AccountService {
 
     /**====== 标记所有消息为已读 =====*/
     Response tagAllMessageRead();
+
+    /**====== 查询商户ID =====*/
+    String findMerchantIdByUserId(String workerId);
 }

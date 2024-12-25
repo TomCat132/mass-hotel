@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -108,6 +109,9 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
                 .eq("user_id", StpUtil.getLoginIdAsString())
                 .eq("status", Status.VOUCHER_CAN_USE.code()));
         List<String> voucherIds = userVoucherList.stream().map(UserVoucher::getVoucherId).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(voucherIds)){
+            return success(validVoucherList);
+        }
         List<Voucher> voucherList = voucherMapper.selectList(new QueryWrapper<Voucher>()
                 .in("voucher_id", voucherIds));
         // 根据不同类型的活动券进行分组

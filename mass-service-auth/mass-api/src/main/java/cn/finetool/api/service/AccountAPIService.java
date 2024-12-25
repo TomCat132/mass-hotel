@@ -16,4 +16,8 @@ public interface AccountAPIService {
     /**====== 查询商户员工编号ID =====*/
     @GetMapping("/findMerchantEmployee")
     List<String> findMerchantEmployee(@RequestParam("merchantId") String merchantId);
+
+    /**====== 查询商户ID =====*/
+    @GetMapping("/findMerchantIdByUserId")
+    String findMerchantIdByUserId(@RequestParam("workerId") String workerId);
 }

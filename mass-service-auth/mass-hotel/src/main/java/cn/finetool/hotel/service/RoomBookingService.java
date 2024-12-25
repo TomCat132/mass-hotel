@@ -3,6 +3,7 @@ package cn.finetool.hotel.service;
 import cn.finetool.common.po.RoomBooking;
 import cn.finetool.common.util.Response;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface RoomBookingService extends IService<RoomBooking> {
 
@@ -17,7 +18,7 @@ public interface RoomBookingService extends IService<RoomBooking> {
 
     Response receiveDeposit(String id);
 
-    Response finishHandleCheckIn(Integer id, Integer type, String doorKey);
+    Response finishHandleCheckIn(Integer id, Integer type, String doorKey) throws JsonProcessingException;
 
     Response bindingDoorKey(Integer id, String doorKey);
 

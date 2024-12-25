@@ -70,4 +70,10 @@ public class AccountHandler implements AccountService {
                 .eq("accept_id", StpUtil.getLoginIdAsString()));
         return success("所有消息已被标记为已读");
     }
+
+    @Override
+    public String findMerchantIdByUserId(String workerId) {
+        return userMerchantMapper.selectOne(new QueryWrapper<UserMerchant>()
+                .eq("user_id", workerId)).getMerchantId();
+    }
 }

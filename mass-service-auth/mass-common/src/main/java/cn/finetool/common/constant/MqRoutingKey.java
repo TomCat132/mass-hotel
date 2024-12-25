@@ -23,5 +23,8 @@ public class MqRoutingKey {
     
     /** ========== 房间订单超时 队列 路由 ========== */
     public static final String ROOM_BOOKING_TIMEOUT_ROUTING_KEY = "room_booking_timeout_routing_key";
+    
+    /** ========== 房间订单结束提醒 队列 路由 ========== */
+    public static final String ROOM_ORDER_ENDING_REMIND_ROUTING_KEY  = "room_order_ending_remind_routing_key";
 
 }

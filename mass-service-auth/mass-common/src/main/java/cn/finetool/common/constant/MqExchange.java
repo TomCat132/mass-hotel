@@ -22,4 +22,7 @@ public class MqExchange {
     
     /** ========= 房间订单超时交换机 =========== */
     public static final String ROOM_BOOKING_TIMEOUT_EXCHANGE = "room_booking_timeout_exchange";
+    
+    /** ========= 房间订单即将结束提醒  交换机 =========== */
+    public static final String ROOM_ORDER_ENDING_REMIND_EXCHANGE = "room_order_ending_remind_exchange";
 }

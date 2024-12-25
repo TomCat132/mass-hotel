@@ -22,4 +22,6 @@ public class MqQueue {
     
     /** ======== 房间预订超时未处理 队列 ======== */
     public static final String ROOM_BOOKING_TIMEOUT_QUEUE = "room_booking_timeout_queue";
+    
+    public static final String ROOM_ORDER_ENDING_REMIND_QUEUE = "room_order_ending_remind_queue";
 }

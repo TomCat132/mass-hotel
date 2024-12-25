@@ -26,4 +26,10 @@ public class AccountAPIService {
     List<String> findMerchantEmployee(@RequestParam("merchantId") String merchantId){
         return accountService.findMerchantEmployee(merchantId);
     }
+
+    /**====== 查询商户ID =====*/
+    @GetMapping("/findMerchantIdByUserId")
+    String findMerchantIdByUserId(@RequestParam("workerId") String workerId){
+        return accountService.findMerchantIdByUserId(workerId);
+    }
 }

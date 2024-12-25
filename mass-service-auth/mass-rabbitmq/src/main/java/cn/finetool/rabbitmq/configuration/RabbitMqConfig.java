@@ -24,6 +24,28 @@ public class RabbitMqConfig implements CommandLineRunner {
 
     @Resource
     private AmqpAdmin amqpAdmin;
+
+    
+    /** ============ 房间订单即将结束（1小时）提醒 路由绑定 ========== */
+    @Bean
+    public Binding roomOrderEndingRemindBinding(){
+        return BindingBuilder.bind(RoomOrderEndingRemindQueue())
+                .to(roomOrderEndingRemindExchange())
+                .with(MqRoutingKey.ROOM_ORDER_ENDING_REMIND_ROUTING_KEY).noargs();
+    }
+
+    /** ============ 房间订单即将结束（1小时）提醒  交换机========== */
+    @Bean
+    public CustomExchange roomOrderEndingRemindExchange(){
+        return new CustomExchange(MqExchange.ROOM_ORDER_ENDING_REMIND_EXCHANGE,"x-delayed-message",
+                true,false, Collections.singletonMap("x-delayed-type", "direct"));
+    }
+    
+    /** ============ 房间订单即将结束（1小时）提醒  队列============= */
+    @Bean
+    public Queue RoomOrderEndingRemindQueue(){
+        return new Queue(MqQueue.ROOM_ORDER_ENDING_REMIND_QUEUE, true, false, false);
+    }
     
     /** ============ 房间预定超时1小时提醒 路由绑定 ========== */
     @Bean
