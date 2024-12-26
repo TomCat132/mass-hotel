@@ -104,7 +104,9 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
         //扣除账户余额
         userAPIService.decreaseUserAccount(userId,orderPayDto.getUserPayAmount());
         //优惠券状态状态更新
-        activityAPIService.usedVoucher(orderPayDto.getVoucherId(), Status.VOUCHER_USED.code());
+        if (Objects.nonNull(orderPayDto.getVoucherId())){
+            activityAPIService.usedVoucher(orderPayDto.getVoucherId(), Status.VOUCHER_USED.code());
+        }
         //更新房间预定订单订单状态
         orderStatusService.changeOrderStatus(orderPayDto.getOrderId(), Status.ORDER_SUCCESS.getCode(), PayType.ACCOUNT_PAY.getCode());
         //删除缓存
