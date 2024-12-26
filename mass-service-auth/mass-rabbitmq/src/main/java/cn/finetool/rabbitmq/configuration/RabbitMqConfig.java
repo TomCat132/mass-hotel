@@ -215,5 +215,18 @@ public class RabbitMqConfig implements CommandLineRunner {
         amqpAdmin.declareQueue(VoucherDownQueue());
         amqpAdmin.declareExchange(VoucherDownExchange());
         amqpAdmin.declareBinding(BindingBuilder.bind(VoucherDownQueue()).to(VoucherDownExchange()).with(MqRoutingKey.VOUCHER_DOWN_ROUTING_KEY).noargs());
+        // 声明 房间预定超时1小时提醒 队列、交换机、绑定
+        amqpAdmin.declareQueue(RoomBookingTimeoutQueue());
+        amqpAdmin.declareExchange(RoomBookingTimeoutExchange());
+        amqpAdmin.declareBinding(BindingBuilder.bind(RoomBookingTimeoutQueue()).to(RoomBookingTimeoutExchange()).with(MqRoutingKey.ROOM_BOOKING_TIMEOUT_ROUTING_KEY).noargs());
+        // 声明 房间订单即将结束（1小时）提醒 队列、交换机、绑定
+        amqpAdmin.declareQueue(RoomOrderEndingRemindQueue());
+        amqpAdmin.declareExchange(roomOrderEndingRemindExchange());
+        amqpAdmin.declareBinding(BindingBuilder.bind(RoomOrderEndingRemindQueue()).to(roomOrderEndingRemindExchange()).with(MqRoutingKey.ROOM_ORDER_ENDING_REMIND_ROUTING_KEY).noargs());
+        // 声明 充值订单 队列、交换机、绑定
+        amqpAdmin.declareQueue(orderQueue());
+        amqpAdmin.declareExchange(orderExchange());
+        amqpAdmin.declareBinding(BindingBuilder.bind(orderQueue()).to(orderExchange()).with(MqRoutingKey.ORDER_ROUTING_KEY).noargs());
+        
     }
 }
