@@ -2,12 +2,14 @@ package cn.finetool.account.service.impl;
 
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.finetool.account.mapper.LoginLogMapper;
 import cn.finetool.account.mapper.RoleMapper;
 import cn.finetool.account.mapper.SystemMapper;
 import cn.finetool.account.mapper.UserMapper;
 import cn.finetool.account.service.RoleService;
 import cn.finetool.account.service.UserRolesService;
 import cn.finetool.account.service.UserService;
+import cn.finetool.api.handler.MessageHandler;
 import cn.finetool.api.service.ActivityAPIService;
 import cn.finetool.api.service.OrderAPIService;
 import cn.finetool.api.service.OssAPIService;
@@ -24,11 +26,14 @@ import cn.finetool.common.util.CommonsUtils;
 import cn.finetool.common.util.IpUtil;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.util.SnowflakeIdWorker;
+import cn.finetool.common.util.SystemUtil;
+import cn.finetool.common.util.TimeUtil;
 import cn.finetool.common.vo.OrderVO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.ImmutableMap;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -74,6 +79,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private SystemMapper systemMapper;
     @Resource
     private ActivityAPIService activityAPIService;
+    @Resource
+    private LoginLogMapper loginLogMapper;
+    @Resource
+    private MessageHandler messageHandler;
     
     @Override
     public Response register(User user) {
@@ -138,10 +147,42 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         });
 
         //登录成功，记录IP 
-        String IP = IpUtil.getClientIp();
-        LOGGER.info("用户{}登录成功，IP：{}", DBUser.getUsername(), IP);
+        recordLoginLog();
         StpUtil.getTokenSession().set(SaSession.ROLE_LIST, roleList);
         return success("登录成功");
+    }
+
+    // 记录登录日志
+    private void recordLoginLog() {
+        String userId = StpUtil.getLoginIdAsString();
+        //解析数据
+        String ip = IpUtil.getClientIp();
+        Map<String, String> locationInfo = IpUtil.getLocationInfo(ip);
+        String country = locationInfo.get("country");
+        String province = locationInfo.get("province");
+        String city = locationInfo.get("city");
+        String lat = locationInfo.get("lat");
+        String lon = locationInfo.get("lon");
+        LocalDateTime nowTime = TimeUtil.now();
+        LoginLog loginLog = new LoginLog();
+        String messageId = String.valueOf(IdWorker.nextId());
+        String operatingSystem = SystemUtil.getOperatingSystem();
+        loginLog.setId(messageId);
+        loginLog.setUserId(userId);
+        loginLog.setLoginIp(ip);
+        loginLog.setCountry(country);
+        loginLog.setLat(lat);
+        loginLog.setLon(lon);
+        loginLog.setProvince(province);
+        loginLog.setCity(city);
+        loginLog.setCreateTime(nowTime);
+        loginLog.setSystem(operatingSystem);
+        loginLogMapper.insert(loginLog);
+        //发送消息到盒子
+        String messageContent = "登录成功&登录时间: " + TimeUtil.format(nowTime) + "&IP: [" + ip + "]&地区: "
+                + country + province + city +  "&操作系统: " + operatingSystem; 
+        //登录系统
+        messageHandler.sendMessage(userId,messageContent,messageId);
     }
 
 

@@ -7,12 +7,14 @@ import cn.finetool.api.mapper.MessageBoxMapper;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.po.MessageBox;
 import cn.finetool.common.po.UserMerchant;
+import cn.finetool.common.util.IpUtil;
 import cn.finetool.common.util.Response;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import jakarta.annotation.Resource;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
@@ -75,5 +77,11 @@ public class AccountHandler implements AccountService {
     public String findMerchantIdByUserId(String workerId) {
         return userMerchantMapper.selectOne(new QueryWrapper<UserMerchant>()
                 .eq("user_id", workerId)).getMerchantId();
+    }
+
+    @Override
+    public Response getUserLocationInfo() {
+        Map<String, String> locationInfo = IpUtil.getLocationInfo();
+        return success(locationInfo);
     }
 }

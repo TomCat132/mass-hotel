@@ -128,10 +128,10 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
                 });
         redisTemplate.opsForValue().set(RedisCache.ROOM_BOOKING_TIMEOUT_REMIND + orderPayDto.getOrderId(),"");
         // 系统消息提醒
-        String messageContent1 = "您预定的房间订单:" + orderPayDto.getOrderId() + "已成功支付";
+        String messageContent1 = "房间预定成功" + "&订单: " +orderPayDto.getOrderId() + "&已成功支付";
         messageHandler.sendMessage(userId, messageContent1, orderPayDto.getOrderId());
         List<String> acceptIds = accountAPIService.findMerchantEmployee(merchantId);
-        String messageContent2 = "您有新的房间订单:" + orderPayDto.getOrderId() + "，请及时处理";
+        String messageContent2 = "收到新的房间预定订单:" + orderPayDto.getOrderId() + "，请及时处理";
         messageHandler.sendMessage(acceptIds, messageContent2, orderPayDto.getOrderId());
         return success("支付成功");
     }

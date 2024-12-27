@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
 import cn.finetool.common.util.Response;
 import cn.finetool.hotel.service.RoomBookingService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
@@ -67,7 +68,7 @@ public class RoomBookingController {
     public Response finishHandleCheckIn(@RequestParam("id") Integer id,
                                         @RequestParam("type") Integer type,
                                         //非必填参数
-                                        @RequestParam(required = false, value = "doorKey") String doorKey) {
+                                        @RequestParam(required = false, value = "doorKey") String doorKey) throws JsonProcessingException {
         return roomBookingService.finishHandleCheckIn(id, type, doorKey);
     }
 }

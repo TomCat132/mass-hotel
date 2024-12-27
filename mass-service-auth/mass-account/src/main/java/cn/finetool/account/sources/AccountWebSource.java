@@ -24,7 +24,6 @@ public class AccountWebSource {
         return accountService.getUserMessageBoxList();
     }
     
-    
     @GetMapping("/unread-message-count")
     @ApiOperation(value = "获取未读消息数量", notes = "获取未读消息数量")
     public Response getUnreadMessageCount(){
@@ -35,5 +34,11 @@ public class AccountWebSource {
     @ApiOperation(value = "标记所有消息为已读", notes = "标记所有消息为已读")
     public Response tagAllMessageRead(){
         return accountService.tagAllMessageRead();
+    }
+    
+    @GetMapping("/get-user-location-info")
+    @ApiOperation(value = "获取用户位置信息", notes = "获取用户位置信息")
+    public Response getUserLocationInfo(){
+        return accountService.getUserLocationInfo();
     }
 }

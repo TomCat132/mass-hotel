@@ -22,4 +22,7 @@ public interface AccountService {
 
     /**====== 查询商户ID =====*/
     String findMerchantIdByUserId(String workerId);
+
+    /**====== 查询用户位置信息 =====*/
+    Response getUserLocationInfo();
 }

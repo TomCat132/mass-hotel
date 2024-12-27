@@ -161,8 +161,8 @@ public class CouponStrategy extends SaveVoucherStrategy {
             String[] split = voucherSubTitle.replace("\\n", "\n").split("\n");
 
             String messageContent1 = "恭喜您，您领取的【" + coupon.getVoucherTitle() + "】优惠券已发放成功！"
-                    + "使用规则:【" + split[0] + "】" + "【" + split[1] + "】"
-                    + "，有效期至：" + coupon.getEndTime().toString();
+                    + "&使用规则:【" + split[0] + "】" + "【" + split[1] + "】"
+                    + "，&有效期至：" + coupon.getEndTime().toString();
             messageHandler.sendMessage(userId, messageContent1, voucherId);
 
             String messageContent2 = "用户：【" + userId + "】" + "领取了" + coupon.getVoucherTitle();

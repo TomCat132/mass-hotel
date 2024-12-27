@@ -43,9 +43,9 @@ public class VoucherConsumer {
         activityAPIService.updateVoucherStatus(voucherType, voucherId, Status.VOUCHER_UP.code());
         LOGGER.info("活动券:{}, 状态修改为:{}", voucherId, Status.VOUCHER_UP.desc());
         // 系统消息提醒: 商户
-        String messageContent = "本店活动券 【" + voucherTitle + "】已上架，" + "活动券类型为";
+        String messageContent = "本店活动券 【" + voucherTitle + "】已上架，" + "&活动券类型: ";
         messageContent += "【" + VoucherType.toDesc(voucherType) + "】";
-        messageContent += "优惠券编号:【" + voucherId + "】";
+        messageContent += "&优惠券编号:【" + voucherId + "】";
         List<String> acceptIds = accountAPIService.findMerchantEmployee(merchantId);
         messageHandler.sendMessage(acceptIds, messageContent, voucherId);
         // TODO:系统消息提醒：所有用户（广告，需花钱） 

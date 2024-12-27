@@ -7,12 +7,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EnableDiscoveryClient
 @Slf4j
 @EnableFeignClients(basePackages = "cn.finetool.api")
 @MapperScan(basePackages = {"cn.finetool.api.mapper", "cn.finetool.account.mapper"})
+@ComponentScan(basePackages = {"cn.finetool.account", "cn.finetool.api"})
 public class AccountApplication {
     public static void main(String[] args) {
         SpringApplication.run(AccountApplication.class, args);
