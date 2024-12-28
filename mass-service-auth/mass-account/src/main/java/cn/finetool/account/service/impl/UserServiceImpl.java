@@ -33,7 +33,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.common.collect.ImmutableMap;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -104,7 +103,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setPassword(CommonsUtils.encodeMD5(user.getPassword() + salty));
         user.setRegistrationTime(LocalDateTime.now());
         // 设置用户ID 前缀标志 1010
-        user.setUserId(SysEnum.UserPrefix.getCode() + String.valueOf(IdWorker.nextId()));
+        user.setUserId(SysEnum.USER_PREFIX.getCode() + String.valueOf(IdWorker.nextId()));
         user.setSalty(salty);
 
         save(user);
@@ -266,12 +265,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         //查询充值订单
         List<OrderVO> rechargeOrderList = orderAPIService.getRechargeOrderList(StpUtil.getLoginIdAsString());
         if (Objects.nonNull(rechargeOrderList)) {
-            orderList.addAll(rechargeOrderList.stream().peek(orderVo -> orderVo.setOrderType(SysEnum.RechargeOrderPrefix.getCode())).toList());
+            orderList.addAll(rechargeOrderList.stream().peek(orderVo -> orderVo.setOrderType(SysEnum.RECHARGE_ORDER_PREFIX.getCode())).toList());
         }
         //查询房间预定订单
         List<OrderVO> roomOrderList = orderAPIService.getRoomOrderList(StpUtil.getLoginIdAsString());
         if (Objects.nonNull(roomOrderList)) {
-            orderList.addAll(roomOrderList.stream().peek(orderVo -> orderVo.setOrderType(SysEnum.HotelOrderPrefix.getCode())).toList());
+            orderList.addAll(roomOrderList.stream().peek(orderVo -> orderVo.setOrderType(SysEnum.ROOM_ORDER_PREFIX.code())).toList());
         }
         // 根据订单状态、订单时间排序，优先级：0：未支付 再按时间 降序
         orderList.sort(Comparator.comparing(OrderVO::getOrderStatus).reversed().thenComparing(OrderVO::getCreateTime).reversed());

@@ -57,7 +57,7 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
             Room room = new Room();
             room.setRoomDesc(JSONUTIL.writeValueAsString(roomDto.getRoomDesc()));
             room.setRoomName(roomDto.getRoomName());
-            room.setRoomId(SysEnum.RoomTypePrefix.getCode() +String.valueOf(idWorker.nextId()));
+            room.setRoomId(SysEnum.ROOM_PREFIX.code() + idWorker.nextId() );
             room.setRoomType(roomDto.getRoomType());
             room.setHotelId(roomDto.getHotelId());
             room.setBasicPrice(roomDto.getBasicPrice());

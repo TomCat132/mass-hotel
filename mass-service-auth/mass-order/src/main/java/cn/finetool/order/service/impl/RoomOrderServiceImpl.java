@@ -144,7 +144,7 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
         String orderId = orderPayDto.getOrderId();
         //截取前4位
         String orderType = orderId.substring(0,4);
-        if (Strings.equals(orderType, SysEnum.HotelOrderPrefix.code())){
+        if (Strings.equals(orderType, SysEnum.ROOM_ORDER_PREFIX.code())){
             // 查询订单是否存在
             RoomOrder roomOrder = roomOrderService.getOne(new QueryWrapper<RoomOrder>()
                     .eq("order_id", orderPayDto.getOrderId()));

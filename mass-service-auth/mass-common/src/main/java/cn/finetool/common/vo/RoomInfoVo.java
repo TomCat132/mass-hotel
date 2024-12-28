@@ -1,5 +1,7 @@
 package cn.finetool.common.vo;
 
+import cn.finetool.common.po.FileUrl;
+import cn.finetool.common.po.RoomInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -62,6 +64,11 @@ public class RoomInfoVo implements Serializable {
     /**
      * 房间展示图片列表
      */
-    private List<String> roomAvatarList;
+    private List<FileUrl> roomAvatarList;
+
+    /**
+     * 房间信息列表
+     */
+    private List<RoomInfo> roomInfoList;
 
 }

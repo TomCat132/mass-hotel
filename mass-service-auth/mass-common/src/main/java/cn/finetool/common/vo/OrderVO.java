@@ -20,7 +20,7 @@ public class OrderVO implements Serializable {
     /**
      * 订单类型
      */
-    private Integer orderType;
+    private String orderType;
 
     /**
      * 订单状态

@@ -37,7 +37,7 @@ public class IpUtil {
         if (ip != null && ip.contains(",")) {
             ip = ip.split(",")[0].trim();
         }
-        if (Strings.equals("127.0.0.1", ip)){
+        if (Strings.equals("127.0.0.1", ip) || Strings.equals("0:0:0:0:0:0:0:1", ip)){
             ip = "171.221.145.74";
         }
         return ip;

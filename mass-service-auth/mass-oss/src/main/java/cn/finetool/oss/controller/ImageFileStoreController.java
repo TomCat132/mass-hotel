@@ -2,6 +2,7 @@ package cn.finetool.oss.controller;
 
 import cn.finetool.common.enums.BusinessErrors;
 import cn.finetool.common.exception.BusinessRuntimeException;
+import cn.finetool.oss.service.OssService;
 import cn.finetool.oss.util.FileConvertUtil;
 import io.minio.MinioClient;
 import jakarta.annotation.Resource;
@@ -18,32 +19,19 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageFileStoreController {
 
     @Resource
-    FileConvertUtil fileConvertUtil;
+    private FileConvertUtil fileConvertUtil;
 
     @Resource
-    private  Environment config;
-
-    @Autowired
-    private  MinioClient minioClient;
+    private OssService ossService;
 
     /** ========== 图片文件上传接口 ========== */
     @PostMapping("/upload")
     public String putMinioFile(@RequestParam("file") MultipartFile file){
-        try {
-            minioClient.putObject(config.getProperty("minio.bucket"),
-                    file.getOriginalFilename(),
-                    file.getInputStream(),
-                    file.getSize(),
-                    file.getContentType());
-            return config.getProperty("minio.url") + '/' + config.getProperty("minio.bucket") + '/'+ file.getOriginalFilename();
-        }catch (Exception e){
-            return "解析失败";
-        }
+        return ossService.uploadFile(file);
     }
 
     /** ========== 图片转换接口 ========== */
     @GetMapping("/convert")
-
     private String urlToBase64(@RequestParam("url") String url){
         try {
             return fileConvertUtil.convertFile(url);

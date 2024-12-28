@@ -3,13 +3,16 @@ package cn.finetool.hotel.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
+import cn.finetool.common.dto.AvatarDto;
 import cn.finetool.common.dto.PlanDto;
 import cn.finetool.common.util.Response;
 import cn.finetool.hotel.handler.HotelAdminService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
+import java.util.List;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/hotel/admin")
@@ -58,5 +61,25 @@ public class HotelAdminWebResource {
     @ApiOperation(value = "开始办理退房", notes = "PMS : 开始办理退房")
     public Response startFinishRoomOut(@RequestParam("id") Integer id) {
         return hotelAdminHandler.startFinishRoomOut(id);
+    }
+    
+    @GetMapping("/get-room-name-list")
+    @ApiOperation(value = "获取房间名称列表", notes = "根据商户ID获取房间名称列表")
+    public Response getRoomNameList(@RequestParam("merchantId") String merchantId){
+        return hotelAdminHandler.getRoomNameList(merchantId);
+    }
+    
+    @GetMapping("/get-room-info")
+    @ApiOperation(value = "获取房间信息", notes = "根据房间ID获取房间信息")
+    public Response getRoomInfoVO(@RequestParam("roomId") String roomId){
+        return hotelAdminHandler.getRoomInfoVO(roomId);
+    }
+
+    @PostMapping(value = "/batch-save-room-info-image", consumes = "multipart/form-data")
+    @ApiOperation(value = "宣传图片更新", notes = "更新房间宣传图片")
+    public Response updateRoomImage(@RequestParam("roomId") String roomId,
+                                    @RequestPart(value = "avatarList", required = false) List<MultipartFile> avatarList,
+                                    @RequestParam(value = "deleteIds", required = false) List<String> deleteIds){
+        return hotelAdminHandler.updateRoomImage(roomId, avatarList, deleteIds);
     }
 }

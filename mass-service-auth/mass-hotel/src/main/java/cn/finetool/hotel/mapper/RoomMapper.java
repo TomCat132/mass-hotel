@@ -15,4 +15,6 @@ public interface RoomMapper extends BaseMapper<Room> {
 
     RoomInfoVo queryRoomInfoByDate(@Param(("roomId")) String roomId,
                                    @Param("date") LocalDate date);
+
+    List<RoomInfoVo> getRoomNameList(@Param(("merchantId")) String merchantId);
 }

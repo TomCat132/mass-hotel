@@ -61,6 +61,7 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
     @Override
     public Response addRoomInfo(RoomInfo roomInfo) {
         // TODO: 简单的添加功能，尚未考虑细节
+        roomInfo.setId(SysEnum.ROOM_INFO_ID_PREFIX.code() + ID_WORKER.nextId());
         save(roomInfo);
         return Response.success("添加成功");
     }
@@ -109,7 +110,7 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
                             .eq("id", canUserRoomDateId)
                             .update();
                     // 生成订单号
-                    String roomOrderId = SysEnum.HotelOrderPrefix.getCode() + String.valueOf(+ID_WORKER.nextId());
+                    String roomOrderId = SysEnum.ROOM_ORDER_PREFIX.code() + ID_WORKER.nextId();
                     String userId = StpUtil.getLoginIdAsString();
                     // 保存预定房间信息 （tb_room_booking）
                     RoomBooking roomBooking = new RoomBooking();

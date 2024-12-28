@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.finetool.oss.mapper.FileUrlMapper">
+
+    <insert id="batchSave" parameterType="java.util.List">
+        INSERT INTO tb_file_url (id, unique_id, url) VALUES
+        <foreach collection="fileUrlList" item="item" separator=",">
+            (#{item.id}, #{item.uniqueId}, #{item.url})
+        </foreach>
+    </insert>
+</mapper>

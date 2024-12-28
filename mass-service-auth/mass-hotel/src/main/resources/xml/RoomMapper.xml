@@ -33,6 +33,12 @@
         WHERE room.room_id = #{roomId}
         GROUP BY room.id,room.room_id,room.room_name,room.room_desc,room.room_type,room.basic_price,room_date.price
     </select>
+    <select id="getRoomNameList" resultType="cn.finetool.common.vo.RoomInfoVo">
+        SELECT room.room_id,room.room_name
+        FROM tb_room AS room
+        INNER JOIN tb_hotel AS hotel ON hotel.hotel_id = room.hotel_id
+        WHERE hotel.merchant_id = #{merchantId}
+    </select>
     <!--    ================================================================================================-->
 
 

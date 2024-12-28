@@ -6,23 +6,28 @@ import lombok.Getter;
 @Getter
 public enum SysEnum {
 
-    MERCHANT_HotelPrefix(1001, "酒店前缀标志"),
-    UserPrefix(1010, "用户前缀标志"),
-    RoomTypePrefix(1011, "房间类型前缀标志"),
-    VoucherPrefix(1012, "活动优惠券前缀标志"),
-    RechargeOrderPrefix(1013, "充值订单前缀标志"),
-    HotelOrderPrefix(1014,"酒店预定订单前缀标志");
+    MERCHANT_HOTEL_PREFIX("1001", "酒店前缀标志"),
+    ROOM_INFO_ID_PREFIX("1002", "具体房间信息ID前缀标志"),
+    USER_PREFIX("1010", "用户前缀标志"),
+    ROOM_PREFIX("1011", "房间类型前缀标志"),
+    VOUCHER_PREFIX("1012", "活动优惠券前缀标志"),
+    RECHARGE_ORDER_PREFIX("1013", "充值订单前缀标志"),
+    ROOM_ORDER_PREFIX("1014","酒店预定订单前缀标志"),
+    FILE_PREFIX("1015", "文件前缀标志"),
+    FILE_PATH_PREFIX("1016", "文件路径前缀标志"),
+    ;
+    
 
-    private final int code;
+    private final String code;
 
     private final String desc;
 
-    SysEnum(int code, String desc) {
+    SysEnum(String code, String desc) {
         this.code = code;
         this.desc = desc;
     }
     
-    public int code(){
+    public String code(){
         return this.code;
     }
     

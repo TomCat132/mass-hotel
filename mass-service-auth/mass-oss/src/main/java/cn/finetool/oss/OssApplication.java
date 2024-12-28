@@ -11,7 +11,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication(scanBasePackages = {"cn.finetool.oss","cn.finetool.common",
         "cn.finetool.api"})
 @EnableFeignClients(basePackages = {"cn.finetool.api"})
-@MapperScan(basePackages = {"cn.finetool.api.mapper"})
+@MapperScan(basePackages = {"cn.finetool.api.mapper", "cn.finetool.oss.mapper"})
 public class OssApplication {
     public static void main(String[] args) {
         SpringApplication.run(OssApplication.class, args);

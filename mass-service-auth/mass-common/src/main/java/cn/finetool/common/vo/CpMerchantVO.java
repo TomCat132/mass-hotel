@@ -13,7 +13,7 @@ public class CpMerchantVO implements java.io.Serializable {
     /**
      * 商户类型
      */
-    private Integer merchantType;
+    private String merchantType;
 
     /**
      * 商户名称

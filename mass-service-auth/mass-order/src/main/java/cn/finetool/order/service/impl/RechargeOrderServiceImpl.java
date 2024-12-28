@@ -66,7 +66,7 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
             throw new BusinessRuntimeException(BusinessErrors.ORDER_CREATE_REQUEST_FAIL, "您有未支付的订单，请先支付或取消订单");
         }
 
-        String orderId = SysEnum.RechargeOrderPrefix.getCode() + CommonsUtils.getWorkerID();
+        String orderId = SysEnum.RECHARGE_ORDER_PREFIX.getCode() + CommonsUtils.getWorkerID();
 
         RechargeOrder rechargeOrder = new RechargeOrder();
         rechargeOrder.setOrderId(orderId);

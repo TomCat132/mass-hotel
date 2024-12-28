@@ -24,7 +24,7 @@ public class RoomBooking implements Serializable {
     private Integer id;
 
     /**
-     * 订单号: HotelOrderPrefix: 1014 +  分布式ID(雪花算法)
+     * 订单号: ROOM_ORDER_PREFIX: 1014 +  分布式ID(雪花算法)
      */
     private String orderId;
 

@@ -59,7 +59,7 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
     public Response addVoucher(VoucherDto voucherDto) throws JsonProcessingException {
 
 
-        String voucherId = SysEnum.VoucherPrefix.getCode() + String.valueOf(WORKER_ID.nextId());
+        String voucherId = SysEnum.VOUCHER_PREFIX.getCode() + String.valueOf(WORKER_ID.nextId());
         voucherDto.setVoucherId(voucherId);
         LocalDateTime nowTime = LocalDateTime.now();
 

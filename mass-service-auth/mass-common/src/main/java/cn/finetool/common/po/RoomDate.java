@@ -24,7 +24,8 @@ public class RoomDate {
     /**
      * 房间Id主键 (room_info的主键)
      */
-    private Integer riId;
+    @TableField(value = "ri_id")
+    private String riId;
 
     /**
      * 日期
