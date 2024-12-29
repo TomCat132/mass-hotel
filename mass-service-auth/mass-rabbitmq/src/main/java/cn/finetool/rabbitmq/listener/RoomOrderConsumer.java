@@ -78,10 +78,14 @@ public class RoomOrderConsumer {
             orderAPIService.changeOrderStatus(orderId, Status.ORDER_CANCEL.getCode(), null);
             // 恢复房间状态
             hotelAPIService.updateRoomDateStatus(roomDateId, checkInDate, checkOutDate, Status.ROOM_DATE_CAN_USE.getCode());
+            // 更改房间预定信息状态
+            hotelAPIService.updateRoomBookingStatus(orderId, Status.ROOMBOOKING_CANCEL.code());
             // 删除redis标记
             redisTemplate.delete(RedisCache.ROOM_RESERVED_ORDER_IS_TIMEOUT + orderId);
             try {
-                // 发送消息 To: 用户
+                //TODO: 发送消息 To: 用户
+//                String messageContent = "订单:【" + orderId + "】 &已超时未支付，已取消订单";
+//                messageHandler.sendMessage();
 
                 channel.basicAck(tag, false);
             } catch (IOException e) {

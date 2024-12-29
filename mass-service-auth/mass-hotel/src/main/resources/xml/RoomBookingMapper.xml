@@ -9,6 +9,12 @@
         SET status = #{status}
         WHERE room_booking.id = #{id}
     </update>
+    
+    <update id="changeStatusByOrderId">
+        UPDATE tb_room_booking 
+        SET status = #{status}
+        WHERE order_id = #{orderId}
+    </update>
 
     <!--    HotelId,避免越权查询 -->
     <select id="queryRoomBookingList" resultType="cn.finetool.common.po.RoomBooking">

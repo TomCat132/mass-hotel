@@ -13,7 +13,6 @@
     <select id="getCanUseRoomInfoList" resultType="cn.finetool.common.po.RoomInfo">
         SELECT id,room_id,room_info_id
         FROM tb_room_info
-        WHERE status = 1
     </select>
 
     <select id="queryResidualRoomInfo" resultType="java.lang.Integer">

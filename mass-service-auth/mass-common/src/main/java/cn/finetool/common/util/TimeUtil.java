@@ -1,6 +1,8 @@
 package cn.finetool.common.util;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 
 public class TimeUtil {
@@ -24,10 +26,31 @@ public class TimeUtil {
      * @param timeStr
      * @return
      */
-    public static LocalDateTime parse(String timeStr) {
+    public static LocalDateTime parseToLocalDateTime(String timeStr) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.parse(timeStr, formatter);
     }
+
+    /**
+     * 解析LocalDate: yyyy-MM-dd
+     * @param timeStr
+     * @return
+     */
+    public static LocalDate parseToLocalDate(String timeStr){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(timeStr, formatter);
+    }
+
+    /**
+     * 解析YearMonth: yyyy-MM
+     * @param timeStr
+     * @return
+     */
+    public static YearMonth parseToYearMonth(String timeStr){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+        return YearMonth.parse(timeStr, formatter);
+    }
+    
 
     /**
      * 获取当前时间: yyyy-MM-dd HH:mm:ss

@@ -1,6 +1,5 @@
 package cn.finetool.hotel.handler;
 
-import cn.finetool.common.dto.AvatarDto;
 import cn.finetool.common.dto.PlanDto;
 import cn.finetool.common.util.Response;
 import java.math.BigDecimal;
@@ -38,5 +37,13 @@ public interface HotelAdminService {
     /** ========= 根据房间ID获取房间信息VO ========= */
     Response getRoomInfoVO(String roomId);
     /** ========= 更新房间宣传图片 ========= */
-    Response updateRoomImage(String roomId, List<MultipartFile> filelist, List<String> deleteIds);
+    Response updateRoomImage(String id, List<MultipartFile> filelist, List<String> deleteIds);
+    /** ========= 根据房间ID获取房间信息 ========= */
+    Response findRoomInfoById(String id, String queryTime);
+    /** ========= 根据订单ID更新房间预定信息状态 ========= */
+    void updateRoomBookingStatus(String orderId, Integer status);
+    /** ========= 根据房间日期ID更新房间价格 ========= */
+    Response updateRoomDatePrice(Integer id, BigDecimal newPrice);
+    /** ========= 根据房间ID获取房间图片列表 ========= */
+    Response findRoomInfoAvatarList(String id);
 }

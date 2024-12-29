@@ -66,7 +66,7 @@ public class UserSignServiceImpl extends ServiceImpl<UserSignMapper, UserSign> i
                 for (Object signTime : signTimes){
                     UserSign userSign = new UserSign();
                     userSign.setUserId(userId);
-                    LocalDateTime signedTime = TimeUtil.parse((String) signTime);
+                    LocalDateTime signedTime = TimeUtil.parseToLocalDateTime((String) signTime);
                     LocalDate localDate = signedTime.toLocalDate();
                     userSign.setSignTime(signedTime);
                     userSign.setSignDate(localDate);

@@ -3,13 +3,13 @@ package cn.finetool.hotel.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
-import cn.finetool.common.dto.AvatarDto;
 import cn.finetool.common.dto.PlanDto;
 import cn.finetool.common.util.Response;
 import cn.finetool.hotel.handler.HotelAdminService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -70,16 +70,36 @@ public class HotelAdminWebResource {
     }
     
     @GetMapping("/get-room-info")
-    @ApiOperation(value = "获取房间信息", notes = "根据房间ID获取房间信息")
-    public Response getRoomInfoVO(@RequestParam("roomId") String roomId){
+    @ApiOperation(value = "获取房间类型信息", notes = "根据房间ID获取房间信息")
+    public Response getRoomTypeInfo(@RequestParam("roomId") String roomId){
         return hotelAdminHandler.getRoomInfoVO(roomId);
     }
 
     @PostMapping(value = "/batch-save-room-info-image", consumes = "multipart/form-data")
     @ApiOperation(value = "宣传图片更新", notes = "更新房间宣传图片")
-    public Response updateRoomImage(@RequestParam("roomId") String roomId,
+    public Response updateRoomImage(@RequestParam("id") String id,
                                     @RequestPart(value = "avatarList", required = false) List<MultipartFile> avatarList,
                                     @RequestParam(value = "deleteIds", required = false) List<String> deleteIds){
-        return hotelAdminHandler.updateRoomImage(roomId, avatarList, deleteIds);
+        return hotelAdminHandler.updateRoomImage(id, avatarList, deleteIds);
+    }
+    
+    @GetMapping("/get-room-info-vo")
+    @ApiOperation(value = "获取房间信息", notes = "根据房间ID获取房间信息")
+    public Response getRoomInfoVo(@RequestParam("id") String id,
+                                  @RequestParam("queryTime") String queryTime){
+        return hotelAdminHandler.findRoomInfoById(id, queryTime);
+    }
+
+    @PutMapping("/update-room-price")
+    @ApiOperation(value = "更新房间价格", notes = "根据房间日期ID更新房间价格")
+    public Response updateRoomDatePrice(@RequestParam("id") Integer id,
+                                        @RequestParam("newPrice") BigDecimal newPrice) {
+        return hotelAdminHandler.updateRoomDatePrice(id, newPrice);
+    }
+    
+    @GetMapping("/get-room-avatar-list")
+    @ApiOperation(value = "获取房间宣传图片列表", notes = "根据房间ID获取房间宣传图片列表")
+    public Response getRoomInfoAvatarList(@RequestParam("id") String id){
+        return hotelAdminHandler.findRoomInfoAvatarList(id);
     }
 }

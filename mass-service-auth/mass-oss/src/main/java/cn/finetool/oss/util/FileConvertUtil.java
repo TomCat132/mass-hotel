@@ -40,7 +40,7 @@ public class FileConvertUtil {
             byte[] fileData = IOUtils.toByteArray(inputStream);
             return "data:jpg;base64," + Base64.getEncoder().encodeToString(fileData);
         } catch (Exception e) {
-            throw new BusinessRuntimeException(BusinessErrors.IMAGE_CONVERT_ERROR,"图片转换失败");
+            throw new RuntimeException(e);
         }
     }
 }

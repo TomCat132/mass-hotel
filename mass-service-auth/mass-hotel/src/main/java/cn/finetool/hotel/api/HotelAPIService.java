@@ -67,4 +67,11 @@ public class HotelAPIService {
     BigDecimal caculatePayAmount(@RequestBody OrderPayDto orderPayDto){
         return hotelService.caculatePayAmount(orderPayDto);
     }
+
+    /**======== 根据OrderId更改房间预定信息状态 ======== **/
+    @PutMapping("/updateRoomBookingStatus")
+    void updateRoomBookingStatus(@RequestParam("orderId") String orderId,
+                                 @RequestParam("status") Integer status) {
+        hotelAdminService.updateRoomBookingStatus(orderId, status);
+    }
 }

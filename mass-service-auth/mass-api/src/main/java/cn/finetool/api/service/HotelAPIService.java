@@ -48,4 +48,9 @@ public interface HotelAPIService {
      */
     @PostMapping("/caculatePayAmount")
     BigDecimal caculatePayAmount(@RequestBody OrderPayDto orderPayDto);
+    
+    /**======== 根据OrderId更改房间预定信息状态 ======== **/
+    @PutMapping("/updateRoomBookingStatus")
+    void updateRoomBookingStatus(@RequestParam("orderId") String orderId,
+                                 @RequestParam("status") Integer status);
 }

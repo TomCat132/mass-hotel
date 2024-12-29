@@ -34,7 +34,7 @@ public class OssAPIService {
     }
     
     /**======== 根据uniqueId查询图片数据列表 ========= **/
-    @GetMapping(value = "findImageListByUniqueId")
+    @GetMapping(value = "findImageListByUniqueId", consumes = "application/json")
     public List<FileUrl> findImageListByUniqueIds(@RequestParam("uniqueIds") List<String> uniqueIds){
         return ossService.findImageListByUniqueIds(uniqueIds);
     }

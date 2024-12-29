@@ -24,7 +24,7 @@ public interface OssAPIService {
     String findImageByUrl(@RequestParam("url") String url);
 
     /**======== 根据uniqueId查询图片数据列表 ========= **/
-    @GetMapping(value = "findImageListByUniqueId")
+    @GetMapping(value = "findImageListByUniqueId", consumes = "application/json")
     List<FileUrl> findImageListByUniqueIds(@RequestParam("uniqueIds") List<String> uniqueIds);
 
     /**======== 根据id删除图片数据 ========= **/

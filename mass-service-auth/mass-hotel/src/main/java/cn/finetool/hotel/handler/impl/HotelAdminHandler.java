@@ -2,7 +2,6 @@ package cn.finetool.hotel.handler.impl;
 
 import cn.finetool.api.service.OssAPIService;
 import cn.finetool.api.service.RechargePlanAPIService;
-import cn.finetool.common.dto.AvatarDto;
 import cn.finetool.common.dto.PlanDto;
 import cn.finetool.common.enums.SysEnum;
 import cn.finetool.common.enums.Status;
@@ -12,12 +11,13 @@ import cn.finetool.common.po.Room;
 import cn.finetool.common.po.RoomBooking;
 import cn.finetool.common.po.RoomDate;
 import cn.finetool.common.po.RoomInfo;
-import cn.finetool.common.util.FunUtil;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.util.Strings;
+import cn.finetool.common.util.TimeUtil;
 import cn.finetool.common.vo.CheckRoomInfoVO;
 import cn.finetool.common.vo.CpMerchantVO;
 import cn.finetool.common.vo.RoomInfoVo;
+import cn.finetool.common.vo.SingleRoomInfoVO;
 import cn.finetool.hotel.handler.HotelAdminService;
 import cn.finetool.hotel.mapper.HotelMapper;
 import cn.finetool.hotel.mapper.RoomBookingMapper;
@@ -25,14 +25,13 @@ import cn.finetool.hotel.mapper.RoomDateMapper;
 import cn.finetool.hotel.mapper.RoomInfoMapper;
 import cn.finetool.hotel.mapper.RoomMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import jakarta.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Collections;
-import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -182,12 +181,12 @@ public class HotelAdminHandler implements HotelAdminService {
         // 查询房间类型的具体信息列表
         if (CollectionUtils.isNotEmpty(roomInfoList)){
             // 查询所有的 roomInfoIds (1002前缀)
-            List<String> roomInfoIds = roomInfoList.stream()
-                    .map(RoomInfo::getId)
-                    .collect(Collectors.toList());
-            // 根据 roomInfoIds 查询图片
-            List<FileUrl> fileUrlList = ossAPIService.findImageListByUniqueIds(roomInfoIds);
-            Map<String, List<FileUrl>> roomInfoFileUrlListMap = FunUtil.groupBy(fileUrlList, FileUrl::getUniqueId);
+//            List<String> roomInfoIds = roomInfoList.stream()
+//                    .map(RoomInfo::getId)
+//                    .collect(Collectors.toList());
+
+
+//            Map<String, List<FileUrl>> roomInfoFileUrlListMap = FunUtil.groupBy(fileUrlList, FileUrl::getUniqueId);
 //            Map<String, List<String>> roomInfoImageListMap = roomInfoFileUrlListMap.entrySet()
 //                    .stream()
 //                    .collect(Collectors.toMap(Map.Entry::getKey,
@@ -195,24 +194,25 @@ public class HotelAdminHandler implements HotelAdminService {
 //                                    .map(FileUrl::getUrlImage)
 //                                    .collect(Collectors.toList())));
             // 根据 roomInfoId 将图片放入 roomInfoList 中
-            List<RoomInfo> roomInfoListHasImage = roomInfoList.stream()
-                    .map(roomInfo -> {
-                        List<FileUrl> roomInfoImageList = roomInfoFileUrlListMap.get(roomInfo.getId());
-                        if (CollectionUtils.isNotEmpty(roomInfoImageList)) {
-                            roomInfo.setAvatarList(roomInfoImageList);
-                        }
-                        return roomInfo;
-                    })
-                    .collect(Collectors.toList());
+//            List<RoomInfo> roomInfoListHasImage = roomInfoList.stream()
+//                    .map(roomInfo -> {
+//                        List<FileUrl> roomInfoImageList = roomInfoFileUrlListMap.get(roomInfo.getId());
+//                        if (CollectionUtils.isNotEmpty(roomInfoImageList)) {
+//                            roomInfo.setAvatarList(roomInfoImageList);
+//                        }
+//                        return roomInfo;
+//                    })
+//                    .collect(Collectors.toList());
             Room room = roomMapper.selectOne(new QueryWrapper<Room>()
                     .eq("room_id", roomId));
             // 组装 RoomInfoVo
-            roomInfoVo.setRoomInfoList(roomInfoListHasImage);
+            roomInfoVo.setRoomInfoList(roomInfoList);
             roomInfoVo.setRoomId(room.getRoomId());
             roomInfoVo.setRoomDesc(room.getRoomDesc());
             roomInfoVo.setRoomType(room.getRoomType()); 
             roomInfoVo.setOldPrice(room.getBasicPrice());
-            List<FileUrl> imageListByUniqueIds = ossAPIService.findImageListByUniqueIds(Collections.singletonList(roomId));
+            List<String> roomIds = Collections.singletonList(roomId);
+            List<FileUrl> imageListByUniqueIds = ossAPIService.findImageListByUniqueIds(roomIds);
             if (CollectionUtils.isNotEmpty(imageListByUniqueIds)){
                 roomInfoVo.setRoomAvatarList(imageListByUniqueIds);
             }
@@ -223,17 +223,64 @@ public class HotelAdminHandler implements HotelAdminService {
     }
 
     @Override
-    public Response updateRoomImage(String roomId, List<MultipartFile> avatarList, List<String> deleteIds) {
+    public Response updateRoomImage(String id, List<MultipartFile> avatarList, List<String> deleteIds) {
         if (CollectionUtils.isNotEmpty(deleteIds)){
             ossAPIService.deleteByIds(deleteIds);
         }
         if (CollectionUtils.isNotEmpty(avatarList)){
-            ossAPIService.batchUploadImage(avatarList, roomId);
+            ossAPIService.batchUploadImage(avatarList, id);
         }
         return success("更新成功");
     }
 
+    @Override
+    public Response findRoomInfoById(String id, String queryTime) {
+        SingleRoomInfoVO singleRoomInfoVO = new SingleRoomInfoVO();
+        // 查询 roomInfo
+        RoomInfo roomInfo = roomInfoMapper.selectById(id);
+        // 根据 roomInfoIds 查询图片
+        List<FileUrl> fileUrlList = ossAPIService.findImageListByUniqueIds(Collections.singletonList(roomInfo.getId()));
+        if (CollectionUtils.isNotEmpty(fileUrlList)){
+            roomInfo.setAvatarList(fileUrlList);
+        }
+        singleRoomInfoVO.setRoomInfo(roomInfo);
+        // 查询 房间当月信息以及是否有用户预定
+        // queryTime: String yyyy-MM 格式
+        // date: LocalDate yyyy-MM-dd
+        YearMonth queryDate = TimeUtil.parseToYearMonth(queryTime);
+        // 获取当年当月第一天和最后一天
+        LocalDate firstDayOfMonth = queryDate.atDay(1);
+        LocalDate lastDayOfMonth = queryDate.atEndOfMonth();
+        List<RoomDate> roomDates = roomDateMapper.selectList(new QueryWrapper<RoomDate>()
+                .eq("ri_id", id)
+                .between("date", firstDayOfMonth, lastDayOfMonth));
+        if (CollectionUtils.isNotEmpty(roomDates)){
+            singleRoomInfoVO.setRoomDateList(roomDates);
+        }
+        return success(singleRoomInfoVO);
+    }
 
+    @Override
+    public void updateRoomBookingStatus(String orderId, Integer status) {
+        roomBookingMapper.changeStatusByOrderId(orderId, status);
+    }
+
+    @Override
+    public Response updateRoomDatePrice(Integer id, BigDecimal newPrice) {
+        roomDateMapper.update(new UpdateWrapper<RoomDate>()
+                .set("price", newPrice)
+                .eq("id", id));
+        return success("价格已更新");
+    }
+
+    @Override
+    public Response findRoomInfoAvatarList(String id) {
+        List<FileUrl> fileUrlList = ossAPIService.findImageListByUniqueIds(Collections.singletonList(id));
+        if (CollectionUtils.isNotEmpty(fileUrlList)) {
+            return success(fileUrlList);
+        }
+        return success(Collections.emptyList());
+    }
 
 
 }

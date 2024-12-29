@@ -57,7 +57,7 @@ public class OssHandler implements OssService {
         try {
             String urlId = SysEnum.FILE_PATH_PREFIX.code() + ID_WORKER.nextId() + "_" + file.getOriginalFilename();
             minioClient.putObject(config.getProperty("minio.bucket"),
-                    SysEnum.FILE_PATH_PREFIX.code() + ID_WORKER.nextId(),
+                    urlId,
                     file.getInputStream(),
                     file.getSize(),
                     file.getContentType());
@@ -90,7 +90,8 @@ public class OssHandler implements OssService {
         return fileUrlList.stream()
                 .map(fileUrl -> {
                     try {
-                        fileUrl.setUrlImage(fileConvertUtil.convertFile(fileUrl.getUrl()));
+                        String urlImage = fileConvertUtil.convertFile(fileUrl.getUrl());
+                        fileUrl.setUrlImage(urlImage);
                         return fileUrl;
                     } catch (MalformedURLException e) {
                         throw new BusinessRuntimeException("数据异常");
