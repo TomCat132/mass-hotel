@@ -4,6 +4,7 @@ package cn.finetool.hotel.controller;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
 import cn.finetool.common.dto.PlanDto;
+import cn.finetool.common.dto.RoomDto;
 import cn.finetool.common.util.Response;
 import cn.finetool.hotel.handler.HotelAdminService;
 import io.swagger.annotations.Api;
@@ -101,5 +102,17 @@ public class HotelAdminWebResource {
     @ApiOperation(value = "获取房间宣传图片列表", notes = "根据房间ID获取房间宣传图片列表")
     public Response getRoomInfoAvatarList(@RequestParam("id") String id){
         return hotelAdminHandler.findRoomInfoAvatarList(id);
+    }
+    
+    @PutMapping("/update-room-info")
+    @ApiOperation(value = "修改房间信息", notes = "根据房间ID更新房间信息")
+    public Response updateRoom(@RequestBody RoomDto roomDto){
+        return hotelAdminHandler.updateRoom(roomDto);
+    }
+    
+    @DeleteMapping("/delete-room")
+    @ApiOperation(value = "删除房间类型相关的所有配置信息", notes = "根据房间ID删除房间类型相关的所有配置信息")
+    public Response deleteRoom(@RequestParam("roomId") String roomId){
+        return hotelAdminHandler.deleteRoom(roomId);
     }
 }

@@ -32,4 +32,10 @@ public class AccountAPIService {
     String findMerchantIdByUserId(@RequestParam("workerId") String workerId){
         return accountService.findMerchantIdByUserId(workerId);
     }
+
+    /**====== 查询用户所在酒店ID =====*/
+    @GetMapping("/findHotelIdOfUserId")
+    String findHotelIdOfUserId(@RequestParam("userId") String userId){
+        return accountService.findMerchantIdOfUserId(userId);
+    }
 }

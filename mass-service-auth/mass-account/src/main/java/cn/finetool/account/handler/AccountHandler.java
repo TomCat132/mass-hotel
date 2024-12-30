@@ -84,4 +84,11 @@ public class AccountHandler implements AccountService {
         Map<String, String> locationInfo = IpUtil.getLocationInfo();
         return success(locationInfo);
     }
+
+    @Override
+    public String findMerchantIdOfUserId(String userId) {
+        UserMerchant merhcantOfUser = userMerchantMapper.selectOne(new QueryWrapper<UserMerchant>()
+                .eq("user_id", userId));
+        return merhcantOfUser.getMerchantId();
+    }
 }

@@ -3,6 +3,7 @@ package cn.finetool.hotel.handler.impl;
 import cn.finetool.api.service.OssAPIService;
 import cn.finetool.api.service.RechargePlanAPIService;
 import cn.finetool.common.dto.PlanDto;
+import cn.finetool.common.dto.RoomDto;
 import cn.finetool.common.enums.SysEnum;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.po.FileUrl;
@@ -31,6 +32,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Collections;
+import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
@@ -176,6 +178,12 @@ public class HotelAdminHandler implements HotelAdminService {
     @Override
     public Response getRoomInfoVO(String roomId) {
         RoomInfoVo roomInfoVo = new RoomInfoVo();
+        Room room = roomMapper.selectOne(new QueryWrapper<Room>()
+                .eq("room_id", roomId));
+        roomInfoVo.setRoomId(room.getRoomId());
+        roomInfoVo.setRoomDesc(room.getRoomDesc());
+        roomInfoVo.setRoomType(room.getRoomType());
+        roomInfoVo.setOldPrice(room.getBasicPrice());
         List<RoomInfo> roomInfoList = roomInfoMapper.selectList(new QueryWrapper<RoomInfo>()
                 .eq("room_id", roomId));
         // 查询房间类型的具体信息列表
@@ -203,23 +211,17 @@ public class HotelAdminHandler implements HotelAdminService {
 //                        return roomInfo;
 //                    })
 //                    .collect(Collectors.toList());
-            Room room = roomMapper.selectOne(new QueryWrapper<Room>()
-                    .eq("room_id", roomId));
+       
             // 组装 RoomInfoVo
             roomInfoVo.setRoomInfoList(roomInfoList);
-            roomInfoVo.setRoomId(room.getRoomId());
-            roomInfoVo.setRoomDesc(room.getRoomDesc());
-            roomInfoVo.setRoomType(room.getRoomType()); 
-            roomInfoVo.setOldPrice(room.getBasicPrice());
+        
             List<String> roomIds = Collections.singletonList(roomId);
             List<FileUrl> imageListByUniqueIds = ossAPIService.findImageListByUniqueIds(roomIds);
             if (CollectionUtils.isNotEmpty(imageListByUniqueIds)){
                 roomInfoVo.setRoomAvatarList(imageListByUniqueIds);
             }
-            // 从 roomInfoList 中取出第一个作为房间图片
-            return success(roomInfoVo);
         }
-        return success(Collections.emptyList());
+        return success(roomInfoVo);
     }
 
     @Override
@@ -280,6 +282,42 @@ public class HotelAdminHandler implements HotelAdminService {
             return success(fileUrlList);
         }
         return success(Collections.emptyList());
+    }
+
+    @Override
+    public Response updateRoom(RoomDto roomDto) {
+        roomMapper.update(new UpdateWrapper<Room>()
+                .set("room_desc", roomDto.getRoomDescStr())
+                .set("room_type", roomDto.getRoomType())
+                .set("basic_price", roomDto.getBasicPrice())
+                .eq("room_id", roomDto.getRoomId()));
+        return success("已保存");
+    }
+
+    @Override
+    public Response deleteRoom(String roomId) {
+
+        List<RoomInfo> roomInfoList = roomInfoMapper.selectList(new QueryWrapper<RoomInfo>()
+                .eq("room_id", roomId));
+        if (CollectionUtils.isNotEmpty(roomInfoList)){
+            List<String> roomInfoIds = roomInfoList.stream()
+                    .map(RoomInfo::getId)
+                    .collect(Collectors.toList());
+            // 再删除 roomInfo
+            // TODO： 有问题需要修挂
+            roomInfoMapper.delete(new QueryWrapper<RoomInfo>()
+                    .in("id", roomInfoIds));
+            roomInfoIds.add(roomId);
+            // 删除 roomInfo 相关的 roomDate
+            roomDateMapper.delete(new QueryWrapper<RoomDate>()
+                    .in("ri_id", roomInfoIds));
+            // 删除 roomInfo,room 相关的图片
+            ossAPIService.deleteByIds(roomInfoIds);
+            // 删除 room
+            roomMapper.delete(new QueryWrapper<Room>()
+                    .eq("room_id", roomId));
+        }
+        return success("操作成功");
     }
 
 

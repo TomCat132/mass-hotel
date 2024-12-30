@@ -20,4 +20,8 @@ public interface AccountAPIService {
     /**====== 查询商户ID =====*/
     @GetMapping("/findMerchantIdByUserId")
     String findMerchantIdByUserId(@RequestParam("workerId") String workerId);
+
+    /**====== 查询用户所在酒店ID =====*/
+    @GetMapping("/findHotelIdOfUserId")
+    String findMerchantIdOfUserId(@RequestParam("userId") String userId);
 }

@@ -10,6 +10,7 @@ import cn.finetool.common.dto.CreateOrderDto;
 import cn.finetool.common.dto.RoomBookingDto;
 import cn.finetool.common.enums.SysEnum;
 import cn.finetool.common.enums.Status;
+import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.*;
 import cn.finetool.common.util.MqUtils;
 import cn.finetool.common.util.Response;
@@ -19,6 +20,7 @@ import cn.finetool.hotel.service.RoomBookingService;
 import cn.finetool.hotel.service.RoomDateService;
 import cn.finetool.hotel.service.RoomInfoService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.Resource;
@@ -60,7 +62,13 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
 
     @Override
     public Response addRoomInfo(RoomInfo roomInfo) {
-        // TODO: 简单的添加功能，尚未考虑细节
+        // 检查是否存在相同的房间
+        RoomInfo existedRoomInfo = roomInfoMapper.selectOne(new QueryWrapper<RoomInfo>()
+                .eq("room_id", roomInfo.getRoomId())
+                .eq("room_info_id", roomInfo.getRoomInfoId()));
+        if (Objects.nonNull(existedRoomInfo)){
+            throw new BusinessRuntimeException("房间信息已存在");
+        }
         roomInfo.setId(SysEnum.ROOM_INFO_ID_PREFIX.code() + ID_WORKER.nextId());
         save(roomInfo);
         return Response.success("添加成功");
