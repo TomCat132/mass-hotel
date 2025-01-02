@@ -8,28 +8,18 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface HotelAdminService {
-
-    /**
-     * Web后台：用户端
-     *
-     * @param merchantId
-     * @return
-     */
+    
+    /** ========= 获取酒店房间预订列表 ========= */
     Response getHotelReserveRoomBookingList(String merchantId);
-
-    /**
-     * Web后台：sys端
-     *
-     * @return
-     */
+    /** ========= 查询合作商户列表 ========= */
     Response queryCooperationMerchantList();
-
+    /** ========= 更新商户状态 ========= */
     Response updateStatus(PlanDto planDto);
-
+    /** ========= 查询商户详情页面 ========= */
     Response merchantInfo(String merchantId);
-
+    /** ========= 退房办理订单信息列表  ========= */
     Response getWillFinishOrderList(String merchantId);
-
+    /** ========= 开始办理退房 ========= */
     Response startFinishRoomOut(Integer id);
     /** ========= 根据房间日期ID获取房间价格 ========= */
     BigDecimal getRoomDatePriceById(Integer roomDateId);
@@ -51,4 +41,6 @@ public interface HotelAdminService {
     Response updateRoom(RoomDto roomDto);
     /** ========= 删除房间类型相关的所有配置信息 ========= */
     Response deleteRoom(String roomId);
+    /** ========= 取消预定房间 ========= */
+    Response cancelReserveRoom(Integer id);
 }

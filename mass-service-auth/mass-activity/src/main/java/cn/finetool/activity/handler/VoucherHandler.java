@@ -5,7 +5,7 @@ import cn.finetool.activity.mapper.CouponMapper;
 import cn.finetool.activity.mapper.UserVoucherMapper;
 import cn.finetool.activity.mapper.VoucherMapper;
 import cn.finetool.activity.service.VoucherService;
-import cn.finetool.activity.strategy.SaveVoucherContext;
+import cn.finetool.activity.strategy.VoucherOperationContext;
 import cn.finetool.api.service.AccountAPIService;
 import cn.finetool.common.dto.VoucherDto;
 import cn.finetool.common.enums.SysEnum;
@@ -44,7 +44,7 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
     private static final SnowflakeIdWorker WORKER_ID = new SnowflakeIdWorker(2, 0);
 
     @Resource
-    private SaveVoucherContext saveVoucherContext;
+    private VoucherOperationContext voucherOperationContext;
     @Resource
     private VoucherMapper voucherMapper;
     @Resource
@@ -70,7 +70,7 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
             throw new BusinessRuntimeException("用户未关联商户");
         }
         
-        saveVoucherContext.saveVoucher(voucherDto);
+        voucherOperationContext.saveVoucher(voucherDto);
 
         Voucher voucher = new Voucher();
         voucher.setVoucherId(voucherId);
@@ -99,7 +99,7 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
 
     @Override
     public void updateVoucherStatus(Integer voucherType, String voucherId, Integer status) {
-        saveVoucherContext.changStatus(voucherType, voucherId, status);
+        voucherOperationContext.changStatus(voucherType, voucherId, status);
     }
 
     @Override
@@ -166,5 +166,14 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
                 .eq("voucher_id", voucherId)
                 .set("status", status)
                 .set("use_time", TimeUtil.now()));
+    }
+
+    @Override
+    public Response deleteVoucherByVoucherId(String voucherId) {
+        // 查询优惠券类型
+        Voucher voucher = voucherMapper.selectOne(new QueryWrapper<Voucher>()
+                .eq("voucher_id", voucherId));
+        voucherOperationContext.deleteVoucher(voucherId, voucher.getVoucherType());
+        return Response.success("删除成功");
     }
 }

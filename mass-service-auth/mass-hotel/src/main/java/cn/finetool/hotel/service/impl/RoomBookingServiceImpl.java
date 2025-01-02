@@ -77,6 +77,9 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
     public Response startHandleCheckIn(Integer id) {
         // 更爱 status : 已预定 -》 办理中
         roomBookingMapper.changeStatus(id, Status.ROOMBOOKING_DOING.getCode());
+        // 清除标记
+        redisTemplate.delete(RedisCache.ROOM_BOOKING_TIMEOUT_REMIND + id);
+        // TODO: 发送办理超时提醒 5分钟  标记/办理入住成功后取消标记
         return Response.success("开始办理入住");
     }
 

@@ -30,7 +30,7 @@ import java.time.YearMonth;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -60,6 +60,8 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
     private RabbitTemplate rabbitTemplate;
     @Resource
     private RoomMapper roomMapper;
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public Response addRoomInfo(RoomInfo roomInfo) {

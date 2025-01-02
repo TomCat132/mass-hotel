@@ -115,4 +115,14 @@ public class HotelAdminWebResource {
     public Response deleteRoom(@RequestParam("roomId") String roomId){
         return hotelAdminHandler.deleteRoom(roomId);
     }
+
+    /**
+     * @param id room_booking_id
+     * @return
+     */
+    @PutMapping("/cancel-reserve-room")
+    @ApiOperation(value = "取消预订房间", notes = "根据预订ID取消预订房间")
+    public Response cancelReserveRoom(@RequestParam("id") Integer id){
+        return hotelAdminHandler.cancelReserveRoom(id);
+    }
 }

@@ -38,8 +38,14 @@ public interface VoucherService extends IService<Voucher> {
 
     /**
      * 更新活动券状态为：已使用
-     * @param voucherId
-     * @param status
+     * @param voucherId 活动券编号
+     * @param status 装填
      */
     void usedVoucher(String voucherId, Integer status);
+
+    /**
+     * 活动券编号
+     * @param voucherId 活动券编号
+     */
+    Response deleteVoucherByVoucherId(String voucherId);
 }

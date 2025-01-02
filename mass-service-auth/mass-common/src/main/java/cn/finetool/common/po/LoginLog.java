@@ -67,8 +67,9 @@ public class LoginLog implements java.io.Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime createTime;
     
-    @TableField(value = "system")
-    private String System;
+    //TODO: 还没有更改数据库 op_system
+    @TableField(value = "op_system")
+    private String system;
 
     /**
      * 是否删除
