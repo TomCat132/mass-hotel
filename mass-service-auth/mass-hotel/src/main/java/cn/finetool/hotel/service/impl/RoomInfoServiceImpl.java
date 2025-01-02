@@ -15,7 +15,9 @@ import cn.finetool.common.po.*;
 import cn.finetool.common.util.MqUtils;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.util.SnowflakeIdWorker;
+import cn.finetool.common.util.TimeUtil;
 import cn.finetool.hotel.mapper.RoomInfoMapper;
+import cn.finetool.hotel.mapper.RoomMapper;
 import cn.finetool.hotel.service.RoomBookingService;
 import cn.finetool.hotel.service.RoomDateService;
 import cn.finetool.hotel.service.RoomInfoService;
@@ -24,9 +26,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.Resource;
+import java.time.YearMonth;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -44,21 +48,18 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
 
     @Resource
     private RedissonClient redissonClient;
-
     @Resource
     private RoomInfoMapper roomInfoMapper;
-
     @Resource
     private RoomDateService roomDateService;
-
     @Resource
     private RoomBookingService roomBookingService;
-
     @Resource
     private OrderAPIService orderAPIService;
-
     @Resource
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    private RoomMapper roomMapper;
 
     @Override
     public Response addRoomInfo(RoomInfo roomInfo) {
@@ -71,7 +72,29 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
         }
         roomInfo.setId(SysEnum.ROOM_INFO_ID_PREFIX.code() + ID_WORKER.nextId());
         save(roomInfo);
+        //初始化该新增房间数据
+        YearMonth yearMonth = TimeUtil.CurrentYearOfMonth();
+        initRoomDate(roomInfo.getId(), yearMonth);
         return Response.success("添加成功");
+    }
+
+    /**
+     * 
+     * @param id 主键 tb_room_info
+     * @param yearMonth
+     */
+    private void initRoomDate(String id, YearMonth yearMonth) {
+        // 拿到第一天到最后一天的列表
+        RoomInfo roomInfo = roomInfoMapper.selectById(id);
+        Room room = roomMapper.selectOne(new QueryWrapper<Room>()
+                .eq("id", roomInfo.getRoomId()));
+        List<LocalDate> dateList = TimeUtil.getBetweenDate(yearMonth.atDay(1), yearMonth.atEndOfMonth());
+        for (LocalDate date : dateList){
+            RoomDate roomDate = new RoomDate();
+            roomDate.setRiId(id);
+            roomDate.setDate(date);
+            roomDate.setPrice(room.getBasicPrice());
+        }
     }
 
     @Override
