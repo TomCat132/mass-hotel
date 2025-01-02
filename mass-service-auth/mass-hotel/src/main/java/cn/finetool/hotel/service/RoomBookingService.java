@@ -9,10 +9,8 @@ public interface RoomBookingService extends IService<RoomBooking> {
 
     /** =========== 查询订单（手机号/订单号） ========== */
     Response queryRoomBooking(Integer queryType, String queryValue);
-
     /** =========== 开始处理入住 ========== */
     Response startHandleCheckIn(Integer id);
-
     /** =========== 检查房间情况 ========== */
     Response checkRoomDateInfo(Integer id);
 

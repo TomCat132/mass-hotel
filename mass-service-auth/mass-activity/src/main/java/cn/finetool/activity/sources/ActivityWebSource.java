@@ -7,6 +7,7 @@ import cn.finetool.common.util.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,5 +32,14 @@ public class ActivityWebSource {
     @ApiOperation(value = "获取有效的所有活动券列表", notes = "PMS: 获取有效的所有活动券列表")
     public Response getValidVoucherList(){
         return voucherService.getValidVoucherList();
+    }
+
+    /**
+     * @param voucherId 活动券编号
+     */
+    @DeleteMapping("/voucher")
+    @ApiOperation(value = "删除活动券", notes = "PMS: 删除活动券")
+    public Response deleteVoucherByVoucherId(@RequestParam("voucherId") String voucherId){
+        return voucherService.deleteVoucherByVoucherId(voucherId);
     }
 }

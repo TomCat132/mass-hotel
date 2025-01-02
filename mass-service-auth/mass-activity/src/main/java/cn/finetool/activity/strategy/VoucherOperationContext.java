@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Component
 @Slf4j
-public class SaveVoucherContext {
+public class VoucherOperationContext {
 
     private final Map<Integer, SaveVoucherStrategy> strategies = new LinkedHashMap<>();
 
@@ -45,5 +45,10 @@ public class SaveVoucherContext {
     public boolean decreaseVoucherStock(Integer voucherType, String voucherId, String userId) {
         SaveVoucherStrategy strategy = strategies.get(voucherType);
         return strategy.decreaseVoucherStock(voucherId, userId);
+    }
+
+    public void deleteVoucher(String voucherId, Integer voucherType) {
+        SaveVoucherStrategy strategy = strategies.get(voucherType);
+        strategy.deleteVoucher(voucherId);
     }
 }

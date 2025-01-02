@@ -33,9 +33,18 @@ public class RoomDto implements Serializable {
      wifi：有无 tv：电视v airConditioning：空调 parking：停车位
      */
     private Map<String,Object> roomDesc;
+    /**
+     * JSON格式的房间描述
+     */
+    private String roomDescStr;
 
     /**
      * 房间基础定价
      */
     private BigDecimal basicPrice;
+
+    /**
+     * room 的 id 
+     */
+    private String roomId;
 }
