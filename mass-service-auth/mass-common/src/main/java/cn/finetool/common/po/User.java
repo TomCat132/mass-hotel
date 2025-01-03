@@ -130,4 +130,12 @@ public class User implements Serializable {
         }
         return sb.toString();
     }
+
+    /**
+     * 默认密码
+     * @return
+     */
+    public static String defaultPassword(){
+        return "123456";
+    }
 }

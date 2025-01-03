@@ -78,7 +78,10 @@ public enum Status {
 
     ACCOUNT_OFFLINE(0, "离线"),
     ACCOUNT_ONLINE(1, "在线"),
-    
+    // user_merchant
+    ACCOUNT_CLOD(1, "已冻结"),
+    ACCOUNT_NORMAL(0, "在职"),
+    ACCOUNT_RESIGNED(2, "离职"),
     ;
 
     private final int code;

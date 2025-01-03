@@ -38,7 +38,12 @@ public class UserVO implements java.io.Serializable {
     private String role;
 
     /**
-     * 账号状态
+     * 账号状态: 0-正常，1-冻结
      */
     private Integer status;
+
+    /**
+     * 0：离线  1：在线
+     */
+    private Boolean isOnLine;
 }
