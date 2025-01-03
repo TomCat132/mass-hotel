@@ -106,6 +106,12 @@ public class User implements Serializable {
     private BigDecimal account;
 
     /**
+     * 账号状态
+     */
+    @TableField(value = "status")
+    private Integer status;
+
+    /**
      * 用户消费兑换券数量
      */
     private Integer consumeVoucherCount;

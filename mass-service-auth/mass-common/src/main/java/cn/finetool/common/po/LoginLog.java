@@ -66,9 +66,12 @@ public class LoginLog implements java.io.Serializable {
     @TableField(value = "create_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime createTime;
-    
-    @TableField(value = "system")
-    private String System;
+
+    /**
+     * 登录设备
+     */
+    @TableField(value = "op_system")
+    private String system;
 
     /**
      * 是否删除

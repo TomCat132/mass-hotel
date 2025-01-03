@@ -8,6 +8,7 @@ import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -41,4 +42,12 @@ public class AccountWebSource {
     public Response getUserLocationInfo(){
         return accountService.getUserLocationInfo();
     }
+    
+    @GetMapping("/get-merchant-employee-list")
+    @ApiOperation(value = "获取商户员工列表", notes = "获取商户员工列表")
+    public Response getMerchantEmployeeList(@RequestParam("merchantId") String merchantId){
+        return accountService.getMerchantEmployeeList(merchantId);
+    }
+    
+    
 }

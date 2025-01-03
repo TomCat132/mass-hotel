@@ -34,7 +34,7 @@ spring:
         - id: mass-account-service
           uri: lb://mass-account-service
           predicates:
-            - Path=/user/**,/role/**,/userRoles/**,/account/**
+            - Path=/user/**,/role/**,/userRoles/**,/account/**,/admin/**
         # 充值服务路由
         - id: mass-recharge-plan-service
           uri: lb://mass-recharge-plan-service
