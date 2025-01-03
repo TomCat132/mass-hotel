@@ -320,5 +320,25 @@ public class HotelAdminHandler implements HotelAdminService {
         return success("操作成功");
     }
 
+    @Override
+    public Response getCanReserveRoomByDate(String merchantId, String queryDate) {
+        return null;
+    }
+
+    @Override
+    public Response getReservedRoomByDate(String merchantId, String queryDate) {
+        return null;
+    }
+
+    @Override
+    public Response getUsingRoomByDate(String merchantId, String queryDate) {
+        return null;
+    }
+
+    @Override
+    public Response getCleaningRoomByDate(String merchantId, String queryDate) {
+        return null;
+    }
+
 
 }

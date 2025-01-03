@@ -115,4 +115,32 @@ public class HotelAdminWebResource {
     public Response deleteRoom(@RequestParam("roomId") String roomId){
         return hotelAdminHandler.deleteRoom(roomId);
     }
+    
+    @GetMapping("/get-can-reserve-room-by-date")
+    @ApiOperation(value = "获取可预订的房间列表", notes = "根据商户ID和日期获取可预订的房间简述")
+    public Response getCanReserveRoomInfoByDate(@RequestParam("merchantId") String merchantId,
+                                            @RequestParam("queryDate") String queryDate){
+        return hotelAdminHandler.getCanReserveRoomByDate(merchantId, queryDate);
+    }
+    
+    @GetMapping("/get-reserved-room-by-date")
+    @ApiOperation(value = "获取预订的房间列表", notes = "根据商户ID和日期获取预订的房间简述")
+    public Response getReservedRoomInfoByDate(@RequestParam("merchantId") String merchantId,
+                                          @RequestParam("queryDate") String queryDate){
+        return hotelAdminHandler.getReservedRoomByDate(merchantId, queryDate);
+    }
+    
+    @GetMapping("/get-using-room-by-date")
+    @ApiOperation(value = "获取使用中的房间列表", notes = "根据商户ID和日期获取使用中的房间简述")
+    public Response getUsingRoomInfoByDate(@RequestParam("merchantId") String merchantId,
+                                           @RequestParam("queryDate") String queryDate){
+        return hotelAdminHandler.getUsingRoomByDate(merchantId, queryDate);
+    }
+    
+    @GetMapping("/get-cleaning-room-by-date")
+    @ApiOperation(value = "获取清洁中的房间列表", notes = "根据商户ID和日期获取清洁中的房间简述")
+    public Response getCleaningRoomInfoByDate(@RequestParam("merchantId") String merchantId,
+                                              @RequestParam("queryDate") String queryDate){
+        return hotelAdminHandler.getCleaningRoomByDate(merchantId, queryDate);
+    }
 }
