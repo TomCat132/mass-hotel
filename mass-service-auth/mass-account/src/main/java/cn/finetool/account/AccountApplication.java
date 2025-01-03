@@ -16,7 +16,10 @@ import org.springframework.context.annotation.ComponentScan;
 @MapperScan(basePackages = {"cn.finetool.api.mapper", "cn.finetool.account.mapper"})
 @ComponentScan(basePackages = {"cn.finetool.account", "cn.finetool.api"})
 public class AccountApplication {
+    
+    
     public static void main(String[] args) {
         SpringApplication.run(AccountApplication.class, args);
+        
     }
 }

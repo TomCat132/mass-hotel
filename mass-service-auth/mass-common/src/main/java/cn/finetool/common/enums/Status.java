@@ -75,10 +75,10 @@ public enum Status {
     
     MESSAGE_UNREAD(0, "未读"),
     MESSAGE_READ(1, "已读"),
+
+    ACCOUNT_OFFLINE(0, "离线"),
+    ACCOUNT_ONLINE(1, "在线"),
     
-    /**
-     * 房间类型
-     */
     ;
 
     private final int code;

@@ -35,11 +35,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.websocket.Session;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -82,6 +84,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private LoginLogMapper loginLogMapper;
     @Resource
     private MessageHandler messageHandler;
+    @Resource
+    private Environment config;
     
     @Override
     public Response register(User user) {
@@ -144,16 +148,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                     .eq(Role::getRoleId, userRoles.getRoleId()));
             roleList.add(roleInfo.getRoleKey());
         });
-
+        String userId = StpUtil.getLoginIdAsString();
         //登录成功，记录IP 
-        recordLoginLog();
+        recordLoginLog(userId);
         StpUtil.getTokenSession().set(SaSession.ROLE_LIST, roleList);
         return success("登录成功");
     }
 
     // 记录登录日志
-    private void recordLoginLog() {
-        String userId = StpUtil.getLoginIdAsString();
+    public void recordLoginLog(String userId) {
         //解析数据
         String ip = IpUtil.getClientIp();
         Map<String, String> locationInfo = IpUtil.getLocationInfo(ip);
@@ -309,20 +312,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         //校验完成，保存用户角色权限等信息
         StpUtil.login(accountInfo.getUserId());
         StpUtil.getTokenSession().set(SaSession.ROLE_LIST, roleList);
-
-
+        
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("userId", accountInfo.getUserId());
         resultMap.put("userRole", roleList);
+        resultMap.put("websocketUrl", "ws://localhost"  + ":8081"   + "/admin" +
+                "/" + accountInfo.getUserId());
         //保存用户所在酒店Id
         String merchantId = systemMapper.getMerchantId(accountInfo.getUserId());
         if (Objects.nonNull(merchantId)){
             redisTemplate.opsForValue().set(RedisCache.USER_MERCHANT_BINDING + user.getUserId(), merchantId);
             resultMap.put("merchantId", merchantId);
         }
-        
-
-
         return success(resultMap);
     }
 
@@ -358,5 +359,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return success("true");
     }
 
+
+    private String getUserIdFromSession(Session session) {
+        return session.getUserProperties().get("userId").toString();
+    }
 
 }
