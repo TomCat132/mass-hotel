@@ -26,6 +26,7 @@ import cn.finetool.common.util.CommonsUtils;
 import cn.finetool.common.util.IpUtil;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.util.SnowflakeIdWorker;
+import cn.finetool.common.util.Strings;
 import cn.finetool.common.util.SystemUtil;
 import cn.finetool.common.util.TimeUtil;
 import cn.finetool.common.vo.OrderVO;
@@ -188,6 +189,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .eq(User::getUserId, StpUtil.getLoginIdAsString()));
         userInfo.setPassword(null);
         userInfo.setSalty(null);
+        if (Strings.isNotBlank(userInfo.getAvatarKey())){
+            userInfo.setAvatarKey(ossAPIService.findImageByUrl(userInfo.getAvatarKey()));
+        }
         return success(userInfo);
     }
 

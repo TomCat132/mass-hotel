@@ -169,7 +169,7 @@ public class HotelAdminHandler implements HotelAdminService {
     @Override
     public Response getRoomNameList(String merchantId) {
         List<RoomInfoVo> roomInfoVoList = roomMapper.getRoomNameList(merchantId);
-        if (CollectionUtils.isNotEmpty(roomInfoVoList)){
+        if (CollectionUtils.isNotEmpty(roomInfoVoList)) {
             return success(roomInfoVoList);
         }
         return success(Collections.emptyList());
@@ -186,8 +186,13 @@ public class HotelAdminHandler implements HotelAdminService {
         roomInfoVo.setOldPrice(room.getBasicPrice());
         List<RoomInfo> roomInfoList = roomInfoMapper.selectList(new QueryWrapper<RoomInfo>()
                 .eq("room_id", roomId));
+        List<String> roomIds = Collections.singletonList(roomId);
+        List<FileUrl> imageListByUniqueIds = ossAPIService.findImageListByUniqueIds(roomIds);
+        if (CollectionUtils.isNotEmpty(imageListByUniqueIds)) {
+            roomInfoVo.setRoomAvatarList(imageListByUniqueIds);
+        }
         // 查询房间类型的具体信息列表
-        if (CollectionUtils.isNotEmpty(roomInfoList)){
+        if (CollectionUtils.isNotEmpty(roomInfoList)) {
             // 查询所有的 roomInfoIds (1002前缀)
 //            List<String> roomInfoIds = roomInfoList.stream()
 //                    .map(RoomInfo::getId)
@@ -211,25 +216,19 @@ public class HotelAdminHandler implements HotelAdminService {
 //                        return roomInfo;
 //                    })
 //                    .collect(Collectors.toList());
-       
+
             // 组装 RoomInfoVo
             roomInfoVo.setRoomInfoList(roomInfoList);
-        
-            List<String> roomIds = Collections.singletonList(roomId);
-            List<FileUrl> imageListByUniqueIds = ossAPIService.findImageListByUniqueIds(roomIds);
-            if (CollectionUtils.isNotEmpty(imageListByUniqueIds)){
-                roomInfoVo.setRoomAvatarList(imageListByUniqueIds);
-            }
         }
         return success(roomInfoVo);
     }
 
     @Override
     public Response updateRoomImage(String id, List<MultipartFile> avatarList, List<String> deleteIds) {
-        if (CollectionUtils.isNotEmpty(deleteIds)){
+        if (CollectionUtils.isNotEmpty(deleteIds)) {
             ossAPIService.deleteByIds(deleteIds);
         }
-        if (CollectionUtils.isNotEmpty(avatarList)){
+        if (CollectionUtils.isNotEmpty(avatarList)) {
             ossAPIService.batchUploadImage(avatarList, id);
         }
         return success("更新成功");
@@ -242,7 +241,7 @@ public class HotelAdminHandler implements HotelAdminService {
         RoomInfo roomInfo = roomInfoMapper.selectById(id);
         // 根据 roomInfoIds 查询图片
         List<FileUrl> fileUrlList = ossAPIService.findImageListByUniqueIds(Collections.singletonList(roomInfo.getId()));
-        if (CollectionUtils.isNotEmpty(fileUrlList)){
+        if (CollectionUtils.isNotEmpty(fileUrlList)) {
             roomInfo.setAvatarList(fileUrlList);
         }
         singleRoomInfoVO.setRoomInfo(roomInfo);
@@ -256,7 +255,7 @@ public class HotelAdminHandler implements HotelAdminService {
         List<RoomDate> roomDates = roomDateMapper.selectList(new QueryWrapper<RoomDate>()
                 .eq("ri_id", id)
                 .between("date", firstDayOfMonth, lastDayOfMonth));
-        if (CollectionUtils.isNotEmpty(roomDates)){
+        if (CollectionUtils.isNotEmpty(roomDates)) {
             singleRoomInfoVO.setRoomDateList(roomDates);
         }
         return success(singleRoomInfoVO);
@@ -299,7 +298,7 @@ public class HotelAdminHandler implements HotelAdminService {
 
         List<RoomInfo> roomInfoList = roomInfoMapper.selectList(new QueryWrapper<RoomInfo>()
                 .eq("room_id", roomId));
-        if (CollectionUtils.isNotEmpty(roomInfoList)){
+        if (CollectionUtils.isNotEmpty(roomInfoList)) {
             List<String> roomInfoIds = roomInfoList.stream()
                     .map(RoomInfo::getId)
                     .collect(Collectors.toList());
@@ -322,23 +321,81 @@ public class HotelAdminHandler implements HotelAdminService {
 
     @Override
     public Response getCanReserveRoomByDate(String merchantId, String queryDate) {
-        return null;
+        int count = getRoomUsageOfDifferentSituationByDate(merchantId, queryDate, Status.ROOM_DATE_CAN_USE.code());
+        return success(count);
     }
 
     @Override
     public Response getReservedRoomByDate(String merchantId, String queryDate) {
-        return null;
+        int count = getRoomUsageOfDifferentSituationByDate(merchantId, queryDate, Status.ROOM_DATE_RESERVED.code());
+        return success(count);
     }
 
     @Override
     public Response getUsingRoomByDate(String merchantId, String queryDate) {
-        return null;
+        int count = getRoomUsageOfDifferentSituationByDate(merchantId, queryDate, Status.ROOMBOOKING_CHECK_IN.code());
+        return success(count);
     }
 
     @Override
     public Response getCleaningRoomByDate(String merchantId, String queryDate) {
-        return null;
+        int count = getRoomUsageOfDifferentSituationByDate(merchantId, queryDate, Status.ROOM_INFO_CLEANING.code());
+        return success(count);
     }
 
-
+    private int getRoomUsageOfDifferentSituationByDate(String merchantId, String queryDate, Integer status) {
+        //先查所有merchantId的room、roomInfo -> roomDate
+        Hotel hotel = hotelMapper.selectOne(new QueryWrapper<Hotel>()
+                .eq("merchant_id", merchantId));
+        // 查询商户所有的roomIds
+        List<String> roomIds = roomMapper.selectList(new QueryWrapper<Room>()
+                        .eq("hotel_id", hotel.getHotelId()))
+                .stream()
+                .map(Room::getRoomId)
+                .collect(Collectors.toList());
+        // 查询可预定的房间
+        if (Strings.equals(Status.ROOM_DATE_CAN_USE.code(), status)) {
+            List<String> roomInfoPrimaryIds = roomInfoMapper.selectList(new QueryWrapper<RoomInfo>()
+                            .in("room_id", roomIds))
+                    .stream()
+                    .map(RoomInfo::getId)
+                    .collect(Collectors.toList());
+            return roomDateMapper.selectList(new QueryWrapper<RoomDate>()
+                    .in("ri_id", roomInfoPrimaryIds)
+                    .eq("status", Status.ROOM_DATE_CAN_USE.code())
+                    .eq("date", TimeUtil.parseToLocalDate(queryDate))).size();
+        }// 查看已预定的房间 (room_date)
+        else if (Strings.equals(Status.ROOM_DATE_RESERVED.code(), status)) {
+            List<String> roomInfoPrimaryIds = roomInfoMapper.selectList(new QueryWrapper<RoomInfo>()
+                            .in("room_id", roomIds))
+                    .stream()
+                    .map(RoomInfo::getId)
+                    .collect(Collectors.toList());
+            return roomDateMapper.selectList(new QueryWrapper<RoomDate>()
+                    .in("ri_id", roomInfoPrimaryIds)
+                    .eq("status", Status.ROOM_DATE_RESERVED.code())
+                    .eq("date", TimeUtil.parseToLocalDate(queryDate))).size();
+        }// 查看入住中的数量
+        else if (Strings.equals(Status.ROOMBOOKING_CHECK_IN.code(), status)) {
+            List<String> roomInfoPrimaryIds = roomInfoMapper.selectList(new QueryWrapper<RoomInfo>()
+                            .in("room_id", roomIds))
+                    .stream()
+                    .map(RoomInfo::getId)
+                    .collect(Collectors.toList());
+            List<Integer> roomDatePrimaryIds = roomDateMapper.selectList(new QueryWrapper<RoomDate>()
+                            .in("ri_id", roomInfoPrimaryIds))
+                    .stream()
+                    .map(RoomDate::getId)
+                    .collect(Collectors.toList());
+            return roomBookingMapper.selectList(new QueryWrapper<RoomBooking>()
+                    .in("room_date_id", roomDatePrimaryIds)
+                    .eq("status", Status.ROOMBOOKING_CHECK_IN.code())).size();
+        }// 查询清洁中的房间 - 只查看当天
+        else if (Strings.equals(Status.ROOM_INFO_CLEANING.code(), status)) {
+            return roomInfoMapper.selectList(new QueryWrapper<RoomInfo>()
+                    .in("room_id", roomIds)
+                    .eq("status", Status.ROOM_INFO_CLEANING.code())).size();
+        }
+        return 0;
+    }
 }
