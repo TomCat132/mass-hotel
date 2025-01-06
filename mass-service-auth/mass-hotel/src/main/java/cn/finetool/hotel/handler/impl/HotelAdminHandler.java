@@ -61,6 +61,8 @@ public class HotelAdminHandler implements HotelAdminService {
     private RechargePlanAPIService rechargePlanAPIService;
     @Resource
     private OssAPIService ossAPIService;
+    
+    
 
 
     @Override
@@ -342,6 +344,20 @@ public class HotelAdminHandler implements HotelAdminService {
         int count = getRoomUsageOfDifferentSituationByDate(merchantId, queryDate, Status.ROOM_INFO_CLEANING.code());
         return success(count);
     }
+
+    @Override
+    public String findMerchantIdByOrderId(String orderId) {
+        // 截取订单前4位
+        String prefix = orderId.substring(0, 4);
+        // 酒店订单前缀
+        if (Strings.equals(SysEnum.ROOM_ORDER_PREFIX.code(), prefix)){
+           return roomBookingMapper.findMerchantIdByOrderId(orderId);
+        }
+        
+        return "";
+    }
+
+
 
     private int getRoomUsageOfDifferentSituationByDate(String merchantId, String queryDate, Integer status) {
         //先查所有merchantId的room、roomInfo -> roomDate

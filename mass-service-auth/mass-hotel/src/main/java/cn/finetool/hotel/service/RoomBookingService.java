@@ -13,12 +13,14 @@ public interface RoomBookingService extends IService<RoomBooking> {
     Response startHandleCheckIn(Integer id);
     /** =========== 检查房间情况 ========== */
     Response checkRoomDateInfo(Integer id);
-
+    /** =========== 确认缴纳押金 ========== */
     Response receiveDeposit(String id);
-
+    /** =========== 完成处理入住 ========== */
     Response finishHandleCheckIn(Integer id, Integer type, String doorKey) throws JsonProcessingException;
-
+    /** =========== 绑定门禁卡 ========== */
     Response bindingDoorKey(Integer id, String doorKey);
-
+    /** =========== 解绑门禁卡 ========== */
     Response unBindingDoorKey(Integer id);
+    /** =========== 结束处理入住 ========== */
+    Response endCheckInRoomOrder(Integer id);
 }

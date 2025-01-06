@@ -16,4 +16,6 @@ public interface OrderService {
     RoomOrderBaseInfo getOrderBaseInfo(String orderId);
 
     String findMerchantIdByOrderId(String orderId);
+    /**======== 根据订单号查询用户id ======= */
+    String findUserIdByOrderId(String orderId);
 }

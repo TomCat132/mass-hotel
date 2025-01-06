@@ -49,4 +49,6 @@ public interface HotelAdminService {
     Response getUsingRoomByDate(String merchantId, String queryDate);
     /** ========= 根据日期获取空闲中的房间列表 ========= */
     Response getCleaningRoomByDate(String merchantId, String queryDate);
+    /** ========= 根据订单ID获取商户ID ========= */
+    String findMerchantIdByOrderId(String orderId);
 }

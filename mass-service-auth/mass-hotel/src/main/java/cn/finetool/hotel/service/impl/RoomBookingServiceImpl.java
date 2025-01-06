@@ -7,15 +7,22 @@ import cn.finetool.common.constant.MqExchange;
 import cn.finetool.common.constant.MqRoutingKey;
 import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.enums.Status;
+import cn.finetool.common.enums.SysEnum;
+import cn.finetool.common.po.Evaluation;
+import cn.finetool.common.po.Hotel;
 import cn.finetool.common.po.Room;
 import cn.finetool.common.po.RoomBooking;
 import cn.finetool.common.po.RoomDate;
 import cn.finetool.common.po.RoomInfo;
 import cn.finetool.common.po.RoomOrder;
+import cn.finetool.common.threadpool.DynamicThreadPool;
 import cn.finetool.common.util.MqUtils;
 import cn.finetool.common.util.Response;
+import cn.finetool.common.util.SnowflakeIdWorker;
 import cn.finetool.common.util.TimeUtil;
 import cn.finetool.common.vo.CheckRoomInfoVO;
+import cn.finetool.hotel.handler.impl.HotelAdminHandler;
+import cn.finetool.hotel.mapper.HotelMapper;
 import cn.finetool.hotel.mapper.RoomBookingMapper;
 import cn.finetool.hotel.mapper.RoomDateMapper;
 import cn.finetool.hotel.mapper.RoomInfoMapper;
@@ -27,7 +34,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.Resource;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,8 +51,10 @@ import java.util.List;
 @Service
 public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomBooking> implements RoomBookingService {
 
-    
+    public static final SnowflakeIdWorker ID_WORKER = new SnowflakeIdWorker(7, 0);
     private static final Logger LOGGER = LoggerFactory.getLogger(RoomBookingServiceImpl.class);
+    @Resource
+    private DynamicThreadPool dynamicThreadPool;
     @Resource
     private RoomBookingMapper roomBookingMapper;
     @Resource
@@ -55,6 +63,10 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
     private RoomMapper roomMapper;
     @Resource
     private RoomDateMapper roomDateMapper;
+    @Resource
+    private HotelMapper hotelMapper;
+    @Resource
+    private HotelAdminHandler hotelAdminHandler;
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
     @Resource
@@ -145,28 +157,41 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
         }
         // status : 办理中 -》 入住中
         roomBookingMapper.changeStatus(id, Status.ROOMBOOKING_CHECK_IN.getCode());
-        // 发送消息到MQ,根据离店时间前1小时提醒用户（离店或者延长入住时间）
-        Map<String, Object> messageBody = new HashMap<>();
-        String workerId = StpUtil.getLoginIdAsString();
-        String merchantId = accountAPIService.findMerchantIdByUserId(workerId);
-        messageBody.put("merchantId", merchantId);
-        messageBody.put("workerId", workerId);
-        messageBody.put("roomBooking", roomBooking.toString());
-
-        // 计算时间
-        RoomOrder roomOrder = orderAPIService.queryOrderInfo(roomBooking.getOrderId());
-        // 离店日期+11点整
-        LocalDateTime outTime = roomOrder.getCheckOutDate().atStartOfDay().plusHours(11);
-        long delayUpTime = Duration.between(nowTime, outTime).toMillis();
-        MqUtils.sendMessage(rabbitTemplate,
-                MqExchange.ROOM_ORDER_ENDING_REMIND_EXCHANGE,
-                MqRoutingKey.ROOM_ORDER_ENDING_REMIND_ROUTING_KEY,
-                messageBody,
-                message -> {
-                    message.getMessageProperties().getHeaders().put("x-delay", delayUpTime);
-                    return message;
-                });
-        LOGGER.info("完成入住办理, 离店消息提醒倒计时: {}ms", delayUpTime);
+        // 异步线程池更新入住总次数
+        dynamicThreadPool.submitTask(() -> {
+            //TODO: 异步任务
+            try {
+                // 发送消息到MQ,根据离店时间前1小时提醒用户（离店或者延长入住时间）
+                Map<String, Object> messageBody = new HashMap<>();
+                String workerId = StpUtil.getLoginIdAsString();
+                String merchantId = accountAPIService.findMerchantIdByUserId(workerId);
+                messageBody.put("merchantId", merchantId);
+                messageBody.put("workerId", workerId);
+                messageBody.put("roomBooking", roomBooking.toString());
+                // 计算时间
+                RoomOrder roomOrder = orderAPIService.queryOrderInfo(roomBooking.getOrderId());
+                // 离店日期+11点整
+                LocalDateTime outTime = roomOrder.getCheckOutDate().atStartOfDay().plusHours(11);
+                long delayUpTime = Duration.between(nowTime, outTime).toMillis();
+                MqUtils.sendMessage(rabbitTemplate,
+                        MqExchange.ROOM_ORDER_ENDING_REMIND_EXCHANGE,
+                        MqRoutingKey.ROOM_ORDER_ENDING_REMIND_ROUTING_KEY,
+                        messageBody,
+                        message -> {
+                            message.getMessageProperties().getHeaders().put("x-delay", delayUpTime);
+                            return message;
+                        });
+                LOGGER.info("完成入住办理, 离店消息提醒倒计时: {}ms", delayUpTime);
+                
+                // 更新入住总次数
+                hotelMapper.update(new UpdateWrapper<Hotel>()
+                        .setSql("live_count = live_count + 1")
+                        .eq("merchant_id", merchantId));
+                        
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        });
         // TODO: 通知用户可以进行入住了
         return Response.success("已完成入住办理");
     }
@@ -188,6 +213,24 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
                 .eq("id", id));
 
         return Response.success("已解除门禁卡绑定");
+    }
+
+    @Override
+    public Response endCheckInRoomOrder(Integer id) {
+        RoomBooking roomBooking = roomBookingMapper.selectById(id);
+        // status : 入住中 -》 已退房
+        roomBookingMapper.changeStatus(id, Status.ROOMBOOKING_CHECK_OUT.code());
+        
+        dynamicThreadPool.submitTask(()->{
+            // 生成待评价数据
+            Evaluation evaluation = new Evaluation();
+            evaluation.setEvaluationId(SysEnum.EVALUATION_PREFIX.code() + ID_WORKER.nextId());
+            evaluation.setOrderId(roomBooking.getOrderId());
+            evaluation.setMerchantId(hotelAdminHandler.findMerchantIdByOrderId(roomBooking.getOrderId()));
+            evaluation.setUserId(orderAPIService.findUserIdByOrderId(roomBooking.getOrderId()));
+            accountAPIService.saveEvaluation(evaluation);
+        });
+        return null;
     }
 
 }

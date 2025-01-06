@@ -1,6 +1,7 @@
 package cn.finetool.account.handler;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.finetool.account.mapper.EvaluationMapper;
 import cn.finetool.account.mapper.RoleMapper;
 import cn.finetool.account.mapper.UserMapper;
 import cn.finetool.account.mapper.UserMerchantMapper;
@@ -12,6 +13,7 @@ import cn.finetool.common.dto.UserDto;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.enums.SysEnum;
 import cn.finetool.common.exception.BusinessRuntimeException;
+import cn.finetool.common.po.Evaluation;
 import cn.finetool.common.po.MessageBox;
 import cn.finetool.common.po.Role;
 import cn.finetool.common.po.User;
@@ -53,6 +55,8 @@ public class AccountHandler implements AccountService {
     private RoleMapper roleMapper;
     @Autowired
     private UserMapper userMapper;
+    @Resource
+    private EvaluationMapper evaluationMapper;
 
     @Override
     public String queryMerchantOfUser(String userId) {
@@ -233,6 +237,11 @@ public class AccountHandler implements AccountService {
         // 发放账号
         generateAccount(userDto);
         return success("账号已发放");
+    }
+
+    @Override
+    public void saveEvaluation(Evaluation evaluation) {
+        evaluationMapper.insert(evaluation);
     }
 
     private void generateAccount(UserDto userDto) {

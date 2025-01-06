@@ -18,4 +18,6 @@ public interface RoomBookingMapper extends BaseMapper<RoomBooking> {
 
     void changeStatusByOrderId(@Param("orderId") String orderId,
                                @Param("status") Integer status);
+
+    String findMerchantIdByOrderId(@Param("orderId") String orderId);
 }

@@ -127,4 +127,5 @@
           AND room_booking.status NOT IN (0, 1, 6, 7)
     </select>
 
+
 </mapper>

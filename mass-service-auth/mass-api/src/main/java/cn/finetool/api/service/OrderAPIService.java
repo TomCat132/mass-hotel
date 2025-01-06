@@ -21,44 +21,36 @@ public interface OrderAPIService {
     @PutMapping("/handleRechargeOrder")
     void handleRechargeOrder(@RequestParam("orderId") String orderId);
 
-    /**
-     * ====== 获取 用户 充值订单列表 =====
-     */
+    /** ====== 获取 用户 充值订单列表 ===== */
     @GetMapping("/getRechargeOrderList")
     List<OrderVO> getRechargeOrderList(@RequestParam("userId") String userId);
-
+    /** ========== 修改订单状态 ========= */
     @PutMapping("/changeOrderStatus")
     void changeOrderStatus(@RequestParam("orderId") String orderId,
                            @RequestParam("orderStatus") Integer orderStatus,
                            @RequestParam(value = "payType", required = false) Integer payType);
 
-    /**
-     * ======== 获取 充值订单状态 =======
-     */
+    /** ======== 获取 充值订单状态 =======*/
     @GetMapping("/queryOrder")
     OrderStatus queryOrder(@RequestParam("orderId") String orderId);
 
-    /**
-     * ======== 获取 房间订单信息 =======
-     */
+    /** ======== 获取 房间订单信息 =======*/
     @GetMapping("/queryOrderInfo")
     RoomOrder queryOrderInfo(@RequestParam("orderId") String orderId);
 
-    /**
-     * ======== 创建 房间预定 订单 =======
-     */
+    /** ======== 创建 房间预定 订单 =======*/
     @RequestMapping(value = "/createRoomOrder", consumes = "application/json")
     void createRoomOrder(@RequestBody CreateOrderDto createOrderDto);
 
-    /**
-     * ======== 获取 用户 房间预定订单列表 =======
-     */
+    /**======== 获取 用户 房间预定订单列表 =======*/
     @GetMapping("/getRoomOrderList")
     List<OrderVO> getRoomOrderList(@RequestParam("userId") String userId);
 
-    /**
-     * ======== 逻辑删除 订单 =======
-     */
+    /**======== 逻辑删除 订单 ======= */
     @PutMapping("/deleteOrder")
     void deleteOrder(@RequestParam("orderId") String orderId);
+    
+    /**======== 根据订单号查询用户id ======= */
+    @GetMapping("/findUserIdByOrderId")
+    String findUserIdByOrderId(@RequestParam("orderId") String orderId);
 }

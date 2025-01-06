@@ -3,7 +3,6 @@ package cn.finetool.order.controller;
 import cn.finetool.common.dto.OrderPayDto;
 import cn.finetool.common.util.Response;
 import cn.finetool.order.service.RoomOrderService;
-import cn.finetool.order.service.impl.RoomOrderServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

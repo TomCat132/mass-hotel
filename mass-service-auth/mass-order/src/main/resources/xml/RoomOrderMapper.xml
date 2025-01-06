@@ -30,4 +30,9 @@
         INNER JOIN tb_hotel AS hotel ON room.hotel_id = hotel.hotel_id
         WHERE order1.order_id = #{orderId}
     </select>
+    <select id="findUserIdByOrderId" resultType="java.lang.String">
+        SELECT user_id
+        FROM tb_room_order
+        WHERE order_id = #{orderId}
+    </select>
 </mapper>

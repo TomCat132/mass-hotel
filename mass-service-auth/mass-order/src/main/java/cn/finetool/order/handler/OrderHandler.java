@@ -92,6 +92,16 @@ public class OrderHandler implements OrderService {
         return roomOrderMapper.findMerchantIdByOrderId(orderId);
     }
 
+    @Override
+    public String findUserIdByOrderId(String orderId) {
+        // 截取订单号前4位,比较查询订单类型
+        String prefix = orderId.substring(0, 4);
+        if (Strings.equals(SysEnum.ROOM_ORDER_PREFIX.code(), prefix)){
+            return roomOrderMapper.findUserIdByOrderId(orderId);
+        }
+        return "";
+    }
+
     private List<OrderVO> queryMerchantRoomOrderList(String merchantId) {
         List<OrderVO> roomOrderList = roomOrderMapper.queryMerchantRoomOrderList(merchantId);
         roomOrderList.forEach(orderVO -> {

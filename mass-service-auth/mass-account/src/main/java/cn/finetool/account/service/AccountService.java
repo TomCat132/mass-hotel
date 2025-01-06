@@ -1,6 +1,7 @@
 package cn.finetool.account.service;
 
 import cn.finetool.common.dto.UserDto;
+import cn.finetool.common.po.Evaluation;
 import cn.finetool.common.util.Response;
 import java.util.List;
 import java.util.Map;
@@ -35,4 +36,6 @@ public interface AccountService {
     Response deleteResignedEmployee(String userId);
     /**====== 新增入职员工信息 =====*/
     Response newEmployeeInfo(UserDto userDto);
+    /**====== 保存评价信息 =====*/
+    void saveEvaluation(Evaluation evaluation);
 }

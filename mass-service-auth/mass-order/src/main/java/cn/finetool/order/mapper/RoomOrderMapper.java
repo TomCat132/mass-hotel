@@ -15,4 +15,6 @@ public interface RoomOrderMapper extends BaseMapper<RoomOrder> {
     List<OrderVO> queryMerchantRoomOrderList(@Param("merchantId") String merchantId);
 
     String findMerchantIdByOrderId(@Param("orderId") String orderId);
+
+    String findUserIdByOrderId(@Param("orderId") String orderId);
 }

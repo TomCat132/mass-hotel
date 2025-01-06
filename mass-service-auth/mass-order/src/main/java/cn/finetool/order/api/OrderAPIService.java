@@ -88,6 +88,10 @@ public class OrderAPIService {
         orderHandler.deleteOrder(orderId);
     }
 
-
+    /**======== 根据订单号查询用户id ======= */
+    @GetMapping("/findUserIdByOrderId")
+    String findUserIdByOrderId(@RequestParam("orderId") String orderId){
+        return orderHandler.findUserIdByOrderId(orderId);
+    }
 }
 

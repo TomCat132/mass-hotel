@@ -8,6 +8,7 @@ public enum SysEnum {
 
     MERCHANT_HOTEL_PREFIX("1001", "酒店前缀标志"),
     ROOM_INFO_ID_PREFIX("1002", "具体房间信息ID前缀标志"),
+    EVALUATION_PREFIX("1003", "评价前缀标志"),
     USER_PREFIX("1010", "用户前缀标志"),
     ROOM_PREFIX("1011", "房间类型前缀标志"),
     VOUCHER_PREFIX("1012", "活动优惠券前缀标志"),

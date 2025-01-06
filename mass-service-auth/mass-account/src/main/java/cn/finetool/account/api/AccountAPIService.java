@@ -1,11 +1,14 @@
 package cn.finetool.account.api;
 
 import cn.finetool.account.service.AccountService;
+import cn.finetool.common.po.Evaluation;
 import jakarta.annotation.Resource;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -37,5 +40,11 @@ public class AccountAPIService {
     @GetMapping("/findHotelIdOfUserId")
     String findHotelIdOfUserId(@RequestParam("userId") String userId){
         return accountService.findMerchantIdOfUserId(userId);
+    }
+
+    /**====== 保存评价数据 =====*/
+    @PostMapping("/saveEvaluation")
+    void saveEvaluation(@RequestPart("evaluation") Evaluation evaluation){
+         accountService.saveEvaluation(evaluation);
     }
 }
