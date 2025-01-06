@@ -7,15 +7,18 @@ import cn.finetool.common.vo.RoomOrderBaseInfo;
 import java.util.List;
 
 public interface OrderService {
+    /**======== 删除订单 ======= */
     void deleteOrder(String orderId);
-
+    /**======== 获取应用充值订单列表 ======= */
     Response getAppRechargeOrderList();
-
+    /**======== 获取商户订单列表 ======= */
     List<OrderVO> getMerchantOrderList(String merchantId);
-
+    /**======== 获取房间预订基本信息 ======= */
     RoomOrderBaseInfo getOrderBaseInfo(String orderId);
-
+    /**======== 根据订单号查询商户id ======= */
     String findMerchantIdByOrderId(String orderId);
     /**======== 根据订单号查询用户id ======= */
     String findUserIdByOrderId(String orderId);
+    /**======== 更改订单评价状态 ======= */
+    void updateEvaluateStatus(String orderId, Integer isEvaluate);
 }

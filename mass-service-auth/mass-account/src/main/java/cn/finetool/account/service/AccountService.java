@@ -1,10 +1,12 @@
 package cn.finetool.account.service;
 
+import cn.finetool.common.dto.EvaluationDto;
 import cn.finetool.common.dto.UserDto;
 import cn.finetool.common.po.Evaluation;
 import cn.finetool.common.util.Response;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface AccountService {
 
@@ -38,4 +40,6 @@ public interface AccountService {
     Response newEmployeeInfo(UserDto userDto);
     /**====== 保存评价信息 =====*/
     void saveEvaluation(Evaluation evaluation);
+    /**====== 用户评价 =====*/
+    Response evaluateAfterEnd(EvaluationDto evaluationDto, List<MultipartFile> avatarList);
 }

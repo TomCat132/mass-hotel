@@ -83,6 +83,9 @@ public enum Status {
     ACCOUNT_CLOD(1, "已冻结"),
     ACCOUNT_NORMAL(0, "在职"),
     ACCOUNT_RESIGNED(2, "离职"),
+
+    EVALUATION_NO(0, "未评价"),
+    EVALUATION_YES(1, "已评价"),
     ;
 
     private final int code;
