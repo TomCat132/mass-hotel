@@ -1,6 +1,5 @@
 package cn.finetool.hotel.handler.impl;
 
-import cn.finetool.api.service.OrderAPIService;
 import cn.finetool.api.service.OssAPIService;
 import cn.finetool.api.service.RechargePlanAPIService;
 import cn.finetool.common.dto.PlanDto;
@@ -62,8 +61,6 @@ public class HotelAdminHandler implements HotelAdminService {
     private RechargePlanAPIService rechargePlanAPIService;
     @Resource
     private OssAPIService ossAPIService;
-    @Resource
-    private OrderAPIService orderAPIService;
 
 
     @Override
@@ -307,7 +304,7 @@ public class HotelAdminHandler implements HotelAdminService {
                     .map(RoomInfo::getId)
                     .collect(Collectors.toList());
             // 再删除 roomInfo
-            // TODO： 有问题需要修改
+            // TODO： 有问题需要修挂
             roomInfoMapper.delete(new QueryWrapper<RoomInfo>()
                     .in("id", roomInfoIds));
             roomInfoIds.add(roomId);
@@ -316,33 +313,31 @@ public class HotelAdminHandler implements HotelAdminService {
                     .in("ri_id", roomInfoIds));
             // 删除 roomInfo,room 相关的图片
             ossAPIService.deleteByIds(roomInfoIds);
+            // 删除 room
+            roomMapper.delete(new QueryWrapper<Room>()
+                    .eq("room_id", roomId));
         }
-        // 删除 room
-        roomMapper.delete(new QueryWrapper<Room>()
-                .eq("room_id", roomId));
         return success("操作成功");
     }
 
     @Override
-    public Response cancelReserveRoom(Integer id) {
+    public Response getCanReserveRoomByDate(String merchantId, String queryDate) {
+        return null;
+    }
 
-        RoomBooking roomBooking = roomBookingMapper.selectById(id);
-        // TODO: 几种情况 1.已预定 2：办理中 3：入住中 4：已退房
-        // 处理预定 未办理入住 或 办理中 的预定信息
-        if (Strings.equals(roomBooking.getStatus(), Status.ROOMBOOKING_RESERVED.code())
-        || Strings.equals(roomBooking.getStatus(), Status.ROOMBOOKING_DOING.code())){
-            // 更改预定订单表状态 
-            roomBookingMapper.update(new UpdateWrapper<RoomBooking>()
-                    .set("status", Status.ROOMBOOKING_CANCEL.code())
-                    .eq("id", id));
-            // 更改订单状态
-            orderAPIService.changeOrderStatus(roomBooking.getOrderId(), Status.ORDER_REFUND.code(), null);
-            // 更改房间状态 1 -> 0
-            roomDateMapper.update(new UpdateWrapper<RoomDate>()
-                    .eq("id", roomBooking.getRoomDateId())
-                    .eq("status", Status.ROOM_DATE_CAN_USE.code()));
-        }
-        return Response.success("取消成功");
+    @Override
+    public Response getReservedRoomByDate(String merchantId, String queryDate) {
+        return null;
+    }
+
+    @Override
+    public Response getUsingRoomByDate(String merchantId, String queryDate) {
+        return null;
+    }
+
+    @Override
+    public Response getCleaningRoomByDate(String merchantId, String queryDate) {
+        return null;
     }
 
 

@@ -1,12 +1,16 @@
 package cn.finetool.account.sources;
 
 import cn.finetool.account.service.AccountService;
+import cn.finetool.common.dto.UserDto;
 import cn.finetool.common.util.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,5 +53,34 @@ public class AccountWebSource {
         return accountService.getMerchantEmployeeList(merchantId);
     }
     
+    @PutMapping("/freeze-account")
+    @ApiOperation(value = "冻结账户", notes = "冻结账户")
+    public Response accountCold(@RequestParam("userId") String userId){
+        return accountService.accountCold(userId);
+    }
     
+    @PutMapping("/unfreeze-account")
+    @ApiOperation(value = "解冻账户", notes = "解冻账户")
+    public Response accountUnCold(@RequestParam("userId") String userId){
+        return accountService.accountUnCold(userId);
+    }
+    
+    @PostMapping("/set-permission")
+    @ApiOperation(value = "设置账户权限", notes = "设置账户权限")
+    public Response setPermission(@RequestParam("userId") String userId,
+                                  @RequestParam("permission") String permission){
+        return accountService.setPermission(userId, permission);
+    }
+    
+    @DeleteMapping("/delete-resigned-employee")
+    @ApiOperation(value = "删除离职员工信息", notes = "删除离职员工信息")
+    public Response deleteResignedEmployee(@RequestParam("userId") String userId){
+        return accountService.deleteResignedEmployee(userId);
+    }
+    
+    @PostMapping("/new-employee-info")
+    @ApiOperation(value = "新增入职员工信息", notes = "新增入职员工信息")
+    public Response newEmployeeInfo(@RequestBody UserDto userDto){
+        return accountService.newEmployeeInfo(userDto);
+    }
 }

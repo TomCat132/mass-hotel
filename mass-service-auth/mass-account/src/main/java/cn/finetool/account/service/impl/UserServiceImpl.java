@@ -86,7 +86,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private MessageHandler messageHandler;
     @Resource
     private Environment config;
-    
+
     @Override
     public Response register(User user) {
         if (StringUtils.isAnyEmpty(user.getUsername(), user.getPhone(), user.getPassword())) {
@@ -98,18 +98,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (userByPhone != null) {
             throw new BusinessRuntimeException(BusinessErrors.DATA_DUPLICATION, "手机号已注册");
         }
-        User userByUsername = userService.getOne(new LambdaQueryWrapper<User>()
-                .eq(User::getUsername, user.getUsername()));
-        if (userByUsername != null) {
-            throw new BusinessRuntimeException(BusinessErrors.DATA_DUPLICATION, "用户名已注册");
-        }
         String salty = User.generateSalty();
         user.setPassword(CommonsUtils.encodeMD5(user.getPassword() + salty));
         user.setRegistrationTime(LocalDateTime.now());
         // 设置用户ID 前缀标志 1010
-        user.setUserId(SysEnum.USER_PREFIX.getCode() + String.valueOf(IdWorker.nextId()));
+        user.setUserId(SysEnum.USER_PREFIX.getCode() + IdWorker.nextId());
         user.setSalty(salty);
-
         save(user);
         // 默认为 用户 角色
         userRolesService.saveUserRoles(RoleType.USER.getCode(), user.getUserId());
@@ -128,7 +122,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new BusinessRuntimeException(BusinessErrors.DATA_NOT_EXIST, "用户不存在");
         }
         if (!CommonsUtils.encodeMD5(user.getPassword() + DBUser.getSalty()).equals(DBUser.getPassword())) {
-            throw new BusinessRuntimeException(BusinessErrors.AUTHENTICATION_ERROR, "用户名或密码错误");
+            throw new BusinessRuntimeException(BusinessErrors.AUTHENTICATION_ERROR, "手机号或密码错误");
         }
         StpUtil.login(DBUser.getUserId());
 
@@ -182,9 +176,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         loginLogMapper.insert(loginLog);
         //发送消息到盒子
         String messageContent = "登录成功&登录时间: " + TimeUtil.format(nowTime) + "&IP: [" + ip + "]&地区: "
-                + country + province + city +  "&操作系统: " + operatingSystem; 
+                + country + province + city + "&操作系统: " + operatingSystem;
         //登录系统
-        messageHandler.sendMessage(userId,messageContent,messageId);
+        messageHandler.sendMessage(userId, messageContent, messageId);
     }
 
 
@@ -312,15 +306,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         //校验完成，保存用户角色权限等信息
         StpUtil.login(accountInfo.getUserId());
         StpUtil.getTokenSession().set(SaSession.ROLE_LIST, roleList);
-        
+
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("userId", accountInfo.getUserId());
         resultMap.put("userRole", roleList);
-        resultMap.put("websocketUrl", "ws://localhost"  + ":8081"   + "/admin" +
+        resultMap.put("websocketUrl", "ws://localhost" + ":8081" + "/admin" +
                 "/" + accountInfo.getUserId());
         //保存用户所在酒店Id
         String merchantId = systemMapper.getMerchantId(accountInfo.getUserId());
-        if (Objects.nonNull(merchantId)){
+        if (Objects.nonNull(merchantId)) {
             redisTemplate.opsForValue().set(RedisCache.USER_MERCHANT_BINDING + user.getUserId(), merchantId);
             resultMap.put("merchantId", merchantId);
         }

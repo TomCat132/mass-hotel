@@ -17,9 +17,9 @@ public interface HotelAdminService {
     Response updateStatus(PlanDto planDto);
     /** ========= 查询商户详情页面 ========= */
     Response merchantInfo(String merchantId);
-    /** ========= 退房办理订单信息列表  ========= */
+    /** ========= 退房办理订单信息列表 ========= */
     Response getWillFinishOrderList(String merchantId);
-    /** ========= 开始办理退房 ========= */
+    /** ========= 开始办理入住 ========= */
     Response startFinishRoomOut(Integer id);
     /** ========= 根据房间日期ID获取房间价格 ========= */
     BigDecimal getRoomDatePriceById(Integer roomDateId);
@@ -41,6 +41,12 @@ public interface HotelAdminService {
     Response updateRoom(RoomDto roomDto);
     /** ========= 删除房间类型相关的所有配置信息 ========= */
     Response deleteRoom(String roomId);
-    /** ========= 取消预定房间 ========= */
-    Response cancelReserveRoom(Integer id);
+    /** ========= 根据日期获取可预订的房间列表 ========= */
+    Response getCanReserveRoomByDate(String merchantId, String queryDate);
+    /** ========= 根据日期获取已预订的房间列表 ========= */
+    Response getReservedRoomByDate(String merchantId, String queryDate);
+    /** ========= 根据日期获取正在使用中的房间列表 ========= */
+    Response getUsingRoomByDate(String merchantId, String queryDate);
+    /** ========= 根据日期获取空闲中的房间列表 ========= */
+    Response getCleaningRoomByDate(String merchantId, String queryDate);
 }
