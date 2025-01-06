@@ -49,6 +49,7 @@ public enum Status {
     ROOMBOOKING_CANCEL(3, "已取消"),
     ROOMBOOKING_CHECK_OUT(4, "已退房"),
     ROOMBOOKING_CHANGE(5, "已更换"),
+    ROOMBOOKING_TIMEOUT(6, "已超时"),
     /**
      * 查询方式
      */

@@ -31,7 +31,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import org.apache.logging.log4j.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -42,6 +45,8 @@ import java.util.List;
 @Service
 public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomBooking> implements RoomBookingService {
 
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(RoomBookingServiceImpl.class);
     @Resource
     private RoomBookingMapper roomBookingMapper;
     @Resource
@@ -75,8 +80,19 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
 
     @Override
     public Response startHandleCheckIn(Integer id) {
-        // 更爱 status : 已预定 -》 办理中
+       
+        RoomBooking roomBooking = roomBookingMapper.selectOne(new QueryWrapper<RoomBooking>()
+                .eq("id", id));
+        if (Objects.isNull(roomBooking)){
+
+        }
+        // 删除 超时提醒标记
+        redisTemplate.delete(RedisCache.ROOM_BOOKING_TIMEOUT_REMIND + roomBooking.getOrderId());
+        // 更新 status : 已预定 -》 办理中
         roomBookingMapper.changeStatus(id, Status.ROOMBOOKING_DOING.getCode());
+
+
+        // TODO: 开始办理入住
         return Response.success("开始办理入住");
     }
 
@@ -135,12 +151,12 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
         String merchantId = accountAPIService.findMerchantIdByUserId(workerId);
         messageBody.put("merchantId", merchantId);
         messageBody.put("workerId", workerId);
-        messageBody.put("roomBooking", roomBooking);
+        messageBody.put("roomBooking", roomBooking.toString());
 
         // 计算时间
         RoomOrder roomOrder = orderAPIService.queryOrderInfo(roomBooking.getOrderId());
         // 离店日期+11点整
-        LocalDate outTime = roomOrder.getCheckOutDate().plus(Duration.ofHours(11));
+        LocalDateTime outTime = roomOrder.getCheckOutDate().atStartOfDay().plusHours(11);
         long delayUpTime = Duration.between(nowTime, outTime).toMillis();
         MqUtils.sendMessage(rabbitTemplate,
                 MqExchange.ROOM_ORDER_ENDING_REMIND_EXCHANGE,
@@ -150,6 +166,7 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
                     message.getMessageProperties().getHeaders().put("x-delay", delayUpTime);
                     return message;
                 });
+        LOGGER.info("完成入住办理, 离店消息提醒倒计时: {}ms", delayUpTime);
         // TODO: 通知用户可以进行入住了
         return Response.success("已完成入住办理");
     }

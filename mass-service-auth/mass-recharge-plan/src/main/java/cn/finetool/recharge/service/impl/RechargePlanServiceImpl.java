@@ -23,6 +23,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.Resource;
 
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,7 @@ import static cn.finetool.common.util.Response.success;
 @Slf4j
 public class RechargePlanServiceImpl extends ServiceImpl<RechargePlanMapper, RechargePlans> implements RechargePlanService {
 
+    public static final Logger LOGGER = LoggerFactory.getLogger(RechargePlanServiceImpl.class);
     @Resource
     private RechargePlanService rechargePlanService;
     @Resource
@@ -75,15 +78,14 @@ public class RechargePlanServiceImpl extends ServiceImpl<RechargePlanMapper, Rec
                 throw new BusinessRuntimeException(BusinessErrors.DATA_STATUS_ERROR, "活动充值方案过期时间不能早于当前时间");
             }
             rechargePlanService.save(rechargePlans);
-
+            
             // 活动充值方案倒计时  单位 : ms
             long milliseconds = Duration.between(nowTime, expirationDate).toMillis();
-            
+            LOGGER.info("活动充值方案倒计时:{}ms");
             Map<String, Object> messageBody = new HashMap<>();
             messageBody.put("planId", rechargePlans.getPlanId());
             messageBody.put("orderType", OrderType.RECHARGE_ORDER.code());
 
-            log.info("message:{}", messageBody);
             MqUtils.sendMessage(rabbitTemplate,
                     MqExchange.RECHARGE_PLAN_EXCHANGE,
                     MqRoutingKey.RECHARGE_PLAN_ROUTING_KEY,
@@ -94,6 +96,8 @@ public class RechargePlanServiceImpl extends ServiceImpl<RechargePlanMapper, Rec
                         message.getMessageProperties().setContentType("application/json");
                         return message;
                     });
+            // 更新Redis
+            redisTemplate.delete(RedisCache.VALID_RECHARGE_PLAN_LIST);
             return success("活动充值方案添加成功");
         }
 
@@ -110,6 +114,8 @@ public class RechargePlanServiceImpl extends ServiceImpl<RechargePlanMapper, Rec
             rechargePlanMapper.update(new UpdateWrapper<RechargePlans>()
                     .set("status", status)
                     .eq("plan_id", planId));
+            // 更新Redis
+            redisTemplate.delete(RedisCache.VALID_RECHARGE_PLAN_LIST);
             return true;
         } catch (Exception e) {
             return false;
@@ -138,6 +144,8 @@ public class RechargePlanServiceImpl extends ServiceImpl<RechargePlanMapper, Rec
                 .set("is_delete", Status.IS_DELETED.getCode())
                 .eq("plan_id", id)
                 .update();
+        // 更新Redis
+        redisTemplate.delete(RedisCache.VALID_RECHARGE_PLAN_LIST);
         return success(null);
     }
 

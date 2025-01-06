@@ -178,6 +178,7 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
         return success(orderInfo);
     }
 
+    @Override
     public RoomOrder queryRoomOrderInfo(String orderId) {
         return roomOrderService.getOne(new LambdaQueryWrapper<RoomOrder>()
                 .eq(RoomOrder::getOrderId,orderId));

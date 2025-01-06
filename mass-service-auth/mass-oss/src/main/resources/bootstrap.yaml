@@ -30,4 +30,7 @@ spring:
           - data-id: shared-common.yaml
             group: MASS_HOTEL
             refresh: true
+          - data-id: shared-rabbitmq.yaml
+            group: MASS_HOTEL
+            refresh: true
 

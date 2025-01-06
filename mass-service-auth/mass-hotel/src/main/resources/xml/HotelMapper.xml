@@ -94,10 +94,10 @@
     </select>
 
     <select id="queryUserColumn" resultType="java.lang.String">
-        SELECT user.phone
+        SELECT DISTINCT user.phone
         FROM tb_user AS user
         JOIN tb_room_order AS room_order ON  user.user_id  = room_order.user_id
-            JOIN tb_room_booking AS room_booking ON room_order.order_id = room_booking.order_id
+        JOIN tb_room_booking AS room_booking ON room_order.order_id = room_booking.order_id
         WHERE room_booking.room_date_id = #{roomDateId}
     </select>
     <select id="queryWillFinishOrderList" resultMap="CheckRoomInfoVOResultMap">

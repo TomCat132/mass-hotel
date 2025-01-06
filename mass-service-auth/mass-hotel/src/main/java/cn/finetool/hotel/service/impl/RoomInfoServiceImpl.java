@@ -15,6 +15,7 @@ import cn.finetool.common.po.*;
 import cn.finetool.common.util.MqUtils;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.util.SnowflakeIdWorker;
+import cn.finetool.common.util.Strings;
 import cn.finetool.common.util.TimeUtil;
 import cn.finetool.hotel.mapper.RoomInfoMapper;
 import cn.finetool.hotel.mapper.RoomMapper;
@@ -30,7 +31,6 @@ import java.time.YearMonth;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -63,6 +63,10 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
 
     @Override
     public Response addRoomInfo(RoomInfo roomInfo) {
+        // 检查房间号是否合法
+        if (Strings.isBlank(roomInfo.getRoomInfoId())){
+            throw new BusinessRuntimeException("房间号不能为空");
+        }
         // 检查是否存在相同的房间
         RoomInfo existedRoomInfo = roomInfoMapper.selectOne(new QueryWrapper<RoomInfo>()
                 .eq("room_id", roomInfo.getRoomId())
@@ -87,7 +91,7 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
         // 拿到第一天到最后一天的列表
         RoomInfo roomInfo = roomInfoMapper.selectById(id);
         Room room = roomMapper.selectOne(new QueryWrapper<Room>()
-                .eq("id", roomInfo.getRoomId()));
+                .eq("room_id", roomInfo.getRoomId()));
         List<LocalDate> dateList = TimeUtil.getBetweenDate(yearMonth.atDay(1), yearMonth.atEndOfMonth());
         for (LocalDate date : dateList){
             RoomDate roomDate = new RoomDate();
@@ -148,7 +152,7 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> i
                     roomBooking.setRoomDateId(canUserRoomDateId);
                     roomBooking.setOrderId(roomOrderId);
                     roomBooking.setCreatedTime(LocalDateTime.now());
-                    roomBooking.setStatus(Status.ROOMBOOKING_RESERVED.getCode());
+                    roomBooking.setStatus(Status.ROOMBOOKING_RESERVED.code());
                     roomBookingService.save(roomBooking);
 
                     // 保存订单信息 （tb_room_order , tb_order_status）

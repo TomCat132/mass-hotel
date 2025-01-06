@@ -59,8 +59,8 @@ public class OrderAPIService {
     }
 
     /** ========= 查询 房间订单信息 ========= */
-    @GetMapping("/queryRoomOrderInfo")
-    public RoomOrder queryRoomOrderInfo(@RequestParam("orderId") String orderId){
+    @GetMapping("/queryOrderInfo")
+    RoomOrder queryOrderInfo(@RequestParam("orderId") String orderId){
         return roomOrderService.queryRoomOrderInfo(orderId);
     }
 

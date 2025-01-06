@@ -71,7 +71,7 @@ public class Initializer {
     /**
      * 生成当月的每日房间信息，只执行一次
      */
-    @Scheduled(cron = "0 0 2 1 * ?")
+//    @Scheduled(cron = "0 0 2 1 * ?")
 //    @PostConstruct
     public void InitRoomDateInfo() {
         //获取月份 临时脚本
