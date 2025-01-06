@@ -102,6 +102,18 @@ public class OrderHandler implements OrderService {
         return "";
     }
 
+    @Override
+    public void updateEvaluateStatus(String orderId, Integer isEvaluate) {
+        // 截取订单号前4位,比较查询订单类型
+        String prefix = orderId.substring(0, 4);
+        // 酒店订单
+        if (Strings.equals(prefix, SysEnum.ROOM_ORDER_PREFIX.code())) {
+            roomOrderMapper.update(new UpdateWrapper<RoomOrder>()
+                    .set("is_evaluate", isEvaluate)
+                    .eq("order_id", orderId));
+        }
+    }
+
     private List<OrderVO> queryMerchantRoomOrderList(String merchantId) {
         List<OrderVO> roomOrderList = roomOrderMapper.queryMerchantRoomOrderList(merchantId);
         roomOrderList.forEach(orderVO -> {

@@ -53,4 +53,9 @@ public interface OrderAPIService {
     /**======== 根据订单号查询用户id ======= */
     @GetMapping("/findUserIdByOrderId")
     String findUserIdByOrderId(@RequestParam("orderId") String orderId);
+
+    /**======== 更新订单评价状态 ======= */
+    @PutMapping("/updateEvaluateStatus")
+    void updateEvaluateStatus(@RequestParam("orderId") String orderId,
+                              @RequestParam("isEvaluate") Integer isEvaluate);
 }

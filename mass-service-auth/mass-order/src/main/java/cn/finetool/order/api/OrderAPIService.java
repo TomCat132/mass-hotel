@@ -93,5 +93,12 @@ public class OrderAPIService {
     String findUserIdByOrderId(@RequestParam("orderId") String orderId){
         return orderHandler.findUserIdByOrderId(orderId);
     }
+
+    /**======== 更新订单评价状态 ======= */
+    @PutMapping("/updateEvaluateStatus")
+    void updateEvaluateStatus(@RequestParam("orderId") String orderId,
+                              @RequestParam("isEvaluate") Integer isEvaluate){
+        orderHandler.updateEvaluateStatus(orderId, isEvaluate);
+    }
 }
 

@@ -8,7 +8,9 @@ import cn.finetool.account.mapper.UserMerchantMapper;
 import cn.finetool.account.mapper.UserRolesMapper;
 import cn.finetool.account.service.AccountService;
 import cn.finetool.api.mapper.MessageBoxMapper;
-import cn.finetool.api.service.AccountAPIService;
+import cn.finetool.api.service.OrderAPIService;
+import cn.finetool.api.service.OssAPIService;
+import cn.finetool.common.dto.EvaluationDto;
 import cn.finetool.common.dto.UserDto;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.enums.SysEnum;
@@ -29,7 +31,6 @@ import cn.finetool.common.util.Response;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import jakarta.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -37,13 +38,15 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import static cn.finetool.common.util.Response.success;
 
 @Component
 public class AccountHandler implements AccountService {
-    
+
     public static final SnowflakeIdWorker ID_WORKER = new SnowflakeIdWorker(0, 0);
     @Resource
     private UserMerchantMapper userMerchantMapper;
@@ -57,12 +60,16 @@ public class AccountHandler implements AccountService {
     private UserMapper userMapper;
     @Resource
     private EvaluationMapper evaluationMapper;
+    @Resource
+    private OrderAPIService orderAPIService;
+    @Resource
+    private OssAPIService ossAPIService;
 
     @Override
     public String queryMerchantOfUser(String userId) {
         UserMerchant userMerchant = userMerchantMapper.selectOne(new QueryWrapper<UserMerchant>()
                 .eq("user_id", userId));
-        if (Objects.isNull(userMerchant)){
+        if (Objects.isNull(userMerchant)) {
             return null;
         }
         return userMerchant.getMerchantId();
@@ -80,7 +87,7 @@ public class AccountHandler implements AccountService {
         List<MessageBox> messageBoxList = messageBoxMapper.selectList(new QueryWrapper<MessageBox>()
                 .eq("accept_id", StpUtil.getLoginIdAsString())
                 .orderByDesc("sender_time"));
-        if (CollectionUtils.isNotEmpty(messageBoxList)){
+        if (CollectionUtils.isNotEmpty(messageBoxList)) {
             return success(messageBoxList);
         }
         return success(Collections.emptyList());
@@ -169,7 +176,7 @@ public class AccountHandler implements AccountService {
         // 如果账号在线，则踢下线
         User user = userMapper.selectOne(new QueryWrapper<User>()
                 .eq("user_id", userId));
-        if (Strings.equals(user.getStatus(), Status.ACCOUNT_ONLINE.code())){
+        if (Strings.equals(user.getStatus(), Status.ACCOUNT_ONLINE.code())) {
             StpUtil.kickout(userId);
             userMapper.update(new UpdateWrapper<User>()
                     .set("status", Status.ACCOUNT_OFFLINE.code())
@@ -206,11 +213,11 @@ public class AccountHandler implements AccountService {
         // 校验是否为离职员工
         User user = userMapper.selectOne(new QueryWrapper<User>()
                 .eq("user_id", userId));
-        if(!Strings.equals(user.getStatus(), Status.ACCOUNT_RESIGNED.code())){
+        if (!Strings.equals(user.getStatus(), Status.ACCOUNT_RESIGNED.code())) {
             throw new BusinessRuntimeException("该员工未离职，无法删除");
         }
         // 校验是否是自己账号
-        if (Strings.equals(StpUtil.getLoginIdAsString(), userId)){
+        if (Strings.equals(StpUtil.getLoginIdAsString(), userId)) {
             throw new BusinessRuntimeException("无权限操作本人账号");
         }
         // 删除账号
@@ -231,7 +238,7 @@ public class AccountHandler implements AccountService {
         String phone = userDto.getPhone();
         User user = userMapper.selectOne(new QueryWrapper<User>()
                 .eq("phone", phone));
-        if (Objects.nonNull(user)){
+        if (Objects.nonNull(user)) {
             throw new BusinessRuntimeException("手机号已存在");
         }
         // 发放账号
@@ -242,6 +249,28 @@ public class AccountHandler implements AccountService {
     @Override
     public void saveEvaluation(Evaluation evaluation) {
         evaluationMapper.insert(evaluation);
+    }
+
+    @Override
+    public Response evaluateAfterEnd(EvaluationDto evaluationDto, List<MultipartFile> avatarList) {
+        // 评级、内容、时间
+        UpdateWrapper<Evaluation> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.set("content", evaluationDto.getContent())
+                .set("create_time", TimeUtil.now())
+                .eq("evaluation_id", evaluationDto.getEvaluationId());
+        // 如果 content 不为空，则更新 content 字段
+        if (evaluationDto.getContent() != null && !evaluationDto.getContent().isEmpty()) {
+            updateWrapper.set("star", evaluationDto.getStar());
+            // 更新订单评价状态
+            orderAPIService.updateEvaluateStatus(evaluationDto.getOrderId(), Status.EVALUATION_YES.code());
+        }
+        // 执行更新操作
+        evaluationMapper.update(null, updateWrapper);
+        // 上传评价图
+        if (CollectionUtils.isNotEmpty(avatarList)){
+            ossAPIService.batchUploadImage(avatarList, evaluationDto.getEvaluationId());
+        }
+        return success("感谢您的评价，我们会努力提供更好的服务");
     }
 
     private void generateAccount(UserDto userDto) {
