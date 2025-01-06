@@ -23,4 +23,7 @@ public abstract class SaveVoucherStrategy {
      */
     void sendMessage(String voucherId,String userId, boolean success){
     }
+
+    public void deleteVoucher(String voucherId) {
+    }
 }

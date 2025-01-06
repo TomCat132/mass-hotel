@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/voucher")
-@Api(tags = "优惠券管理")
+@Api(tags = "活动券券管理")
 public class VoucherController {
 
     @Resource

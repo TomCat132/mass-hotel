@@ -8,6 +8,7 @@ import cn.finetool.common.constant.MqExchange;
 import cn.finetool.common.constant.MqRoutingKey;
 import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.dto.VoucherDto;
+import cn.finetool.common.enums.Status;
 import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.Voucher;
 import cn.finetool.common.po.VoucherCoupon;
@@ -154,7 +155,7 @@ public class CouponStrategy extends SaveVoucherStrategy {
     }
 
     @Override
-    void sendMessage(String voucherId, String userId, boolean success) {
+    public void sendMessage(String voucherId, String userId, boolean success) {
         if (success) {
             VoucherCoupon coupon = couponService.getById(voucherId);
             String voucherSubTitle = coupon.getVoucherSubTitle();
@@ -176,5 +177,23 @@ public class CouponStrategy extends SaveVoucherStrategy {
             String messageContent = coupon.getVoucherTitle() + "已被抢光";
             messageHandler.sendMessage(userId, messageContent, voucherId);
         }
+    }
+
+    @Override
+    public void deleteVoucher(String voucherId) {
+        VoucherCoupon coupon = couponService.getOne(new QueryWrapper<VoucherCoupon>()
+                .eq("voucher_id", voucherId));
+        // 上架过程中不能删除！！！
+        if (Strings.equals(coupon.getStatus(), Status.VOUCHER_UP.code())){
+            throw new BusinessRuntimeException("优惠券上架过程中不能删除！");
+            // 如果优惠券带发布状态（创建未上架）
+        } else if (Strings.equals(coupon.getStatus(), Status.VOUCHER_PREPARE.code())){
+            // 删除上架标记
+            
+        }
+        couponService.update()
+                .set("flag", Status.IS_DELETED.code())
+                .eq("voucher_id", voucherId)
+                .update();
     }
 }
