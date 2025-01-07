@@ -16,15 +16,18 @@ import cn.finetool.common.enums.Status;
 import cn.finetool.common.enums.SysEnum;
 import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.Evaluation;
+import cn.finetool.common.po.FileUrl;
 import cn.finetool.common.po.MessageBox;
 import cn.finetool.common.po.Role;
 import cn.finetool.common.po.User;
 import cn.finetool.common.po.UserMerchant;
 import cn.finetool.common.po.UserRoles;
 import cn.finetool.common.util.CommonsUtils;
+import cn.finetool.common.util.FunUtil;
 import cn.finetool.common.util.SnowflakeIdWorker;
 import cn.finetool.common.util.Strings;
 import cn.finetool.common.util.TimeUtil;
+import cn.finetool.common.vo.EvaluationVO;
 import cn.finetool.common.vo.UserVO;
 import cn.finetool.common.util.IpUtil;
 import cn.finetool.common.util.Response;
@@ -38,7 +41,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -278,6 +280,47 @@ public class AccountHandler implements AccountService {
         Evaluation evaluation = evaluationMapper.selectOne(new QueryWrapper<Evaluation>()
                 .eq("order_id", orderId));
         return success(evaluation);
+    }
+
+    @Override
+    public Response getEvaluateListByRelationId(String relationId) {
+        List<Evaluation> relationList = evaluationMapper.selectList(new QueryWrapper<Evaluation>()
+                .eq("relation_id", relationId));
+        //批量查图片再进行分组避免循环内查DB
+        List<String> uniqueIds = relationList.stream()
+                .map(Evaluation::getEvaluationId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        List<FileUrl> imageListByUniqueIds = ossAPIService.findImageListByUniqueIds(uniqueIds);
+        // key: EvaluationId, value: List<FileUrl>
+        Map<String, List<FileUrl>> fileUrlMap = FunUtil.groupBy(imageListByUniqueIds, FileUrl::getUniqueId);
+
+        //批量查询用户相关信息
+        List<String> userIds = relationList.stream()
+                .map(Evaluation::getUserId)
+                .collect(Collectors.toList());
+        List<User> userInfoList = userMapper.selectList(new QueryWrapper<User>()
+                .in("user_id", userIds));
+        Map<String, User> userInfoMap = FunUtil.toMap(userInfoList, User::getUserId);
+        List<EvaluationVO> evaluationVOList = relationList.stream()
+                .map(evaluation -> {
+                    //填充数据
+                    EvaluationVO evaluationVO = new EvaluationVO(evaluation);
+                    //获取评价图片列表
+                    List<String> imageList = fileUrlMap.getOrDefault(evaluation.getEvaluationId(),
+                                    Collections.emptyList())
+                            .stream()
+                            .map(FileUrl::getUrlImage)
+                            .collect(Collectors.toList());
+                    evaluationVO.setEvaluationAvatarList(imageList);
+                    //获取用户图片
+                    User userInfo = userInfoMap.getOrDefault(evaluation.getUserId(), new User());
+                    evaluationVO.setUserAvatar(ossAPIService.findImageByUrl(userInfo.getAvatarKey()));
+                    evaluationVO.setUsername(userInfo.getUsername());
+                    return evaluationVO;
+                })
+                .collect(Collectors.toList());
+        return CollectionUtils.isEmpty(evaluationVOList) ? success(Collections.emptyList()) : success(evaluationVOList);
     }
 
     private void generateAccount(UserDto userDto) {

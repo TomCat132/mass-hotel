@@ -63,4 +63,9 @@ public class OrderVO implements Serializable {
      * 用户ID
      */
     private String userId;
+
+    /**
+     * 订单是否评价
+     */
+    private Integer isEvaluate;
 }

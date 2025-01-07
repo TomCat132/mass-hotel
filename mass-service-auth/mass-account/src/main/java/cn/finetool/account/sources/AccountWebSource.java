@@ -100,4 +100,10 @@ public class AccountWebSource {
     public Response getEvaluateByOrderId(@RequestParam("orderId") String orderId){
         return accountService.getEvaluateByOrderId(orderId);
     }
+    
+    @GetMapping("/get-evaluate-list-by-relation-id")
+    @ApiOperation(value = "根据关联ID查询评价列表", notes = "根据关联ID查询评价列表")
+    public Response getEvaluateListByRelationId(@RequestParam("relationId") String relationId){
+        return accountService.getEvaluateListByRelationId(relationId);
+    }
 }
