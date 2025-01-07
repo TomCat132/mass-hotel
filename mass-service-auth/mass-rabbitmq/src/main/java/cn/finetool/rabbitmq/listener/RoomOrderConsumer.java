@@ -156,7 +156,7 @@ public class RoomOrderConsumer {
         Map<String, Object> message = JsonUtil.fromJsonString(messageBody, Map.class);
         String merchantId = (String) message.get("merchantId");
         String orderId = (String) message.get("orderId");
-        RoomBooking roomBooking = (RoomBooking) message.get("roomBooking");
+        RoomBooking roomBooking = JsonUtil.fromJsonString((String) message.get("roomBooking"), RoomBooking.class)  ;
         // 检查订单状态是否已经结束
         if (Strings.equals(roomBooking.getStatus(), Status.ROOMBOOKING_CHECK_OUT.code())) {
             LOGGER.info("订单：{} 已结束", orderId);

@@ -71,8 +71,8 @@ public class RoomBookingController {
                                         @RequestParam(required = false, value = "doorKey") String doorKey) throws JsonProcessingException {
         return roomBookingService.finishHandleCheckIn(id, type, doorKey);
     }
-    
-    @PostMapping("/endCheckInRoomOrder")
+
+    @PostMapping(value = "/endCheckInRoomOrder")
     @ApiOperation(value = "结束入住", notes = "结束入住")
     public Response endCheckInRoomOrder(@RequestParam("id") Integer id){
         return roomBookingService.endCheckInRoomOrder(id);

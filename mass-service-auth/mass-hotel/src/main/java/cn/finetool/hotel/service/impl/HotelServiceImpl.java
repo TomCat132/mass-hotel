@@ -2,9 +2,11 @@ package cn.finetool.hotel.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.finetool.api.service.OrderAPIService;
+import cn.finetool.api.service.OssAPIService;
 import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.dto.OrderPayDto;
 import cn.finetool.common.dto.QueryRoomTypeDto;
+import cn.finetool.common.po.FileUrl;
 import cn.finetool.common.po.Hotel;
 import cn.finetool.common.po.Room;
 import cn.finetool.common.po.RoomBooking;
@@ -23,7 +25,11 @@ import cn.finetool.hotel.service.HotelService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.*;
 import org.springframework.data.redis.connection.RedisGeoCommands;
@@ -57,6 +63,8 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
     private RoomServiceImpl roomManager;
     @Resource
     private OrderAPIService orderAPIService;
+    @Resource
+    private OssAPIService ossAPIService;
 
     @Override
     public Response addHotelInfo(Hotel hotel) {
@@ -69,42 +77,33 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
     public Response getNearByHotelList(Double userLng, Double userLat, Double queryRange) {
         // 1. 用户当前位置经纬度
         Point userPoint = new Point(userLng, userLat);
-
-         queryRange = queryRange * 1000; // 转换为米
-
+        queryRange = queryRange * 1000; // 转换为米
         // 2. 存储用户位置到 Redis
         // 临时存储用户位置，用于计算距离
         String userKey = StpUtil.getLoginIdAsString();
-
         redisTemplate.opsForGeo().add(RedisCache.HOTEL_LOCATION_LIST, new RedisGeoCommands.GeoLocation<>(userKey, userPoint));
-
         // 2. 查询半径为 queryRange 的圆形范围
         Circle circle = new Circle(userPoint, queryRange);
         GeoResults<RedisGeoCommands.GeoLocation<Object>> nearbyHotels = redisTemplate.opsForGeo().radius(RedisCache.HOTEL_LOCATION_LIST, circle);
         if (nearbyHotels == null || nearbyHotels.getContent().isEmpty()) {
             return Response.error("附近没有入驻的酒店哦~");
         }
-
         // 3. 计算用户到每个酒店的距离
         List<HotelVo> hotelVoList = new ArrayList<>();
         for (GeoResult<RedisGeoCommands.GeoLocation<Object>> result : nearbyHotels) {
-
             String hotelIdStr = (String) result.getContent().getName();
-
             // 查询酒店的经纬度
             List<Point> hotelPoints = redisTemplate.opsForGeo().position(RedisCache.HOTEL_LOCATION_LIST, hotelIdStr);
             Point hotelPoint = Objects.requireNonNull(hotelPoints).getFirst();
             hotelPoint = new Point(hotelPoint.getX(), hotelPoint.getY());
-
             // 使用 GEODIST 命令计算用户和酒店之间的距离，单位为千米
             Distance distance = redisTemplate.opsForGeo().distance(RedisCache.HOTEL_LOCATION_LIST, userKey, hotelIdStr, RedisGeoCommands.DistanceUnit.KILOMETERS);
             if (distance == null) {
                 continue; // 忽略无法计算距离的酒店
             }
-
             // 根据id 获取酒店详细地址 、 最低价格 、 距离
             // 判断是否是临时用户位置 酒店id：自增主键 用户ID: 1010
-            if (hotelIdStr.startsWith("1010")){
+            if (hotelIdStr.startsWith("1010")) {
                 continue;
             }
             HotelVo hotelVo = hotelMapper.queryHotelInfo(Integer.parseInt(hotelIdStr));
@@ -113,19 +112,28 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
             hotelVo.setDistance(distance.getValue());
             // 计算最低价格
             Integer hotelId = hotelVo.getHotelId();
+            // 随机返回一张图片
+            List<String> roomIds = roomMapper.selectList(new QueryWrapper<Room>()
+                            .eq("hotel_id", hotelId))
+                    .stream()
+                    .map(Room::getRoomId)
+                    .collect(Collectors.toList());
+            List<FileUrl> imageListByUniqueIds = ossAPIService.findImageListByUniqueIds(Collections.singletonList(roomIds.getFirst()));
+            List<String> collect = imageListByUniqueIds.stream()
+                    .map(FileUrl::getUrlImage)
+                    .collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(collect)) {
+                hotelVo.setAvatar(collect.getFirst());
+            }
             // 根据Id获取 roomIdList，遍历查询 roomInfo 的主键List,根据主键 List去查询 roomDate 当日最低价格
             BigDecimal minPrice = roomDateMapper.queryHotelMinPrice(hotelId, LocalDate.now());
-            if (minPrice != null){
+            if (minPrice != null) {
                 hotelVo.setMinPrice(minPrice);
                 hotelVoList.add(hotelVo);
             }
-
-
         }
-
         // 删除临时存储的用户位置
         redisTemplate.opsForGeo().remove(RedisCache.HOTEL_LOCATION_LIST, userKey);
-
         return Response.success(hotelVoList);
     }
 
@@ -142,8 +150,14 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
         List<RoomInfoVo> roomInfoVoList = hotelMapper.queryHotelRoomTypeList(queryRoomTypeDto.getHotelId(),
                 queryRoomTypeDto.getCheckInDate(),
                 checkOutDate);
-
-
+        roomInfoVoList.stream()
+                .forEach(roomInfoVo -> {
+                    List<FileUrl> imageListByUniqueIds = ossAPIService.findImageListByUniqueIds(Collections.singletonList(roomInfoVo.getRoomId()));
+                    for (FileUrl fileUrl : imageListByUniqueIds) {
+                        roomInfoVo.setRoomAvatar(fileUrl.getUrlImage());
+                        break;
+                    }
+                });
         return Response.success(roomInfoVoList);
     }
 

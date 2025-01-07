@@ -273,6 +273,13 @@ public class AccountHandler implements AccountService {
         return success("感谢您的评价，我们会努力提供更好的服务");
     }
 
+    @Override
+    public Response getEvaluateByOrderId(String orderId) {
+        Evaluation evaluation = evaluationMapper.selectOne(new QueryWrapper<Evaluation>()
+                .eq("order_id", orderId));
+        return success(evaluation);
+    }
+
     private void generateAccount(UserDto userDto) {
         // 生成账号
         User user = new User();
