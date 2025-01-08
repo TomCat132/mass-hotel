@@ -10,9 +10,11 @@ import cn.finetool.common.enums.SysEnum;
 import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.Hotel;
 import cn.finetool.common.po.Room;
+import cn.finetool.common.po.RoomInfo;
 import cn.finetool.common.util.JsonUtil;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.util.SnowflakeIdWorker;
+import cn.finetool.common.util.TimeUtil;
 import cn.finetool.common.vo.RoomInfoVo;
 import cn.finetool.hotel.mapper.HotelMapper;
 import cn.finetool.hotel.mapper.RoomInfoMapper;
@@ -79,8 +81,7 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
     public Response queryRoomInfo(String roomId) {
         // TODO: 代优化 （简单查询数据）
         // 需要字段 roomId,roomName,roomAvatarList,roomType,oldPrice,price,roomDesc
-        RoomInfoVo roomInfo = roomMapper.queryRoomInfoByDate(roomId, LocalDate.now());
-
+        RoomInfoVo roomInfo = roomMapper.queryRoomInfoByDate(roomId, TimeUtil.currentDate());
         return success(roomInfo);
     }
 

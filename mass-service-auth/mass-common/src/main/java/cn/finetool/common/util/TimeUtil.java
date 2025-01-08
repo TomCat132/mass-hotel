@@ -83,6 +83,14 @@ public class TimeUtil {
         return date2.datesUntil(date1.plusDays(1)).toList();
     }
 
+    /**
+     * 获取当前日期
+     * @return
+     */
+    public static LocalDate currentDate(){
+        return LocalDate.now();
+    }
+    
     public static void main(String[] args) {
         YearMonth yearMonth = CurrentYearOfMonth();
         //获取第一天

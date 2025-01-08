@@ -2,6 +2,7 @@ package cn.finetool.account.service.impl;
 
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.finetool.account.event.customEvent.LoginLogEvent;
 import cn.finetool.account.mapper.LoginLogMapper;
 import cn.finetool.account.mapper.RoleMapper;
 import cn.finetool.account.mapper.SystemMapper;
@@ -13,6 +14,7 @@ import cn.finetool.api.handler.MessageHandler;
 import cn.finetool.api.service.ActivityAPIService;
 import cn.finetool.api.service.OrderAPIService;
 import cn.finetool.api.service.OssAPIService;
+import cn.finetool.common.configuration.AppContext;
 import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.dto.PasswordDto;
 import cn.finetool.common.enums.BusinessErrors;
@@ -81,12 +83,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private SystemMapper systemMapper;
     @Resource
     private ActivityAPIService activityAPIService;
-    @Resource
-    private LoginLogMapper loginLogMapper;
-    @Resource
-    private MessageHandler messageHandler;
-    @Resource
-    private Environment config;
 
     @Override
     public Response register(User user) {
@@ -144,43 +140,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             roleList.add(roleInfo.getRoleKey());
         });
         String userId = StpUtil.getLoginIdAsString();
-        //登录成功，记录IP 
-        recordLoginLog(userId);
         StpUtil.getTokenSession().set(SaSession.ROLE_LIST, roleList);
+        //登录成功，记录登录日志
+        AppContext.getApplicationContext().publishEvent(
+                new LoginLogEvent(this, userId,IpUtil.getClientIp(), SystemUtil.getOperatingSystem()));
         return success("登录成功");
     }
 
-    // 记录登录日志
-    public void recordLoginLog(String userId) {
-        //解析数据
-        String ip = IpUtil.getClientIp();
-        Map<String, String> locationInfo = IpUtil.getLocationInfo(ip);
-        String country = locationInfo.get("country");
-        String province = locationInfo.get("province");
-        String city = locationInfo.get("city");
-        String lat = locationInfo.get("lat");
-        String lon = locationInfo.get("lon");
-        LocalDateTime nowTime = TimeUtil.now();
-        LoginLog loginLog = new LoginLog();
-        String messageId = String.valueOf(IdWorker.nextId());
-        String operatingSystem = SystemUtil.getOperatingSystem();
-        loginLog.setId(messageId);
-        loginLog.setUserId(userId);
-        loginLog.setLoginIp(ip);
-        loginLog.setCountry(country);
-        loginLog.setLat(lat);
-        loginLog.setLon(lon);
-        loginLog.setProvince(province);
-        loginLog.setCity(city);
-        loginLog.setCreateTime(nowTime);
-        loginLog.setSystem(operatingSystem);
-        loginLogMapper.insert(loginLog);
-        //发送消息到盒子
-        String messageContent = "登录成功&登录时间: " + TimeUtil.format(nowTime) + "&IP: [" + ip + "]&地区: "
-                + country + province + city + "&操作系统: " + operatingSystem;
-        //登录系统
-        messageHandler.sendMessage(userId, messageContent, messageId);
-    }
+
 
 
     @Override

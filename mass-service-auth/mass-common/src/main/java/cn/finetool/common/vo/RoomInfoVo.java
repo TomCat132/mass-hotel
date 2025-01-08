@@ -71,4 +71,8 @@ public class RoomInfoVo implements Serializable {
      */
     private List<RoomInfo> roomInfoList;
 
+    /**
+     * roomInfoId: 房间信息主键
+     */
+    private String roomInfoId;
 }
