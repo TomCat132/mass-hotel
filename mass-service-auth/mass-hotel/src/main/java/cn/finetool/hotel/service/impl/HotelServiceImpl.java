@@ -13,7 +13,7 @@ import cn.finetool.common.po.RoomBooking;
 import cn.finetool.common.po.RoomDate;
 import cn.finetool.common.po.RoomInfo;
 import cn.finetool.common.util.Response;
-import cn.finetool.common.vo.HotelVo;
+import cn.finetool.common.vo.HotelVO;
 import cn.finetool.common.vo.RoomInfoVo;
 import cn.finetool.common.vo.RoomOrderBaseInfo;
 import cn.finetool.hotel.mapper.HotelMapper;
@@ -26,11 +26,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.*;
 import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -89,7 +87,7 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
             return Response.error("附近没有入驻的酒店哦~");
         }
         // 3. 计算用户到每个酒店的距离
-        List<HotelVo> hotelVoList = new ArrayList<>();
+        List<HotelVO> hotelVoList = new ArrayList<>();
         for (GeoResult<RedisGeoCommands.GeoLocation<Object>> result : nearbyHotels) {
             String hotelIdStr = (String) result.getContent().getName();
             // 查询酒店的经纬度
@@ -106,7 +104,7 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
             if (hotelIdStr.startsWith("1010")) {
                 continue;
             }
-            HotelVo hotelVo = hotelMapper.queryHotelInfo(Integer.parseInt(hotelIdStr));
+            HotelVO hotelVo = hotelMapper.queryHotelInfo(Integer.parseInt(hotelIdStr));
             hotelVo.setHotelLng(hotelPoint.getX());
             hotelVo.setHotelLat(hotelPoint.getY());
             hotelVo.setDistance(distance.getValue());

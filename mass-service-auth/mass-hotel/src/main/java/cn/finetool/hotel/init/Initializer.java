@@ -4,7 +4,7 @@ import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.po.Room;
 import cn.finetool.common.po.RoomDate;
 import cn.finetool.common.po.RoomInfo;
-import cn.finetool.common.vo.HotelVo;
+import cn.finetool.common.vo.HotelVO;
 import cn.finetool.hotel.mapper.HotelMapper;
 import cn.finetool.hotel.mapper.RoomDateMapper;
 import cn.finetool.hotel.mapper.RoomInfoMapper;
@@ -14,9 +14,7 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.Point;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -58,7 +56,7 @@ public class Initializer {
 
         redisTemplate.delete(RedisCache.HOTEL_LOCATION_LIST);
 
-        List<HotelVo> hotelVoList = hotelMapper.getHotelGeoList();
+        List<HotelVO> hotelVoList = hotelMapper.getHotelGeoList();
 
         hotelVoList.forEach(hotelVo -> {
             redisTemplate.opsForGeo().add(RedisCache.HOTEL_LOCATION_LIST,

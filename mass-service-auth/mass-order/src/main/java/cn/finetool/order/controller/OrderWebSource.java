@@ -34,4 +34,10 @@ public class OrderWebSource {
     public Response getRoomBookingBaseInfo(@PathVariable("orderId") String orderId) {
         return Response.success(orderHandler.getOrderBaseInfo(orderId));
     }
+    
+    @GetMapping("/findOrderInfoByOrderId")
+    @ApiOperation(value = "根据订单号获取订单信息", notes = "不同订单类型查询对应信息")
+    public Response getOrderInfoByOrderId(@RequestParam("orderId") String orderId){
+        return Response.success(orderHandler.findOrderInfoByOrderId(orderId));
+    }
 }

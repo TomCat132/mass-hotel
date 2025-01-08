@@ -223,7 +223,6 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
         RoomBooking roomBooking = roomBookingMapper.selectById(id);
         // status : 退房待确认 -》 已退房
         roomBookingMapper.changeStatus(id, Status.ROOMBOOKING_CHECK_OUT.code());
-        
         dynamicThreadPool.submitTask(()->{
             // 生成待评价数据
             LOGGER.info("开始生成待评价数据");
@@ -232,6 +231,13 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
             evaluation.setOrderId(roomBooking.getOrderId());
             evaluation.setMerchantId(hotelAdminHandler.findMerchantIdByOrderId(roomBooking.getOrderId()));
             evaluation.setUserId(orderAPIService.findUserIdByOrderId(roomBooking.getOrderId()));
+            // 查询房间ID:roomInfo_id 
+            RoomDate roomDate = roomDateMapper.selectOne(new QueryWrapper<RoomDate>()
+                    .eq("id", roomBooking.getRoomDateId()));
+            RoomInfo roomInfo = roomInfoMapper.selectById(roomDate.getRiId());
+            if (Objects.nonNull(roomInfo)){
+                evaluation.setRelationId(roomInfo.getRoomId());
+            }
             accountAPIService.saveEvaluation(evaluation);
         });
         return Response.success("已完成退房确认，请通知相关人员清洁房间");

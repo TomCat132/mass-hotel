@@ -3,6 +3,7 @@ package cn.finetool.order.handler;
 import cn.finetool.api.service.HotelAPIService;
 import cn.finetool.common.enums.SysEnum;
 import cn.finetool.common.enums.Status;
+import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.OrderStatus;
 import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.po.RoomOrder;
@@ -17,6 +18,7 @@ import cn.finetool.order.mapper.RoomOrderMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import jakarta.annotation.Resource;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,6 +26,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static cn.finetool.common.enums.SysEnum.ROOM_ORDER_PREFIX;
+import static cn.finetool.common.util.Response.success;
 
 @Service
 public class OrderHandler implements OrderService {
@@ -39,7 +44,7 @@ public class OrderHandler implements OrderService {
     private HotelAPIService hotelAPIService;
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
-    
+
     @Override
     public void deleteOrder(String orderId) {
         //截取订单号前4位,比较查询订单类型
@@ -49,7 +54,7 @@ public class OrderHandler implements OrderService {
                     .set("is_deleted", Status.IS_DELETED.getCode())
                     .eq("order_id", orderId));
             LOGGER.info("用户逻辑删除充值订单:{}", orderId);
-        } else if (Strings.equals(prefix, SysEnum.ROOM_ORDER_PREFIX.code())) {
+        } else if (Strings.equals(prefix, ROOM_ORDER_PREFIX.code())) {
             roomOrderMapper.update(new UpdateWrapper<RoomOrder>()
                     .set("is_deleted", Status.IS_DELETED.getCode())
                     .eq("order_id", orderId));
@@ -61,7 +66,7 @@ public class OrderHandler implements OrderService {
     public Response getAppRechargeOrderList() {
         // 获取应用所有充值订单
         List<OrderVO> rechargeOrderList = rechargeOrderMapper.getAppOrderList();
-        return Response.success(rechargeOrderList);
+        return success(rechargeOrderList);
     }
 
     @Override
@@ -96,7 +101,7 @@ public class OrderHandler implements OrderService {
     public String findUserIdByOrderId(String orderId) {
         // 截取订单号前4位,比较查询订单类型
         String prefix = orderId.substring(0, 4);
-        if (Strings.equals(SysEnum.ROOM_ORDER_PREFIX.code(), prefix)){
+        if (Strings.equals(ROOM_ORDER_PREFIX.code(), prefix)) {
             return roomOrderMapper.findUserIdByOrderId(orderId);
         }
         return "";
@@ -107,20 +112,44 @@ public class OrderHandler implements OrderService {
         // 截取订单号前4位,比较查询订单类型
         String prefix = orderId.substring(0, 4);
         // 酒店订单
-        if (Strings.equals(prefix, SysEnum.ROOM_ORDER_PREFIX.code())) {
+        if (Strings.equals(prefix, ROOM_ORDER_PREFIX.code())) {
             roomOrderMapper.update(new UpdateWrapper<RoomOrder>()
                     .set("is_evaluate", isEvaluate)
                     .eq("order_id", orderId));
         }
     }
 
+    @Override
+    public OrderVO findOrderInfoByOrderId(String orderId) {
+        // 截取订单号前4位,比较查询订单类型
+        String prefix = orderId.substring(0, 4);
+        SysEnum sysEnum = SysEnum.getEnumCategory(prefix);
+        if (Objects.nonNull(sysEnum)) {
+            switch (sysEnum) {
+                case ROOM_ORDER_PREFIX:
+                    //目前只需要 is_evaluate
+                    RoomOrder roomOrder = roomOrderMapper.selectOne(new QueryWrapper<RoomOrder>()
+                            .eq("order_id", orderId));
+                    OrderVO orderVO = new OrderVO();
+                    orderVO.setIsEvaluate(roomOrder.getIsEvaluate());
+                    return orderVO;
+                case RECHARGE_ORDER_PREFIX:
+                    // 充值订单暂时不做处理
+                    return null;
+                default:
+                    return null;
+            }
+        }
+        
+        throw new BusinessRuntimeException("订单不存在");
+    }
+
     private List<OrderVO> queryMerchantRoomOrderList(String merchantId) {
         List<OrderVO> roomOrderList = roomOrderMapper.queryMerchantRoomOrderList(merchantId);
         roomOrderList.forEach(orderVO -> {
-            orderVO.setOrderType(SysEnum.ROOM_ORDER_PREFIX.code());
+            orderVO.setOrderType(ROOM_ORDER_PREFIX.code());
         });
         return roomOrderList;
     }
-
 
 }
