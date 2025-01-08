@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 
@@ -29,6 +30,6 @@ public interface AccountAPIService {
     String findMerchantIdOfUserId(@RequestParam("userId") String userId);
 
     /**====== 保存评价数据 =====*/
-    @PostMapping("/saveEvaluation")
-    void saveEvaluation(@RequestPart("evaluation") Evaluation evaluation);
+    @PostMapping(value = "/saveEvaluation", consumes = "application/json")
+    void saveEvaluation(@RequestBody Evaluation evaluation);
 }

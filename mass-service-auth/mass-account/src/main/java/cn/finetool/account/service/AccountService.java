@@ -42,4 +42,8 @@ public interface AccountService {
     void saveEvaluation(Evaluation evaluation);
     /**====== 用户评价 =====*/
     Response evaluateAfterEnd(EvaluationDto evaluationDto, List<MultipartFile> avatarList);
+    /**====== 查询订单评价信息 =====*/
+    Response getEvaluateByOrderId(String orderId);
+    /**====== 根据关联ID查询评价列表 =====*/
+    Response getEvaluateListByRelationId(String relationId);
 }

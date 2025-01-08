@@ -15,16 +15,11 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 
 /**
@@ -34,17 +29,12 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
  * OnError 表示有错误发生，比如网络断开了等等
  */
 @Slf4j
-@Component
 @ServerEndpoint("/admin/{userId}")
 public class AdminSocket {
 
-    private static UserMapper userMapper;
-    private static UserServiceImpl userService;
-    @Autowired
-    public void setUserMapper(UserMapper userMapper, UserServiceImpl userService){
-        AdminSocket.userMapper = userMapper;
-        AdminSocket.userService = userService;
-    }
+    private static final UserMapper userMapper = AppContext.getBean(UserMapper.class);
+    private static final UserServiceImpl userService = AppContext.getBean(UserServiceImpl.class);
+
     
     private static final Logger Logger = LoggerFactory.getLogger(AdminSocket.class);
     /**
@@ -72,6 +62,7 @@ public class AdminSocket {
                 .set("status", Status.ACCOUNT_ONLINE.code())
                 .eq("user_id", userId));
         Logger.info("管理员:{} 已上线", userId);
+//        AppContext.getApplicationContext().publishEvent(new MessageHandler(userId, "管理员已上线"));
     }
 
     @OnError

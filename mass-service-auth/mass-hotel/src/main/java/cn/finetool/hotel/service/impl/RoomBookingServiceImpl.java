@@ -155,8 +155,11 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
                     .set("check_in_date", nowTime)
                     .eq("id", id));
         }
-        // status : 办理中 -》 入住中
-        roomBookingMapper.changeStatus(id, Status.ROOMBOOKING_CHECK_IN.getCode());
+        // 更新预定房间状态和入住时间
+        roomBookingMapper.update(new UpdateWrapper<RoomBooking>()
+                .set("check_in_date", TimeUtil.now())
+                .set("status", Status.ROOMBOOKING_CHECK_IN.code())
+                .eq("id", id));
         // 异步线程池更新入住总次数
         dynamicThreadPool.submitTask(() -> {
             //TODO: 异步任务
@@ -218,19 +221,26 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
     @Override
     public Response endCheckInRoomOrder(Integer id) {
         RoomBooking roomBooking = roomBookingMapper.selectById(id);
-        // status : 入住中 -》 已退房
+        // status : 退房待确认 -》 已退房
         roomBookingMapper.changeStatus(id, Status.ROOMBOOKING_CHECK_OUT.code());
-        
         dynamicThreadPool.submitTask(()->{
             // 生成待评价数据
+            LOGGER.info("开始生成待评价数据");
             Evaluation evaluation = new Evaluation();
             evaluation.setEvaluationId(SysEnum.EVALUATION_PREFIX.code() + ID_WORKER.nextId());
             evaluation.setOrderId(roomBooking.getOrderId());
             evaluation.setMerchantId(hotelAdminHandler.findMerchantIdByOrderId(roomBooking.getOrderId()));
             evaluation.setUserId(orderAPIService.findUserIdByOrderId(roomBooking.getOrderId()));
+            // 查询房间ID:roomInfo_id 
+            RoomDate roomDate = roomDateMapper.selectOne(new QueryWrapper<RoomDate>()
+                    .eq("id", roomBooking.getRoomDateId()));
+            RoomInfo roomInfo = roomInfoMapper.selectById(roomDate.getRiId());
+            if (Objects.nonNull(roomInfo)){
+                evaluation.setRelationId(roomInfo.getRoomId());
+            }
             accountAPIService.saveEvaluation(evaluation);
         });
-        return null;
+        return Response.success("已完成退房确认，请通知相关人员清洁房间");
     }
 
 }

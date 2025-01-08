@@ -154,7 +154,7 @@ public class HotelAdminHandler implements HotelAdminService {
 
     @Override
     public Response startFinishRoomOut(Integer id) {
-        roomBookingMapper.changeStatus(id, Status.ROOMBOOKING_CHECK_OUT.getCode());
+        roomBookingMapper.changeStatus(id, Status.ROOMBOOKING_CHECK_OUT_WAIT_CHECK.getCode());
         RoomBooking roomBooking = roomBookingMapper.selectById(id);
         RoomDate roomDate = roomDateMapper.selectById(roomBooking.getRoomDateId());
         RoomInfo roomInfo = roomInfoMapper.selectById(roomDate.getRiId());

@@ -18,6 +18,12 @@ import java.time.LocalDateTime;
 public class Evaluation implements Serializable {
 
     /**
+     * 关联ID：例如：roomInfoId  商品ID （方便查看评价）
+     */
+    @TableField(value = "relation_id")
+    private String relationId;
+
+    /**
      * 唯一编号
      */
     @TableId(value = "evaluation_id")

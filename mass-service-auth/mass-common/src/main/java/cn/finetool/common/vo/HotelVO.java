@@ -1,8 +1,6 @@
 package cn.finetool.common.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,13 +11,12 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class HotelVo implements Serializable {
+public class HotelVO implements Serializable {
 
 
     /**
      * 主键id
      */
-    @TableId(value = "hotel_id", type = IdType.AUTO)
     private Integer hotelId;
 
     /**
@@ -54,5 +51,15 @@ public class HotelVo implements Serializable {
      * 最低价格
      */
     private BigDecimal minPrice;
+
+    /**
+     * 商户编号
+     */
+    private String merchantId;
+
+    /**
+     * 宣传图
+     */
+    private String avatar;
 
 }

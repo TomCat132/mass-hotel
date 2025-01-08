@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -89,8 +90,20 @@ public class AccountWebSource {
 
     @PostMapping("/evaluate-after-end")
     @ApiOperation(value = "订单评价", notes = "订单评价")
-    public Response evaluateAfterEnd(@RequestBody EvaluationDto evaluationDto,
-                                     @RequestParam("avatarList") List<MultipartFile> avatarList) {
+    public Response evaluateAfterEnd(@RequestPart("evaluationDto") EvaluationDto evaluationDto,
+                                     @RequestPart("avatarList") List<MultipartFile> avatarList) {
         return accountService.evaluateAfterEnd(evaluationDto, avatarList);
+    }
+    
+    @GetMapping("/get-evaluate-by-order-id")
+    @ApiOperation(value = "根据订单号获取评价数据", notes = "根据订单号获取评价数据")
+    public Response getEvaluateByOrderId(@RequestParam("orderId") String orderId){
+        return accountService.getEvaluateByOrderId(orderId);
+    }
+    
+    @GetMapping("/get-evaluate-list-by-relation-id")
+    @ApiOperation(value = "根据关联ID查询评价列表", notes = "根据关联ID查询评价列表")
+    public Response getEvaluateListByRelationId(@RequestParam("relationId") String relationId){
+        return accountService.getEvaluateListByRelationId(relationId);
     }
 }

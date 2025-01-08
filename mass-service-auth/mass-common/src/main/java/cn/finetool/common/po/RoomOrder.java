@@ -1,6 +1,7 @@
 package cn.finetool.common.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -76,4 +77,10 @@ public class RoomOrder implements Serializable {
      * 0: 未删   1: 已删
      */
     private Integer isDeleted;
+
+    /**
+     * 0: 未评价   1: 已评价
+     */
+    @TableField(value = "is_evaluate")
+    private Integer isEvaluate;
 }

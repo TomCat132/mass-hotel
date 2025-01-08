@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 @Component
 public class VoucherConsumeStrategy extends SaveVoucherStrategy {
 
-    public static final Logger Logger = LoggerFactory.getLogger(VoucherConsumeStrategy.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(VoucherConsumeStrategy.class);
     @Resource
     private VoucherConsumeMapper voucherConsumeMapper;
 
@@ -33,7 +33,7 @@ public class VoucherConsumeStrategy extends SaveVoucherStrategy {
             VoucherConsume data = voucherConsumeMapper.selectOne(new QueryWrapper<VoucherConsume>()
                     .eq("begin_time", beginTime));
             if (Objects.nonNull(data)) {
-                Logger.info("{} 已经发放系统券，禁止重复发放", beginTime);
+                LOGGER.info("{} 已经发放系统券，禁止重复发放", beginTime);
 
                 throw new BusinessRuntimeException(beginTime.format(DateTimeFormatter.ofPattern("yyyy-MM")) + "已经发放系统券，禁止重复发放");
             }

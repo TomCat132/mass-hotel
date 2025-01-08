@@ -21,4 +21,6 @@ public interface OrderService {
     String findUserIdByOrderId(String orderId);
     /**======== 更改订单评价状态 ======= */
     void updateEvaluateStatus(String orderId, Integer isEvaluate);
+    /**======== 根据订单号查询订单信息 ======= */
+    OrderVO findOrderInfoByOrderId(String orderId);
 }

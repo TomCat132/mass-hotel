@@ -14,12 +14,9 @@ import org.springframework.context.annotation.ComponentScan;
 @Slf4j
 @EnableFeignClients(basePackages = "cn.finetool.api")
 @MapperScan(basePackages = {"cn.finetool.api.mapper", "cn.finetool.account.mapper"})
-@ComponentScan(basePackages = {"cn.finetool.account", "cn.finetool.api"})
+@ComponentScan(basePackages = {"cn.finetool.account", "cn.finetool.api", "cn.finetool.common"})
 public class AccountApplication {
-    
-    
     public static void main(String[] args) {
         SpringApplication.run(AccountApplication.class, args);
-        
     }
 }

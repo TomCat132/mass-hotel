@@ -18,10 +18,10 @@ public enum SysEnum {
     FILE_PATH_PREFIX("1016", "文件路径前缀标志"),
     ;
     
-
     private final String code;
-
     private final String desc;
+    
+
 
     SysEnum(String code, String desc) {
         this.code = code;
@@ -34,5 +34,24 @@ public enum SysEnum {
     
     public String desc(){
         return this.desc;
+    }
+
+
+    /**
+     * 根据key得到枚举类型
+     *
+     * @param code
+     * @return
+     */
+    public static SysEnum getEnumCategory(String code) {
+        SysEnum[] enums = SysEnum.values();
+
+        for (SysEnum enum1 : enums) {
+            if (String.valueOf(enum1.code).equals(code)) {
+                return enum1;
+            }
+        }
+
+        return null;
     }
 }

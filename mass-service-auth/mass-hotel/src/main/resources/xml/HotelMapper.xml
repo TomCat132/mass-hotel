@@ -34,13 +34,13 @@
     </resultMap>
 
     <!-- SQL 查询语句 -->
-    <select id="getHotelGeoList" resultType="cn.finetool.common.vo.HotelVo">
+    <select id="getHotelGeoList" resultType="cn.finetool.common.vo.HotelVO">
         SELECT hotel_id,hotel_name,hotel_lng,hotel_lat
         FROM tb_hotel
         WHERE status = 0
     </select>
 
-    <select id="queryHotelInfo" resultType="cn.finetool.common.vo.HotelVo">
+    <select id="queryHotelInfo" resultType="cn.finetool.common.vo.HotelVO">
         SELECT hotel_id,hotel_name,address
         FROM tb_hotel
         WHERE hotel_id = #{hotelId}

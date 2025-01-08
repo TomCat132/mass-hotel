@@ -3,6 +3,7 @@ package cn.finetool.oss.handler;
 import cn.finetool.common.enums.SysEnum;
 import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.FileUrl;
+import cn.finetool.common.util.Response;
 import cn.finetool.common.util.SnowflakeIdWorker;
 import cn.finetool.oss.mapper.FileUrlMapper;
 import cn.finetool.oss.service.OssService;
@@ -22,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+
+import static cn.finetool.common.util.Response.success;
 
 @Component
 public class OssHandler implements OssService {
@@ -108,5 +111,10 @@ public class OssHandler implements OssService {
     @Override
     public void batchUploadImage(List<MultipartFile> avatarList, String uniqueId) {
         batchStore(uniqueId, avatarList);
+    }
+
+    @Override
+    public Response findImageListByUniqueId(String uniqueId) {
+        return success(findImageListByUniqueIds(Collections.singletonList(uniqueId)));
     }
 }
