@@ -1,5 +1,6 @@
-package cn.finetool.account.event.customEvent;
+package cn.finetool.common.event.customEvent;
 
+import java.util.Map;
 import org.springframework.context.ApplicationEvent;
 
 public class LoginLogEvent extends ApplicationEvent {

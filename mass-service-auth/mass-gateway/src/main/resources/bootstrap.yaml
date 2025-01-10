@@ -64,7 +64,7 @@ spring:
         - id: mass-hotel-service
           uri: lb://mass-hotel-service
           predicates:
-            - Path=/hotel/**,/room/**,/roomInfo/**,/roomDate/**,/roomBooking/**
+            - Path=/hotel/**,/room/**,/roomInfo/**,/roomDate/**,/roomBooking/**,/serve/**
 
 ############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
 sa-token:

@@ -15,7 +15,6 @@ public class RoomDateServiceImpl extends ServiceImpl<RoomDateMapper, RoomDate> i
 
     @Resource
     private RoomDateMapper roomDateMapper;
-
     @Override
     public void updateRoomDateStatus(Integer roomDateId, LocalDate checkInDate, LocalDate checkOutDate, Integer status) {
         // 只入住一天的情况

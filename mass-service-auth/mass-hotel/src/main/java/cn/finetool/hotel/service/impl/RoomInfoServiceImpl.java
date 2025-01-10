@@ -39,13 +39,11 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import static cn.finetool.hotel.HotelApplication.ID_WORKER;
+
 @Service
 public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo> implements RoomInfoService {
-
-    private static final SnowflakeIdWorker ID_WORKER = new SnowflakeIdWorker(7, 0);
-
     private static final Logger log = Logger.getLogger(RoomInfoServiceImpl.class.getName());
-
     @Resource
     private RedissonClient redissonClient;
     @Resource

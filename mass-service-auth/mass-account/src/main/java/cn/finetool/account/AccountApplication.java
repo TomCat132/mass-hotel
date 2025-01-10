@@ -8,13 +8,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 
 @SpringBootApplication
 @EnableDiscoveryClient
 @Slf4j
 @EnableFeignClients(basePackages = "cn.finetool.api")
 @MapperScan(basePackages = {"cn.finetool.api.mapper", "cn.finetool.account.mapper"})
-@ComponentScan(basePackages = {"cn.finetool.account", "cn.finetool.api", "cn.finetool.common"})
+@ComponentScan(basePackages = {"cn.finetool.account", "cn.finetool.api", "cn.finetool.common"},
+excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "cn.finetool.hotel.handler"))
 public class AccountApplication {
     public static void main(String[] args) {
         SpringApplication.run(AccountApplication.class, args);

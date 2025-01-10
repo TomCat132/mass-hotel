@@ -3,17 +3,23 @@ package cn.finetool.common.configuration;
 import cn.finetool.common.constant.GlobalNames;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
-@Order(-1)
 public final class AppContext implements ApplicationContextAware {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppContext.class);
@@ -52,6 +58,7 @@ public final class AppContext implements ApplicationContextAware {
 
     /**
      * 获取线程上下文参数
+     *
      * @param ctxKey 上下文键
      * @return 上下文值
      */
@@ -61,6 +68,7 @@ public final class AppContext implements ApplicationContextAware {
 
     /**
      * 获取原始HttpServletRequest对象，不建议应用直接使用
+     *
      * @return HttpServletRequest实例
      */
     public static HttpServletRequest getRawRequest() {
@@ -69,6 +77,7 @@ public final class AppContext implements ApplicationContextAware {
 
     /**
      * 获取原始HttpServletResponse对象，不建议应用直接使用
+     *
      * @return HttpServletResponse实例
      */
     public static HttpServletResponse getRawResponse() {

@@ -48,10 +48,11 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static cn.finetool.hotel.HotelApplication.ID_WORKER;
+
 @Service
 public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomBooking> implements RoomBookingService {
-
-    public static final SnowflakeIdWorker ID_WORKER = new SnowflakeIdWorker(7, 0);
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(RoomBookingServiceImpl.class);
     @Resource
     private DynamicThreadPool dynamicThreadPool;

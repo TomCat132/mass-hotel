@@ -39,5 +39,8 @@ public class RedisCache {
     public static final String ROOM_BOOKING_TIMEOUT_REMIND = "room_booking_timeout_remind_order_id:";
 
     /** =========== 优惠券分布式所 ========== */
-    public static final String CouponLock = "coupon_lock_voucherId";
+    public static final String COUPON_LOCK = "coupon_lock_voucherId";
+    
+    /** =========== 用户请求处理分布式锁========== */
+    public static final String REQUEST_LOCK = "request_lock_requestId";
 }

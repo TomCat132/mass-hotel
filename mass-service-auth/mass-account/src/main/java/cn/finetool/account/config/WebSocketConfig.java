@@ -1,6 +1,6 @@
 package cn.finetool.account.config;
 
-import cn.finetool.account.socket.AdminSocket;
+import cn.finetool.account.socket.ChatSocket;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
@@ -14,7 +14,8 @@ public class WebSocketConfig {
     }
 
     @Bean
-    public AdminSocket adminSocket() {
-        return new AdminSocket();
+    public ChatSocket adminSocket() {
+        return new ChatSocket();
     }
+
 }

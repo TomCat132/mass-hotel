@@ -1,4 +1,4 @@
-package cn.finetool.hotel.controller;
+package cn.finetool.hotel.resource;
 
 
 import cn.dev33.satoken.annotation.SaCheckRole;

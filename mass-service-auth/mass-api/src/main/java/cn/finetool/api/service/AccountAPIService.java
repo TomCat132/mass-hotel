@@ -2,6 +2,7 @@ package cn.finetool.api.service;
 
 import cn.finetool.common.configuration.MultipartSupportConfig;
 import cn.finetool.common.po.Evaluation;
+import cn.finetool.common.po.User;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,4 +33,7 @@ public interface AccountAPIService {
     /**====== 保存评价数据 =====*/
     @PostMapping(value = "/saveEvaluation", consumes = "application/json")
     void saveEvaluation(@RequestBody Evaluation evaluation);
+
+    @GetMapping("/findUsernameByUserId")
+    User findUsernameByUserId(@RequestParam("userId") String userId);
 }

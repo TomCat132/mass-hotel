@@ -3,6 +3,7 @@ package cn.finetool.account.service;
 import cn.finetool.common.dto.EvaluationDto;
 import cn.finetool.common.dto.UserDto;
 import cn.finetool.common.po.Evaluation;
+import cn.finetool.common.po.User;
 import cn.finetool.common.util.Response;
 import java.util.List;
 import java.util.Map;
@@ -46,4 +47,6 @@ public interface AccountService {
     Response getEvaluateByOrderId(String orderId);
     /**====== 根据关联ID查询评价列表 =====*/
     Response getEvaluateListByRelationId(String relationId);
+    /**====== 根据用户ID查询用户名 =====*/
+    User findUserInfoUserId(String userId);
 }

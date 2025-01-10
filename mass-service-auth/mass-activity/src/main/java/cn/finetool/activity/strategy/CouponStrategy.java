@@ -123,7 +123,7 @@ public class CouponStrategy extends SaveVoucherStrategy {
             sendMessage(voucherId, userId, true);
             return true;
         }
-        RLock lock = redissonClient.getLock(RedisCache.CouponLock + voucherId);
+        RLock lock = redissonClient.getLock(RedisCache.COUPON_LOCK + voucherId);
 
         try {
             boolean isLocked = lock.tryLock(10, 10, TimeUnit.SECONDS);

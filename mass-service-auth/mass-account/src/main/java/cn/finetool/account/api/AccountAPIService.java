@@ -2,6 +2,7 @@ package cn.finetool.account.api;
 
 import cn.finetool.account.service.AccountService;
 import cn.finetool.common.po.Evaluation;
+import cn.finetool.common.po.User;
 import jakarta.annotation.Resource;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,5 +48,11 @@ public class AccountAPIService {
     @PostMapping(value = "/saveEvaluation", consumes = "application/json")
     void saveEvaluation(@RequestBody Evaluation evaluation){
          accountService.saveEvaluation(evaluation);
+    }
+
+    /**====== 用户信息 =====*/
+    @GetMapping("/findUsernameByUserId")
+    User findUserInfoUserId(@RequestParam("userId") String userId){
+        return accountService.findUserInfoUserId(userId);
     }
 }

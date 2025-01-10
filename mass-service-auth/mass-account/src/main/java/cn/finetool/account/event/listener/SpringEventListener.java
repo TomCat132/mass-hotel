@@ -1,21 +1,29 @@
 package cn.finetool.account.event.listener;
 
-import cn.finetool.account.event.customEvent.LoginLogEvent;
-import cn.finetool.account.event.customEvent.MessageNoticeEvent;
+import cn.finetool.account.socket.ChatSocket;
+import cn.finetool.common.event.customEvent.ChatRoomEstablishEvent;
+import cn.finetool.common.event.customEvent.LoginLogEvent;
+import cn.finetool.common.event.customEvent.MessageNoticeEvent;
 import cn.finetool.account.mapper.LoginLogMapper;
 import cn.finetool.api.handler.MessageHandler;
 import cn.finetool.common.configuration.AppContext;
 import cn.finetool.common.po.LoginLog;
 import cn.finetool.common.util.IpUtil;
+import cn.finetool.common.util.JsonUtil;
 import cn.finetool.common.util.SnowflakeIdWorker;
 import cn.finetool.common.util.TimeUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.ImmutableMap;
 import jakarta.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
+import lombok.SneakyThrows;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import static cn.finetool.account.socket.ChatSocket.Clients;
 
 
 /**
@@ -35,7 +43,7 @@ public class SpringEventListener {
      * @param event: 登录事件
      */
     @Async
-    @EventListener
+    @EventListener(LoginLogEvent.class)
     public void handleLoginLogEvent(LoginLogEvent event) throws JsonProcessingException {
         System.out.println("记录登录日志：" + event.toString());
         String ip = event.getIp();
@@ -76,11 +84,29 @@ public class SpringEventListener {
      * @param event   : 消息单发送事件
      */
     @Async
-    @EventListener
+    @EventListener(MessageNoticeEvent.class)
     public void handleSingleMessageNoticeEvent(MessageNoticeEvent event){
         String acceptId = event.getAcceptId();
         String message = event.getMessage();
         String affairId = event.getAffairId();
         messageHandler.sendMessage(acceptId, message, affairId);
-    } 
+    }
+
+    /**
+     * 聊天室建立
+     * @param event
+     */
+    @SneakyThrows
+    @Async
+    @EventListener(ChatRoomEstablishEvent.class)
+    public void handleChatRoomEstablishEvent(ChatRoomEstablishEvent event){
+        String chatId = event.getChatId();
+        String customId = event.getCustomId();
+        String conductorId = event.getConductorId();
+        Map<String, String> baseMessage = new HashMap<>(Map.of("chatId", chatId, "customId", customId, "conductorId", conductorId));
+        Clients.get(conductorId).session().getAsyncRemote().sendText(JsonUtil.toJsonString(baseMessage));
+        
+        baseMessage.put("message", "你好！收到您的呼叫，请问有什么可以帮助您？");
+        Clients.get(customId).session().getAsyncRemote().sendText(JsonUtil.toJsonString(baseMessage));
+    }
 }

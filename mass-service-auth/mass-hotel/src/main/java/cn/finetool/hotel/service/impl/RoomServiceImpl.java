@@ -33,11 +33,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static cn.finetool.common.util.Response.success;
+import static cn.finetool.hotel.HotelApplication.ID_WORKER;
 
 @Service
 public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements RoomService {
 
-    private static final SnowflakeIdWorker idWorker = new SnowflakeIdWorker(7, 0);
     @Resource
     private RedissonClient redissonClient;
     @Resource
@@ -63,7 +63,7 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
             Room room = new Room();
             room.setRoomDesc(JsonUtil.toJsonString(roomDto.getRoomDesc()));
             room.setRoomName(roomDto.getRoomName());
-            room.setRoomId(SysEnum.ROOM_PREFIX.code() + idWorker.nextId());
+            room.setRoomId(SysEnum.ROOM_PREFIX.code() + ID_WORKER.nextId());
             room.setRoomType(roomDto.getRoomType());
             room.setHotelId(roomDto.getHotelId());
             room.setBasicPrice(roomDto.getBasicPrice());

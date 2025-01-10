@@ -86,8 +86,19 @@ public enum Status {
     ACCOUNT_NORMAL(0, "在职"),
     ACCOUNT_RESIGNED(2, "离职"),
 
+    /**
+     * 评价状态
+     */
     EVALUATION_NO(0, "未评价"),
     EVALUATION_YES(1, "已评价"),
+
+    /**
+     * 请求状态
+     */
+    REQUEST_NOT(0, "未处理"),
+    REQUEST_DOING(1, "处理中"),
+    REQUEST_DONE(2, "已处理"),
+    REQUEST_FAIL(3, "已超期"),
     ;
 
     private final int code;

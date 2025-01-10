@@ -1,4 +1,4 @@
-package cn.finetool.account.event.customEvent;
+package cn.finetool.common.event.customEvent;
 
 import java.util.List;
 import lombok.Getter;
@@ -18,7 +18,7 @@ public class MessageNoticeEvent extends ApplicationEvent {
     /**
      * 接收者ID
      */
-    private final String acceptId;
+    private String acceptId;
 
     /**
      * 关联事项ID
@@ -28,7 +28,7 @@ public class MessageNoticeEvent extends ApplicationEvent {
     /**
      * 是否系统发送
      */
-    private final boolean isSysSend;
+    private boolean isSysSend;
 
     /**
      * 非必须参数，系统发送时不需要
@@ -41,6 +41,11 @@ public class MessageNoticeEvent extends ApplicationEvent {
     private boolean isSendToMany;
 
     private List<String> acceptIds;
+
+    /**
+     * 消息内容2
+     */
+    private String message2;
 
     /**
      * <h6>source 的作用<h6/>
@@ -99,7 +104,9 @@ public class MessageNoticeEvent extends ApplicationEvent {
     }
 
     public MessageNoticeEvent(Object source, String acceptId, String message, String affairId,
-                              boolean isSysSend, String senderId, boolean isSendToMany, List<String> acceptIds) {
+                              boolean isSysSend, String senderId, boolean isSendToMany, List<String> acceptIds,
+                              String message2
+                              ) {
         super(source);
         this.acceptId = acceptId;
         this.message = message;
@@ -108,6 +115,13 @@ public class MessageNoticeEvent extends ApplicationEvent {
         this.senderId = senderId;
         this.isSendToMany = isSendToMany;
         this.acceptIds = acceptIds;
+        this.message2 = message2;
     }
 
+    public MessageNoticeEvent(Object source, List<String> acceptIds, String message, String affairId){
+        super(source);
+        this.acceptIds = acceptIds;
+        this.message = message;
+        this.affairId = affairId;
+    }
 }

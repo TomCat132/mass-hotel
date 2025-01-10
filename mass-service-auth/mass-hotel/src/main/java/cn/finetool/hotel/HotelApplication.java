@@ -1,5 +1,6 @@
 package cn.finetool.hotel;
 
+import cn.finetool.common.util.SnowflakeIdWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -18,6 +19,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ComponentScan(basePackages = "cn.finetool")
 @MapperScan(basePackages = {"cn.finetool.api.mapper", "cn.finetool.hotel.mapper"})
 public class HotelApplication {
+    public static final SnowflakeIdWorker ID_WORKER = new SnowflakeIdWorker(7, 0);
     public static void main(String[] args) {
         SpringApplication.run(HotelApplication.class, args);
     }

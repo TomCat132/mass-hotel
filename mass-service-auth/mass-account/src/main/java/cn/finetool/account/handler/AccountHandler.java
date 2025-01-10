@@ -323,6 +323,12 @@ public class AccountHandler implements AccountService {
         return CollectionUtils.isEmpty(evaluationVOList) ? success(Collections.emptyList()) : success(evaluationVOList);
     }
 
+    @Override
+    public User findUserInfoUserId(String userId) {
+        return userMapper.selectOne(new QueryWrapper<User>()
+                .eq("user_id", userId));
+    }
+
     private void generateAccount(UserDto userDto) {
         // 生成账号
         User user = new User();
