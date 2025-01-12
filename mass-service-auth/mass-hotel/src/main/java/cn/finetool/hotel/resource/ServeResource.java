@@ -1,6 +1,8 @@
 package cn.finetool.hotel.resource;
 
 import cn.finetool.common.configuration.AppContext;
+import cn.finetool.common.event.customEvent.ChatEvent;
+import cn.finetool.common.event.customEvent.ChatRoomEstablishEvent;
 import cn.finetool.common.po.UserRequest;
 import cn.finetool.common.util.Response;
 import cn.finetool.hotel.handler.ServeService;
@@ -38,5 +40,15 @@ public class ServeResource {
         return serveService.startHandleRequest(requestId);
     }
     
-
+    @GetMapping("/get-request-chat-list")
+    @ApiOperation(value = "获取用户请求聊天列表", notes = "客户端: 首页获取用户请求聊天列表")
+    public Response getRequestChatList(@RequestParam("userId") String userId){
+        return serveService.getRequestChatList(userId);
+    }
+    
+    @GetMapping("/get-guest-chat-list")
+    @ApiOperation(value = "获取客户聊天列表", notes = "聊天室:获取客户聊天列表")
+    public Response getGuestChatList(@RequestParam("conductorId") String conductorId){
+        return serveService.getGuestChatList(conductorId);
+    }
 }

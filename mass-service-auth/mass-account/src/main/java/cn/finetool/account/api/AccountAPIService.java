@@ -3,6 +3,7 @@ package cn.finetool.account.api;
 import cn.finetool.account.service.AccountService;
 import cn.finetool.common.po.Evaluation;
 import cn.finetool.common.po.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.Resource;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -50,9 +50,18 @@ public class AccountAPIService {
          accountService.saveEvaluation(evaluation);
     }
 
-    /**====== 用户信息 =====*/
-    @GetMapping("/findUsernameByUserId")
-    User findUserInfoUserId(@RequestParam("userId") String userId){
+    /**====== 根据用户ID查询用户信息 =====*/
+    @GetMapping("/findUserInfoyUserId")
+    User findUserInfoByUserId(@RequestParam("userId") String userId){
         return accountService.findUserInfoUserId(userId);
+    }
+
+    /**====== 通知用户(客户响应呼叫) =====*/
+    @PostMapping("/noticeUser")
+    void noticeUser(@RequestParam("chatId") String chatId,
+                    @RequestParam("requestId")String requestId,
+                    @RequestParam("customerId") String customerId,
+                    @RequestParam("conductorId") String conductorId) throws JsonProcessingException {
+        accountService.noticeUser(chatId, requestId, customerId, conductorId);
     }
 }

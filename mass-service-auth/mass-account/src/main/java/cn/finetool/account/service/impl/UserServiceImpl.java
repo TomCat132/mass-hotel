@@ -33,6 +33,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.ImmutableMap;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.Session;
@@ -140,7 +141,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         //登录成功，记录登录日志
         AppContext.getApplicationContext().publishEvent(
                 new LoginLogEvent(this, userId,IpUtil.getClientIp(), SystemUtil.getOperatingSystem()));
-        return success("登录成功");
+        ImmutableMap<String, Object> resultMap = ImmutableMap.of("userId", DBUser.getUserId()
+                , "userRole", roleList
+                , "websocketUrl", "ws://localhost" + ":8081" + "/admin" + "/" + DBUser.getUserId());
+        return success(resultMap);
     }
 
 

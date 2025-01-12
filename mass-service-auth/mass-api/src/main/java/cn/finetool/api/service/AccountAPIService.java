@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 
 @FeignClient(name = "mass-account-service", path = "/account/api", configuration = MultipartSupportConfig.class)
 public interface AccountAPIService {
@@ -34,6 +33,14 @@ public interface AccountAPIService {
     @PostMapping(value = "/saveEvaluation", consumes = "application/json")
     void saveEvaluation(@RequestBody Evaluation evaluation);
 
-    @GetMapping("/findUsernameByUserId")
-    User findUsernameByUserId(@RequestParam("userId") String userId);
+    /**====== 根据用户ID查询用户名 =====*/
+    @GetMapping("/findUserInfoyUserId")
+    User findUserInfoByUserId(@RequestParam("userId") String userId);
+    
+    /**====== 通知用户(客户响应呼叫) =====*/
+    @PostMapping("/noticeUser")
+    void noticeUser(@RequestParam("chatId") String chatId,
+                    @RequestParam("requestId")String requestId,
+                    @RequestParam("customerId") String customerId,
+                    @RequestParam("conductorId") String conductorId);
 }

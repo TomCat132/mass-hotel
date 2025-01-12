@@ -75,6 +75,7 @@ public class RequestVO extends UserRequest implements java.io.Serializable {
         this.userId = userRequest.getUserId();
         this.content = userRequest.getContent();
         this.status = userRequest.getStatus();
+        this.requestTime = userRequest.getRequestTime();
         this.requestType = userRequest.getRequestType();
     }
 }

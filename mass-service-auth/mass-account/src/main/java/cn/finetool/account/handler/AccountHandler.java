@@ -7,7 +7,9 @@ import cn.finetool.account.mapper.UserMapper;
 import cn.finetool.account.mapper.UserMerchantMapper;
 import cn.finetool.account.mapper.UserRolesMapper;
 import cn.finetool.account.service.AccountService;
+import cn.finetool.account.socket.ChatSocket;
 import cn.finetool.api.mapper.MessageBoxMapper;
+import cn.finetool.api.service.HotelAPIService;
 import cn.finetool.api.service.OrderAPIService;
 import cn.finetool.api.service.OssAPIService;
 import cn.finetool.common.dto.EvaluationDto;
@@ -24,6 +26,7 @@ import cn.finetool.common.po.UserMerchant;
 import cn.finetool.common.po.UserRoles;
 import cn.finetool.common.util.CommonsUtils;
 import cn.finetool.common.util.FunUtil;
+import cn.finetool.common.util.JsonUtil;
 import cn.finetool.common.util.SnowflakeIdWorker;
 import cn.finetool.common.util.Strings;
 import cn.finetool.common.util.TimeUtil;
@@ -33,8 +36,10 @@ import cn.finetool.common.util.IpUtil;
 import cn.finetool.common.util.Response;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.Resource;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -66,6 +71,8 @@ public class AccountHandler implements AccountService {
     private OrderAPIService orderAPIService;
     @Resource
     private OssAPIService ossAPIService;
+    @Resource
+    private HotelAPIService hotelAPIService;
 
     @Override
     public String queryMerchantOfUser(String userId) {
@@ -328,6 +335,17 @@ public class AccountHandler implements AccountService {
         return userMapper.selectOne(new QueryWrapper<User>()
                 .eq("user_id", userId));
     }
+    
+    @Override
+    public void noticeUser(String chatId, String requestId, String customerId, String conductorId) throws JsonProcessingException {
+        // 发送消息
+        Map<String, Object> message = new HashMap<>();
+        message.put("chatId", chatId);
+        message.put("senderId", conductorId);
+        message.put("senderTime", TimeUtil.nowStr());
+        message.put("message", "请问有什么需要帮助的吗？");
+        ChatSocket.sendMessageTo(JsonUtil.toJsonString(message), customerId);
+    }
 
     private void generateAccount(UserDto userDto) {
         // 生成账号
@@ -356,5 +374,12 @@ public class AccountHandler implements AccountService {
         userRoles.setUserId(user.getUserId());
     }
 
-
+    /**
+     * 代理之久话消息
+     * @param message
+     * @param receiverId
+     */
+    public void proxySaveWebSocketMessage(String message, String receiverId) {
+        hotelAPIService.saveWebSocketMessage(message, receiverId);
+    }
 }

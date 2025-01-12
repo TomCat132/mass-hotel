@@ -61,6 +61,14 @@ public class TimeUtil {
     }
 
     /**
+     * 获取当前时间的字符串: yyyy-MM-dd HH:mm:ss
+     * @return
+     */
+    public static String nowStr(){
+        return format(now());
+    }
+
+    /**
      * 获取当前时间的: yyyy-MM 从第一天到最后一天的列表
      */
     public static YearMonth CurrentYearOfMonth() {

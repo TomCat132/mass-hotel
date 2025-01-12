@@ -5,6 +5,7 @@ import cn.finetool.common.dto.UserDto;
 import cn.finetool.common.po.Evaluation;
 import cn.finetool.common.po.User;
 import cn.finetool.common.util.Response;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,4 +50,6 @@ public interface AccountService {
     Response getEvaluateListByRelationId(String relationId);
     /**====== 根据用户ID查询用户名 =====*/
     User findUserInfoUserId(String userId);
+    /**====== 通知用户(客户响应呼叫) =====*/
+    void noticeUser(String chatId, String requestId, String customerId, String conductorId) throws JsonProcessingException;
 }

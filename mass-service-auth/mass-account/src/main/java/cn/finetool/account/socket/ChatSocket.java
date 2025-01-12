@@ -1,18 +1,17 @@
 package cn.finetool.account.socket;
 
 
+import cn.finetool.account.handler.AccountHandler;
 import cn.finetool.account.mapper.UserMapper;
+import cn.finetool.api.service.HotelAPIService;
 import cn.finetool.common.configuration.AppContext;
 import cn.finetool.common.enums.Status;
-import cn.finetool.common.enums.SystemTag;
 import cn.finetool.common.po.User;
-import cn.finetool.common.util.JsonUtil;
 import cn.finetool.common.util.Strings;
-import cn.finetool.common.util.TimeUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.ImmutableMap;
+import jakarta.annotation.Resource;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -20,7 +19,6 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +27,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 /**
@@ -48,6 +47,15 @@ public class ChatSocket {
     public static int OnlineCount = 0;
     
     private static final UserMapper userMapper = AppContext.getBean(UserMapper.class);
+    private static final AccountHandler accountHandler = AppContext.getBean(AccountHandler.class);
+    private static HotelAPIService hotelAPIService;
+    
+    public ChatSocket(){}
+    
+    @Autowired
+    public ChatSocket(HotelAPIService hotelAPIService){
+        ChatSocket.hotelAPIService = hotelAPIService;
+    }
     /**
      * 以用户的Id作为key，WebSocket为对象保存起来
      */
@@ -63,7 +71,9 @@ public class ChatSocket {
      * 会话S Session
      */
     private Session session;
-    
+
+
+
     /**
      * 建立连接
      */
@@ -79,15 +89,6 @@ public class ChatSocket {
                 .eq("user_id", userId));
         User user = userMapper.selectOne(new QueryWrapper<User>()
                 .eq("user_id", userId));
-        String messageContent = String.format("管理员:%s 已上线", user.getUsername());
-        ImmutableMap<String, ? extends Serializable> message = ImmutableMap.of("message",messageContent,
-                "time", TimeUtil.now().toString(),
-                "senderId", SystemTag.SYSTEM_BROADCAST.desc()
-                );
-        Map<String, ChatSocket> allAdminSession = getAllAdminSession();
-        allAdminSession.remove(userId);
-        List<String> acceptIds = allAdminSession.keySet().stream().toList();
-        broadcastMessage(JsonUtil.toJsonString(message), acceptIds);
     }
 
     @OnError
@@ -102,7 +103,7 @@ public class ChatSocket {
     public void onClose() {
         OnlineCount++;
         Clients.remove(userId);
-        LOGGER.info("管理员:{} 已下线", userId);
+        LOGGER.info("账号:{} 已下线", userId);
     }
 
     /**
@@ -155,4 +156,15 @@ public class ChatSocket {
         return this.userId;
     }
 
+
+    public static void sendMessageTo(String message, String receiverId) {
+        for (ChatSocket chat : Clients.values()){
+            if (Strings.equals(chat.userId, receiverId)){
+                chat.session.getAsyncRemote().sendText(message);
+                // 消息持久化
+                accountHandler.proxySaveWebSocketMessage(message, receiverId);
+                break;
+            }
+        }
+    }
 }

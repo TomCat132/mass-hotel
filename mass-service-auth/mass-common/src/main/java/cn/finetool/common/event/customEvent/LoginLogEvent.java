@@ -1,6 +1,5 @@
 package cn.finetool.common.event.customEvent;
 
-import java.util.Map;
 import org.springframework.context.ApplicationEvent;
 
 public class LoginLogEvent extends ApplicationEvent {
@@ -23,8 +22,7 @@ public class LoginLogEvent extends ApplicationEvent {
     public String getIp() {
         return ip;
     }
-
-
+    
     public String getOperationSystem() {
         return operationSystem;
     }

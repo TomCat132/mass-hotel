@@ -100,5 +100,11 @@ public class OrderAPIService {
                               @RequestParam("isEvaluate") Integer isEvaluate){
         orderHandler.updateEvaluateStatus(orderId, isEvaluate);
     }
+
+    /**======== 根据订单号查询商户id ======= */
+    @GetMapping("/getAppRechargeOrderList")
+    String findMerchantIdByOrderId(@RequestParam("orderId") String orderId) {
+        return orderHandler.findMerchantIdByOrderId(orderId);
+    }
 }
 

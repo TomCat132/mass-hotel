@@ -6,12 +6,14 @@ import cn.finetool.common.dto.PlanDto;
 import cn.finetool.common.dto.RoomDto;
 import cn.finetool.common.enums.SysEnum;
 import cn.finetool.common.enums.Status;
+import cn.finetool.common.po.ChatMessage;
 import cn.finetool.common.po.FileUrl;
 import cn.finetool.common.po.Hotel;
 import cn.finetool.common.po.Room;
 import cn.finetool.common.po.RoomBooking;
 import cn.finetool.common.po.RoomDate;
 import cn.finetool.common.po.RoomInfo;
+import cn.finetool.common.util.JsonUtil;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.util.Strings;
 import cn.finetool.common.util.TimeUtil;
@@ -20,6 +22,7 @@ import cn.finetool.common.vo.CpMerchantVO;
 import cn.finetool.common.vo.RoomInfoVo;
 import cn.finetool.common.vo.SingleRoomInfoVO;
 import cn.finetool.hotel.handler.HotelAdminService;
+import cn.finetool.hotel.mapper.ChatMessageMapper;
 import cn.finetool.hotel.mapper.HotelMapper;
 import cn.finetool.hotel.mapper.RoomBookingMapper;
 import cn.finetool.hotel.mapper.RoomDateMapper;
@@ -33,6 +36,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Collections;
 import java.util.stream.Collectors;
+import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +47,7 @@ import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
 
 import static cn.finetool.common.util.Response.success;
+import static cn.finetool.hotel.HotelApplication.ID_WORKER;
 
 @Service
 public class HotelAdminHandler implements HotelAdminService {
@@ -61,7 +66,8 @@ public class HotelAdminHandler implements HotelAdminService {
     private RechargePlanAPIService rechargePlanAPIService;
     @Resource
     private OssAPIService ossAPIService;
-    
+    @Resource
+    private ChatMessageMapper chatMessageMapper;
     
 
 
@@ -357,6 +363,24 @@ public class HotelAdminHandler implements HotelAdminService {
         return "";
     }
 
+    @SneakyThrows
+    @Override
+    public void saveWebSocketMessage(String message, String receiverId) {
+        Map messageMap = JsonUtil.fromJsonString(message, Map.class);
+        String chatId = (String) messageMap.get("chatId");
+        String senderId = (String) messageMap.get("senderId");
+        String senderTime = (String) messageMap.get("senderTime");
+        String messageContent = (String) messageMap.get("message");
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setMessageId(SysEnum.CHAT_MESSAGE_PREFIX.code() + ID_WORKER.nextId());
+        chatMessage.setChatId(chatId);
+        chatMessage.setSenderId(senderId);
+        chatMessage.setSenderTime(TimeUtil.parseToLocalDateTime(senderTime));
+        chatMessage.setReceiverId(receiverId);
+        chatMessage.setMessage(messageContent);
+        chatMessage.setReadState(Status.MESSAGE_UNREAD.code());
+        chatMessageMapper.insert(chatMessage);
+    }
 
 
     private int getRoomUsageOfDifferentSituationByDate(String merchantId, String queryDate, Integer status) {

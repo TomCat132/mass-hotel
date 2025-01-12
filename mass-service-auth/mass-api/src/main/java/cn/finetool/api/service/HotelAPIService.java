@@ -6,6 +6,7 @@ import cn.finetool.common.dto.OrderPayDto;
 import cn.finetool.common.vo.RoomOrderBaseInfo;
 import java.math.BigDecimal;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
 import java.util.List;
 
+@Component
 @FeignClient(name = "mass-hotel-service", path = "/hotel/api", configuration = MultipartSupportConfig.class)
 public interface HotelAPIService {
 
@@ -53,4 +55,9 @@ public interface HotelAPIService {
     @PutMapping("/updateRoomBookingStatus")
     void updateRoomBookingStatus(@RequestParam("orderId") String orderId,
                                  @RequestParam("status") Integer status);
+
+    /**======== 持久化WebSocket消息 ======== **/
+    @PostMapping("/saveWebSocketMessage")
+    void saveWebSocketMessage(@RequestParam("message") String message,
+                              @RequestParam("receiverId") String receiverId);
 }

@@ -74,4 +74,11 @@ public class HotelAPIService {
                                  @RequestParam("status") Integer status) {
         hotelAdminService.updateRoomBookingStatus(orderId, status);
     }
+    /**======== 持久化WebSocket消息 ======== **/
+    @PostMapping("/saveWebSocketMessage")
+    void saveWebSocketMessage(@RequestParam("message") String message,
+                              @RequestParam("receiverId") String receiverId){
+        hotelAdminService.saveWebSocketMessage(message, receiverId);
+    }
+    
 }

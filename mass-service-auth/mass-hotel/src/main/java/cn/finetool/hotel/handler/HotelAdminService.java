@@ -51,4 +51,6 @@ public interface HotelAdminService {
     Response getCleaningRoomByDate(String merchantId, String queryDate);
     /** ========= 根据订单ID获取商户ID ========= */
     String findMerchantIdByOrderId(String orderId);
+    /** ========= 保存WebSocket消息 ========= */
+    void saveWebSocketMessage(String message, String receiverId);
 }

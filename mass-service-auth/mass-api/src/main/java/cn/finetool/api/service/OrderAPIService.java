@@ -58,4 +58,8 @@ public interface OrderAPIService {
     @PutMapping("/updateEvaluateStatus")
     void updateEvaluateStatus(@RequestParam("orderId") String orderId,
                               @RequestParam("isEvaluate") Integer isEvaluate);
+
+    /**======== 根据订单号查询商户id ======= */
+    @GetMapping("/getAppRechargeOrderList")
+    String findMerchantIdByOrderId(@RequestParam("orderId") String orderId);
 }

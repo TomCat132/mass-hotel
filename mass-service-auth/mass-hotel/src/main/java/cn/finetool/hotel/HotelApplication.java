@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 
@@ -16,6 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Slf4j
 @SpringBootApplication(scanBasePackages = "cn.finetool")
 @EnableScheduling
+@EnableAsync
 @ComponentScan(basePackages = "cn.finetool")
 @MapperScan(basePackages = {"cn.finetool.api.mapper", "cn.finetool.hotel.mapper"})
 public class HotelApplication {
