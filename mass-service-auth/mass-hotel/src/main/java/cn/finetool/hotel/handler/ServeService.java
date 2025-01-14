@@ -17,4 +17,6 @@ public interface ServeService {
     Response getRequestChatList(String userId);
     /** ======== 聊天室:获取客户聊天列表======== */
     Response getGuestChatList(String conductorId);
+    /** ======== 聊天室:获取历史聊天记录(单个聊天室)======== */
+    Response chatMessageList(String chatId, String userId);
 }

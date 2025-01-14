@@ -1,5 +1,6 @@
 package cn.finetool.common.vo;
 
+import cn.finetool.common.po.User;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -11,13 +12,9 @@ public class ChatVO implements java.io.Serializable {
      */
     private String hotelName;
     /**
-     * 回复人编号
+     * 用户信息
      */
-    private String conductorName;
-    /**
-     * 回复人头像
-     */
-    private String conductorAvatar;
+    private User userInfo;
     /**
      * 最新一条消息
      */

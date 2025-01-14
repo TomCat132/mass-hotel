@@ -51,4 +51,11 @@ public class ServeResource {
     public Response getGuestChatList(@RequestParam("conductorId") String conductorId){
         return serveService.getGuestChatList(conductorId);
     }
+    
+    @GetMapping("/get-chat-message-list")
+    @ApiOperation(value = "查询历史聊天记录", notes = "聊天室:查询历史聊天记录")
+    public Response chatMessageList(@RequestParam("chatId") String chatId,
+                                    @RequestParam(value = "userId",required = false) String userId){
+        return serveService.chatMessageList(chatId, userId);
+    }
 }

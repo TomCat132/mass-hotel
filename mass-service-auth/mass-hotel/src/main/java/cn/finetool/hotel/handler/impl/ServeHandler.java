@@ -137,7 +137,6 @@ class ServeHandler implements ServeService {
     private void notifyUsers(String chatId, String conductorId, String requestId) {
         UserRequest userRequest = requestMapper.selectById(requestId);
         String customerId = userRequest.getUserId();
-        ;
         accountAPIService.noticeUser(chatId, requestId, customerId, conductorId);
     }
 
@@ -176,8 +175,7 @@ class ServeHandler implements ServeService {
                     chatVO.setHotelName(hotelInfo.getHotelName());
                     // 查询处理人信息
                     User userInfo = accountAPIService.findUserInfoByUserId(userRequest.getConductorId());
-                    chatVO.setConductorName(userInfo.getUsername());
-                    chatVO.setConductorAvatar(ossAPIService.findImageByUrl(userInfo.getAvatarKey()));
+                    chatVO.setUserInfo(userInfo);
                     ChatRecord chatRecord = chatRecordMapper.selectOne(new QueryWrapper<ChatRecord>()
                             .eq("request_id", userRequest.getRequestId()));
                     //查询最新的一条消息，查询未读消息
@@ -212,8 +210,7 @@ class ServeHandler implements ServeService {
                     ChatVO chatVO = new ChatVO();
                     //查询客户信息
                     User userInfo = accountAPIService.findUserInfoByUserId(userRequest.getUserId());
-                    chatVO.setConductorName(userInfo.getUsername());
-                    chatVO.setConductorAvatar(userInfo.getAvatarKey());
+                    chatVO.setUserInfo(userInfo);
                     ChatRecord chatRecord = chatRecordMapper.selectOne(new QueryWrapper<ChatRecord>()
                             .eq("request_id", userRequest.getRequestId()));
                     chatVO.setChatId(chatRecord.getChatId());
@@ -233,9 +230,25 @@ class ServeHandler implements ServeService {
                     chatVO.setNewMessageUnreadCount(size);
 
                     return chatVO;
-                }).collect(Collectors.toList());
+                })
+                .sorted(Comparator.comparing(ChatVO::getNewMessageTime, Comparator.nullsLast(Comparator.reverseOrder())))
+                .collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(chatVOList)) {
             return success(chatVOList);
+        }
+        return success(Collections.emptyList());
+    }
+    
+    @Override
+    public Response chatMessageList(String chatId, String userId) {
+        List<ChatMessage> messageList = chatMessageMapper.selectList(new QueryWrapper<ChatMessage>()
+                .eq("chat_id", chatId)
+                .orderByAsc("sender_time"));
+        chatMessageMapper.update(new UpdateWrapper<ChatMessage>()
+                .eq("receiver_id", userId)
+                .set("read_state", Status.MESSAGE_READ.code()));
+        if (CollectionUtils.isNotEmpty(messageList)){
+            return success(messageList);
         }
         return success(Collections.emptyList());
     }

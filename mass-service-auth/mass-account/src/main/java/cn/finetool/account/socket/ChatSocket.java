@@ -7,6 +7,7 @@ import cn.finetool.api.service.HotelAPIService;
 import cn.finetool.common.configuration.AppContext;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.po.User;
+import cn.finetool.common.util.JsonUtil;
 import cn.finetool.common.util.Strings;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -113,13 +114,15 @@ public class ChatSocket {
      * @param session 会话
      */
     @OnMessage
-    public void onMessage(String message, Session session) {
+    public void onMessage(String message, Session session) throws JsonProcessingException {
         if (Strings.equals(message, "heartbeat")){
             //心跳检测
             Clients.get(userId).session.getAsyncRemote().sendText("ok");
             return;
         }
-
+        Map messaageMap = JsonUtil.fromJsonString(message, Map.class);
+        String receiverId = (String) messaageMap.get("receiverId");
+        sendMessageTo(message, receiverId);
         LOGGER.info("来自客户端消息:" + message + "客户端的ID:" + session.getId());
     }
 
