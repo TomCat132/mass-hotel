@@ -123,6 +123,7 @@ public class ChatSocket {
         Map messaageMap = JsonUtil.fromJsonString(message, Map.class);
         String receiverId = (String) messaageMap.get("receiverId");
         sendMessageTo(message, receiverId);
+        accountHandler.proxySaveWebSocketMessage(message, receiverId);
         LOGGER.info("来自客户端消息:" + message + "客户端的ID:" + session.getId());
     }
 
@@ -165,7 +166,7 @@ public class ChatSocket {
             if (Strings.equals(chat.userId, receiverId)){
                 chat.session.getAsyncRemote().sendText(message);
                 // 消息持久化
-                accountHandler.proxySaveWebSocketMessage(message, receiverId);
+
                 break;
             }
         }
