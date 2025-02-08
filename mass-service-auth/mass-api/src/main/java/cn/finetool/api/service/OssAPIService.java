@@ -35,4 +35,8 @@ public interface OssAPIService {
     @PostMapping(value = "batchUploadImage", consumes = "multipart/form-data")
     void batchUploadImage(@RequestPart("avatarList") List<MultipartFile> avatarList,
                           @RequestParam("uniqueId") String uniqueId);
+
+    /**======== 根据uniqueId查询图片数据（一张） ========= **/
+    @GetMapping(value = "findImageByUniqueId")
+    String findImageByUniqueId(@RequestParam("uniqueId") String uniqueId);
 }

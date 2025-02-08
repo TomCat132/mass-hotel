@@ -12,4 +12,16 @@
         INNER JOIN tb_voucher_coupon AS v2 ON v1.voucher_id = v2.voucher_id
         WHERE v1.merchant_id = #{merchantId}
     </select>
+    
+    <select id="findValidVoucherList" resultType="cn.finetool.common.po.Voucher">
+        SELECT *
+        FROM tb_voucher AS voucher
+        <choose>
+            <when test="voucher_type = 0">
+                INNER JOIN tb_voucher_coupon AS coupon ON voucher.voucher_id = coupon.voucher_id
+                WHERE coupon.status = 1 
+            </when>
+        </choose> 
+    </select>
+    
 </mapper>

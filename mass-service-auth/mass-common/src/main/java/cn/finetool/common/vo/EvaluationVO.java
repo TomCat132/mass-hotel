@@ -38,4 +38,9 @@ public class EvaluationVO extends Evaluation implements java.io.Serializable {
      * 用户名
      */
     private String username;
+
+    /**
+     * 评价状态
+     */
+    private Integer status;
 }

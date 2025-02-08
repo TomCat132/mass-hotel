@@ -3,6 +3,7 @@ package cn.finetool.common.po;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -30,10 +31,11 @@ public class ChatRecord implements Serializable {
     private LocalDateTime createTime;
 
     /**
-     * 扩展字段(暂不使用)
+     * 扩展字段(暂不使用): 结束时间
      */
     @TableField("extr1")
-    private String extr1;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime endTime;
 
     /**
      * 扩展字段(暂不使用)

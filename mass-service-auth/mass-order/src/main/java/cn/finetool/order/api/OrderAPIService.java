@@ -4,12 +4,12 @@ package cn.finetool.order.api;
 import cn.finetool.common.dto.CreateOrderDto;
 import cn.finetool.common.po.RoomOrder;
 import cn.finetool.common.vo.OrderVO;
+import cn.finetool.common.vo.RoomOrderBaseInfo;
 import cn.finetool.order.service.OrderService;
 import cn.finetool.order.service.OrderStatusService;
 import cn.finetool.order.service.RechargeOrderService;
 import cn.finetool.order.service.RoomOrderService;
 import cn.finetool.order.service.impl.RechargeOrderServiceImpl;
-import cn.finetool.order.service.impl.RoomOrderServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -105,6 +105,25 @@ public class OrderAPIService {
     @GetMapping("/getAppRechargeOrderList")
     String findMerchantIdByOrderId(@RequestParam("orderId") String orderId) {
         return orderHandler.findMerchantIdByOrderId(orderId);
+    }
+
+    /**======== 处理订单 ======= */
+    @PostMapping("/handleOrder")
+    void handleOrder(@RequestParam("orderId") String orderId,
+                     @RequestParam("status") Integer status){
+         orderHandler.handleOrder(orderId, status);
+    }
+
+    /**======== 根据用户id查询订单基本信息 ======= */
+    @GetMapping("/findOrderBaseInfoByUserId")
+    RoomOrderBaseInfo findOrderBaseInfoByUserId(@RequestParam("userId") String userId){
+        return orderHandler.findOrderBaseInfoByUserId(userId);
+    }
+
+    /**======== 根据用户id查询订单基本信息列表 ======= */
+    @GetMapping("/findOrderBaseInfoListByUserId")
+    List<RoomOrderBaseInfo> findOrderBaseInfoListByUserId(@RequestParam("userId") String userId){
+        return orderHandler.findOrderBaseInfoListByUserId(userId);
     }
 }
 

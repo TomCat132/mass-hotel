@@ -12,6 +12,7 @@ import cn.finetool.common.enums.Status;
 import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.Voucher;
 import cn.finetool.common.po.VoucherCoupon;
+import cn.finetool.common.util.JsonUtil;
 import cn.finetool.common.util.MqUtils;
 import cn.finetool.common.util.Strings;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -70,10 +71,10 @@ public class CouponStrategy extends SaveVoucherStrategy {
         if (voucherCoupon.getEndTime().isBefore(voucherCoupon.getBeginTime())) {
             throw new BusinessRuntimeException("优惠券有效结束时间不能早于有效开始时间");
         }
-        // 有效时间至少为一周
-        if (Duration.between(voucherCoupon.getBeginTime(), voucherCoupon.getEndTime()).toDays() < 7) {
-            throw new BusinessRuntimeException("优惠券有效时间至少为一周");
-        }
+//        // 有效时间至少为一周
+//        if (Duration.between(voucherCoupon.getBeginTime(), voucherCoupon.getEndTime()).toDays() < 7) {
+//            throw new BusinessRuntimeException("优惠券有效时间至少为一周");
+//        }
         couponService.save(voucherDto.getVoucherCoupon());
         Map<String, Object> messageBody = new HashMap<>();
         messageBody.put("voucherId", voucherDto.getVoucherId());
@@ -87,7 +88,7 @@ public class CouponStrategy extends SaveVoucherStrategy {
         MqUtils.sendMessage(rabbitTemplate,
                 MqExchange.VOUCHER_UP_EXCHANGE,
                 MqRoutingKey.VOUCHER_UP_ROUTING_KEY,
-                messageBody,
+                JsonUtil.toJsonString(messageBody),
                 message -> {
                     message.getMessageProperties().setContentType("application/json");
                     message.getMessageProperties().getHeaders().put("x-delay", delayUpTime);
@@ -98,7 +99,7 @@ public class CouponStrategy extends SaveVoucherStrategy {
         MqUtils.sendMessage(rabbitTemplate,
                 MqExchange.VOUCHER_DOWN_EXCHANGE,
                 MqRoutingKey.VOUCHER_DOWN_ROUTING_KEY,
-                messageBody,
+                JsonUtil.toJsonString(messageBody),
                 message -> {
                     message.getMessageProperties().setContentType("application/json");
                     message.getMessageProperties().getHeaders().put("x-delay", delayDownTime);

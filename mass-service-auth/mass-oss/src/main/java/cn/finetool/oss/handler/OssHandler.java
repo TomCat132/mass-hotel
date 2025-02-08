@@ -117,4 +117,18 @@ public class OssHandler implements OssService {
     public Response findImageListByUniqueId(String uniqueId) {
         return success(findImageListByUniqueIds(Collections.singletonList(uniqueId)));
     }
+
+    @Override
+    public String findImageByUniqueId(String uniqueId) {
+        FileUrl fileUrl = fileUrlMapper.selectOne(new QueryWrapper<FileUrl>()
+                .eq("unique_id", uniqueId)
+                .last("LIMIT 1"));
+        try {
+            // 避免空指针
+            return fileConvertUtil.convertFile(fileUrl.getUrl());
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+      
+    }
 }

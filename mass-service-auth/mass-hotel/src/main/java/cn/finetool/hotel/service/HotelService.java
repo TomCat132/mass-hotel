@@ -25,4 +25,7 @@ public interface HotelService extends IService<Hotel> {
      * @return
      */
     BigDecimal caculatePayAmount(OrderPayDto orderPayDto);
+
+    /** ========= 根据关键词搜索相关酒店信息 ========== */
+    Response getHotelRoomList(String keyword);
 }

@@ -23,10 +23,8 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
     @Resource
     private RoleService roleService;
-
     @Resource
     private UserRolesMapper userRolesMapper;
-
     @Resource
     private RoleMapper roleMapper;
 

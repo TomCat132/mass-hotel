@@ -5,11 +5,13 @@ import cn.finetool.api.service.OrderAPIService;
 import cn.finetool.common.constant.MqQueue;
 import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.enums.Status;
+import cn.finetool.common.util.JsonUtil;
 import com.rabbitmq.client.Channel;
 import jakarta.annotation.Resource;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -31,14 +33,17 @@ public class RechargeOrderConsumer {
     /**
      * ========== 充值订单超时消费者 ==========
      **/
+    @SneakyThrows
     @RabbitListener(queues = MqQueue.RECHARGE_ORDER_QUEUE)
-    public void RechargeOrderConsumer(Map<String, Object> message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) {
+    public void RechargeOrderConsumer(String messageBody, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) {
 
+        Map message = JsonUtil.fromJsonString(messageBody, Map.class);
         String orderId = (String) message.get("orderId");
         if (Objects.nonNull(orderId)) {
-            Boolean timeoutOrder = redisTemplate.hasKey(RedisCache.RECHARGE_ORDER_IS_TIMEOUT + orderId);
-            if (Boolean.FALSE.equals(timeoutOrder)) {
+            String orderTag = (String) redisTemplate.opsForValue().get(RedisCache.RECHARGE_ORDER_IS_TIMEOUT + orderId);
+            if (Objects.isNull(orderTag)) {
                 LOGGER.info("订单：{} 未超时，不做处理", orderId);
+                channel.basicAck(tag, false);
             } else {
                 LOGGER.info("订单：{} 超时未支付，取消订单", orderId);
                 //更新订单状态

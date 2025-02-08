@@ -19,43 +19,57 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/serve")
 @Api(tags = "服务资源接口")
 public class ServeResource {
-    
+
     private final ServeService serveService = AppContext.getBean(ServeService.class);
-    
+
     @PostMapping("/create-request")
     @ApiOperation(value = "用户请求服务", notes = "用户请求服务")
-    public Response userCreateRequest(@RequestBody UserRequest userRequest){
-       return serveService.createUserRequest(userRequest);
+    public Response userCreateRequest(@RequestBody UserRequest userRequest) {
+        return serveService.createUserRequest(userRequest);
     }
-    
+
     @GetMapping("/get-request-list")
     @ApiOperation(value = "获取未处理的用户请求列表", notes = "PMS：首页获取未处理的用户请求列表")
-    public Response getNotHandleRequestList(@RequestParam("merchantId") String merchantId){
+    public Response getNotHandleRequestList(@RequestParam("merchantId") String merchantId) {
         return serveService.getNotHandleRequestList(merchantId);
     }
-    
+
     @PostMapping("/handle-request")
     @ApiOperation(value = "开始处理用户请求", notes = "处理用户请求")
-    public Response startHandleRequest(@RequestParam("requestId") String requestId){
+    public Response startHandleRequest(@RequestParam("requestId") String requestId) {
         return serveService.startHandleRequest(requestId);
     }
-    
+
     @GetMapping("/get-request-chat-list")
-    @ApiOperation(value = "获取用户请求聊天列表", notes = "客户端: 首页获取用户请求聊天列表")
-    public Response getRequestChatList(@RequestParam("userId") String userId){
+    @ApiOperation(value = "用户获取请求呼叫聊天列表", notes = "客户端: 首页用户获取请求呼叫聊天列表")
+    public Response getRequestChatList(@RequestParam("userId") String userId) {
         return serveService.getRequestChatList(userId);
     }
-    
+
     @GetMapping("/get-guest-chat-list")
     @ApiOperation(value = "获取客户聊天列表", notes = "聊天室:获取客户聊天列表")
-    public Response getGuestChatList(@RequestParam("conductorId") String conductorId){
+    public Response getGuestChatList(@RequestParam("conductorId") String conductorId) {
         return serveService.getGuestChatList(conductorId);
     }
-    
+
     @GetMapping("/get-chat-message-list")
     @ApiOperation(value = "查询历史聊天记录", notes = "聊天室:查询历史聊天记录")
     public Response chatMessageList(@RequestParam("chatId") String chatId,
-                                    @RequestParam(value = "userId",required = false) String userId){
+                                    @RequestParam(value = "userId", required = false) String userId) {
         return serveService.chatMessageList(chatId, userId);
+    }
+
+    @PostMapping("/end_chat-with-user-request")
+    @ApiOperation(value = "结束用户请求聊天服务", notes = "结束用户请求聊天服务")
+    public Response endChatWithUserRequest(@RequestParam("chatId") String chatId) {
+        return serveService.endChatWithUserRequest(chatId);
+    }
+
+    @GetMapping("/get-all-request-list")
+    @ApiOperation(value = "获取所有用户请求列表", notes = "PMS：获取所有用户请求列表")
+    public Response userRequestList(@RequestParam("merchantId") String merchantId,
+                                    @RequestParam(value = "status", required = false) Integer status,
+                                    @RequestParam(value = "keyword", required = false) String keyword) {
+        return serveService.getAllUserRequestList(merchantId, status, keyword);
     }
 }

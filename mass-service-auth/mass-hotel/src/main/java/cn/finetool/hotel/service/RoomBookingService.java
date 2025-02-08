@@ -23,4 +23,8 @@ public interface RoomBookingService extends IService<RoomBooking> {
     Response unBindingDoorKey(Integer id);
     /** =========== 结束处理入住 ========== */
     Response endCheckInRoomOrder(Integer id);
+    /** =========== 取消房间预定 ========== */
+    Response cancelRoomBooking(Integer id);
+    /** =========== C端:开始办理入住（线上） ========== */
+    Response startHandleCheckInOnline(Integer id);
 }

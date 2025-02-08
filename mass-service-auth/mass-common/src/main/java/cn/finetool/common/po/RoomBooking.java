@@ -69,5 +69,11 @@ public class RoomBooking implements Serializable {
     /**
      * 更新时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime updatedTime;
+
+    /**
+     * 子状态（办理入住方式）
+     */
+    private Integer subState;
 }

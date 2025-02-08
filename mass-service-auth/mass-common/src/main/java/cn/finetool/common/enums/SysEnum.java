@@ -6,11 +6,13 @@ import lombok.Getter;
 @Getter
 public enum SysEnum {
 
+    MERCHANT_PLATFORM_PREFIX("1000", "平台前缀标志"),
     MERCHANT_HOTEL_PREFIX("1001", "酒店前缀标志"),
     ROOM_INFO_ID_PREFIX("1002", "具体房间信息ID前缀标志"),
     EVALUATION_PREFIX("1003", "评价前缀标志"),
     CHAT_RECORD_PREFIX("1004", "聊天记录前缀标志"),
     CHAT_MESSAGE_PREFIX("1005", "聊天消息前缀标志"),
+    SIGN_REWARD_PREFIX("1006", "签到奖励前缀标志"),
     USER_PREFIX("1010", "用户前缀标志"),
     ROOM_PREFIX("1011", "房间类型前缀标志"),
     VOUCHER_PREFIX("1012", "活动优惠券前缀标志"),

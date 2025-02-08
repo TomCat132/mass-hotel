@@ -1,6 +1,7 @@
 package cn.finetool.activity.service;
 
 import cn.finetool.common.dto.VoucherDto;
+import cn.finetool.common.po.SignReward;
 import cn.finetool.common.po.Voucher;
 import cn.finetool.common.util.Response;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -14,7 +15,6 @@ public interface VoucherService extends IService<Voucher> {
      * 获取所有类型的活动券列表
      *
      * @param merchantId 商户编号
-     * @return
      */
     Response getAllCategoryVoucherList(String merchantId);
 
@@ -32,7 +32,7 @@ public interface VoucherService extends IService<Voucher> {
 
     /**
      * 根据活动券编号获取活动券基本信息
-     * @param voucherId
+     * @param voucherId：活动券编号
      */
     VoucherDto getVoucherBaseInfo(String voucherId);
 
@@ -48,4 +48,39 @@ public interface VoucherService extends IService<Voucher> {
      * @param voucherId 活动券编号
      */
     Response deleteVoucherByVoucherId(String voucherId);
+
+    /**
+     * AP: 设置签到奖励
+     * @param signReward: 签到奖励 PO
+     */
+    Response signRewardSetting(SignReward signReward);
+
+    /**
+     * AP: 修改奖励内容
+     * @param rewardId: 奖励编号
+     */
+    Response changeRewardContent(String rewardId, String content);
+
+    /**
+     * AP: 按月获取奖励内容列表
+     * @param date: 日期 yyyy-MM
+     */
+    Response getRewardContentListByMonth(String date);
+
+    /**
+     * C端: 获取限时活动列表
+     */
+    Response getTimeLimitedActivities();
+
+    /**
+     * 判断用户是否已领取活动券
+     * @param activityId: 活动编号
+     */
+    Response isReceivedVoucher(String activityId);
+
+    /**
+     * C端: 获取活动详情
+     * @param activityId: 活动编号
+     */
+    Response getActivityInfo(String activityId);
 }

@@ -17,7 +17,7 @@ public class OrderStatusServiceImpl extends ServiceImpl<OrderStatusMapper, Order
 
     @Override
     public void changeOrderStatus(String orderId, Integer orderStatus, Integer payType) {
-        LocalDateTime operationTIme =  LocalDateTime.now();
-        orderStatusMapper.changeOrderStatus(orderId, orderStatus,operationTIme ,payType);
+        LocalDateTime operationTIme = LocalDateTime.now();
+        orderStatusMapper.changeOrderStatus(orderId, orderStatus, operationTIme, payType);
     }
 }

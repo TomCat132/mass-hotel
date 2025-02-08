@@ -20,6 +20,25 @@
         SET account = account - #{userPayAmount}
         WHERE user_id = #{userId}
     </update>
+    
+    <update id="increaseUserAccount">
+        UPDATE tb_user
+        SET account = account + #{userPayAmount}
+        WHERE user_id = #{userId}
+    </update>
+    
+    <update id="grantConsumeVoucher">
+        UPDATE tb_user
+        SET consume_voucher_count = consume_voucher_count + #{consumeVoucher}
+        WHERE user_id = #{userId}
+    </update>
+    
+    <update id="grantPoints">
+        UPDATE tb_user
+        SET points = points + #{rewardPoints}
+        SET use_points = use_points + #{rewardPoints}
+        WHERE user_id = #{userId}
+    </update>
 
     <select id="getUserAccount" resultType="java.math.BigDecimal">
         SELECT account

@@ -21,7 +21,6 @@ public class UserRoles implements Serializable {
     /**
      * id
      */
-
     @TableId(value = "id",type = IdType.AUTO)
     private Integer id;
 

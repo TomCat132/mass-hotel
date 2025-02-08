@@ -28,6 +28,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.google.common.collect.ImmutableMap;
 import jakarta.annotation.Resource;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -101,17 +102,20 @@ class ServeHandler implements ServeService {
             boolean isLocked = handleLock.tryLock(10, 10000, TimeUnit.MILLISECONDS);
             if (isLocked) {
                 String conductorId = StpUtil.getLoginIdAsString();
-                //处理用户请求
-                requestMapper.update(new UpdateWrapper<UserRequest>()
-                        .set("status", Status.REQUEST_DOING.code())
-                        .set("conductor_id", conductorId)
-                        .eq("request_id", requestId));
                 //TODO:生成聊天服务编号
                 ChatRecord chatRecord = new ChatRecord();
                 chatRecord.setChatId(SysEnum.CHAT_RECORD_PREFIX.code() + ID_WORKER.nextId());
                 chatRecord.setCreateTime(TimeUtil.now());
                 chatRecord.setRequestId(requestId);
                 chatRecordMapper.insert(chatRecord);
+
+                //处理用户请求
+                requestMapper.update(new UpdateWrapper<UserRequest>()
+                        .set("status", Status.REQUEST_DOING.code())
+                        .set("conductor_id", conductorId)
+                        .set("response_time", TimeUtil.now())
+                        .set("chat_id", chatRecord.getChatId())
+                        .eq("request_id", requestId));
                 //TODO:消息通知,创建聊天室
                 notifyUsers(chatRecord.getChatId(), conductorId, requestId);
                 return success(ImmutableMap.of("chatId", chatRecord.getChatId()));
@@ -167,6 +171,7 @@ class ServeHandler implements ServeService {
         List<UserRequest> userRequestList = requestMapper.selectList(new QueryWrapper<UserRequest>()
                 .eq("user_id", userId));
         List<ChatVO> chatVOList = userRequestList.stream()
+                .filter(userRequest -> Strings.isNotBlank(userRequest.getChatId()))
                 .map(userRequest -> {
                     ChatVO chatVO = new ChatVO();
                     // 查询呼叫请求所属商户信息
@@ -178,6 +183,7 @@ class ServeHandler implements ServeService {
                     chatVO.setUserInfo(userInfo);
                     ChatRecord chatRecord = chatRecordMapper.selectOne(new QueryWrapper<ChatRecord>()
                             .eq("request_id", userRequest.getRequestId()));
+                    chatVO.setChatId(chatRecord.getChatId());
                     //查询最新的一条消息，查询未读消息
                     ChatMessage chatMessage = chatMessageMapper.findNewMessage(chatRecord.getChatId());
                     if (Objects.nonNull(chatMessage)) {
@@ -187,13 +193,15 @@ class ServeHandler implements ServeService {
                     //查询未读消息数量
                     int size = chatMessageMapper.selectList(new QueryWrapper<ChatMessage>()
                                     .eq("receiver_id", userId)
-                                    .eq("is_read", Status.MESSAGE_UNREAD.code())
+                                    .eq("chat_id", chatRecord.getChatId())
+                                    .eq("read_state", Status.MESSAGE_UNREAD.code())
                                     .orderByDesc("sender_time")
                                     .last("LIMIT 99"))
                             .size();
                     chatVO.setNewMessageUnreadCount(size);
                     return chatVO;
                 })
+                .sorted(Comparator.comparing(ChatVO::getNewMessageTime, Comparator.nullsLast(Comparator.reverseOrder())))
                 .collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(chatVOList)) {
             return success(chatVOList);
@@ -223,6 +231,7 @@ class ServeHandler implements ServeService {
                     //查询未读消息数量
                     int size = chatMessageMapper.selectList(new QueryWrapper<ChatMessage>()
                                     .eq("receiver_id", conductorId)
+                                    .eq("chat_id", chatRecord.getChatId())
                                     .eq("read_state", Status.MESSAGE_UNREAD.code())
                                     .orderByDesc("sender_time")
                                     .last("LIMIT 99"))
@@ -238,7 +247,7 @@ class ServeHandler implements ServeService {
         }
         return success(Collections.emptyList());
     }
-    
+
     @Override
     public Response chatMessageList(String chatId, String userId) {
         List<ChatMessage> messageList = chatMessageMapper.selectList(new QueryWrapper<ChatMessage>()
@@ -246,11 +255,76 @@ class ServeHandler implements ServeService {
                 .orderByAsc("sender_time"));
         chatMessageMapper.update(new UpdateWrapper<ChatMessage>()
                 .eq("receiver_id", userId)
+                .eq("chat_id", chatId)
+                .eq("read_state", Status.MESSAGE_UNREAD.code())
+                .set("read_time", TimeUtil.now())
                 .set("read_state", Status.MESSAGE_READ.code()));
-        if (CollectionUtils.isNotEmpty(messageList)){
+        if (CollectionUtils.isNotEmpty(messageList)) {
             return success(messageList);
         }
         return success(Collections.emptyList());
+    }
+
+    @Override
+    public Response endChatWithUserRequest(String chatId) {
+        ChatRecord chatRecord = chatRecordMapper.selectOne(new QueryWrapper<ChatRecord>()
+                .eq("chat_id", chatId));
+        if (Objects.nonNull(chatRecord)) {
+            requestMapper.update(new UpdateWrapper<UserRequest>()
+                    .set("status", Status.REQUEST_DONE.code())
+                    .eq("request_id", chatRecord.getRequestId()));
+
+            chatRecordMapper.update(new UpdateWrapper<ChatRecord>()
+                    .set("end_time", TimeUtil.now())
+                    .eq("chat_id", chatId));
+        }
+        throw new BusinessRuntimeException("该聊天已结束");
+    }
+
+    @Override
+    public Response getAllUserRequestList(String merchantId, Integer status, String keyword) {
+        List<Integer> statusOrder = Arrays.asList(Status.REQUEST_NOT.code(),
+                Status.REQUEST_FAIL.code(), Status.REQUEST_CANT_DO.code(),
+                Status.REQUEST_DOING.code(), Status.REQUEST_DONE.code());
+        // 创建查询包装器并添加查询条件
+        QueryWrapper<UserRequest> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("merchant_id", merchantId);
+        // 构造FIELD函数的参数字符串
+        String fieldParams = statusOrder.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(", ", "FIELD(status, ", ")"));
+        // 使用apply方法添加自定义排序逻辑
+        queryWrapper.apply(fieldParams)
+                .orderByDesc("request_time");
+        if (Objects.nonNull(status)) {
+            queryWrapper.eq("status", status);
+        }
+        List<UserRequest> userRequests = requestMapper.selectList(queryWrapper);
+
+        if (CollectionUtils.isNotEmpty(userRequests)) {
+            List<RequestVO> requestVOList = userRequests.stream()
+                    .map(userRequest -> {
+                        RequestVO requestVO = new RequestVO(userRequest);
+                        User usernameByUserId = accountAPIService.findUserInfoByUserId(userRequest.getUserId());
+                        requestVO.setUsername(usernameByUserId.getUsername());
+                        if (Strings.isNotBlank(userRequest.getConductorId())) {
+                            User conductorInfo = accountAPIService.findUserInfoByUserId(userRequest.getConductorId());
+                            requestVO.setConductorName(conductorInfo.getUsername());
+                        }
+                        return requestVO;
+                    })
+                    .sorted(Comparator.comparing(RequestVO::getRequestTime).reversed())
+                    .toList();
+            if (Strings.isNotBlank(keyword)) {
+                requestVOList = requestVOList.stream()
+                        .filter(requestVO -> requestVO.getUsername().contains(keyword)
+                                || requestVO.getContent().contains(keyword))
+                        .toList();
+            }
+            return success(requestVOList);
+        }
+        return success(Collections.emptyList());
+
     }
 
 }

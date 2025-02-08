@@ -83,7 +83,7 @@ public class RoomOrderServiceImpl extends ServiceImpl<RoomOrderMapper, RoomOrder
         orderStatusService.save(createOrderDto.getOrderStatus());
         String orderId = createOrderDto.getRoomOrder().getOrderId();
         // 订单未处理标记
-        redisTemplate.opsForValue().set(RedisCache.ROOM_RESERVED_ORDER_IS_TIMEOUT + orderId,"", MqTTL.FIVE_MINUTES);
+        redisTemplate.opsForValue().set(RedisCache.ROOM_RESERVED_ORDER_IS_TIMEOUT + orderId,"");
     }
 
     @Override

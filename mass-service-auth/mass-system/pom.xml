@@ -9,7 +9,7 @@
         <version>0.0.4</version>
     </parent>
 
-    <artifactId>mass-recharge-plan</artifactId>
+    <artifactId>mass-system</artifactId>
 
 
     <dependencies>

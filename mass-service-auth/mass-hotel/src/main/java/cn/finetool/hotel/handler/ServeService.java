@@ -19,4 +19,8 @@ public interface ServeService {
     Response getGuestChatList(String conductorId);
     /** ======== 聊天室:获取历史聊天记录(单个聊天室)======== */
     Response chatMessageList(String chatId, String userId);
+    /** ======== 聊天室: 结束用户请求聊天服务 ======== */
+    Response endChatWithUserRequest(String chatId);
+    /** ======== 管理员: 获取所有用户请求列表 ======== */
+    Response getAllUserRequestList(String merchantId, Integer status, String keyword);
 }

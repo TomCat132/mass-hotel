@@ -5,6 +5,7 @@ import cn.finetool.common.po.Evaluation;
 import cn.finetool.common.po.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,4 +65,28 @@ public class AccountAPIService {
                     @RequestParam("conductorId") String conductorId) throws JsonProcessingException {
         accountService.noticeUser(chatId, requestId, customerId, conductorId);
     }
+
+    /**====== 返回用户账号金额 =====*/
+    @PostMapping("/returnAccountBalance")
+    void returnAccountBalance(@RequestParam("userId") String userId,
+                              @RequestParam("userPayAmount") BigDecimal userPayAmount,
+                              @RequestParam("isAdd") boolean isAdd){
+        accountService.changeAccountBalance(userId, userPayAmount, isAdd);
+    }
+
+    /**====== 发放消费券 =====*/
+    @PostMapping("/grantConsumeVoucher")
+    void grantConsumeVoucher(@RequestParam("userId") String userId,
+                             @RequestParam("consumeCount") Integer consumeCount){
+        accountService.grantConsumeVoucher(userId, consumeCount);
+    }
+
+    /**====== 赠送积分 =====*/
+    @PostMapping("/grantPoints")
+    void grantPoints(@RequestParam("userId") String userId,
+                     @RequestParam("rewardPoints") Integer rewardPoints){
+        accountService.grantPoints(userId, rewardPoints);
+    }
+
+
 }

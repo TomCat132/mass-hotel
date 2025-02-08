@@ -1,5 +1,7 @@
 package cn.finetool.hotel.handler.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
+import cn.finetool.api.service.OrderAPIService;
 import cn.finetool.api.service.OssAPIService;
 import cn.finetool.api.service.RechargePlanAPIService;
 import cn.finetool.common.dto.PlanDto;
@@ -20,6 +22,7 @@ import cn.finetool.common.util.TimeUtil;
 import cn.finetool.common.vo.CheckRoomInfoVO;
 import cn.finetool.common.vo.CpMerchantVO;
 import cn.finetool.common.vo.RoomInfoVo;
+import cn.finetool.common.vo.RoomOrderBaseInfo;
 import cn.finetool.common.vo.SingleRoomInfoVO;
 import cn.finetool.hotel.handler.HotelAdminService;
 import cn.finetool.hotel.mapper.ChatMessageMapper;
@@ -38,6 +41,7 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -68,7 +72,8 @@ public class HotelAdminHandler implements HotelAdminService {
     private OssAPIService ossAPIService;
     @Resource
     private ChatMessageMapper chatMessageMapper;
-    
+    @Resource
+    private OrderAPIService orderAPIService;
 
 
     @Override
@@ -356,10 +361,10 @@ public class HotelAdminHandler implements HotelAdminService {
         // 截取订单前4位
         String prefix = orderId.substring(0, 4);
         // 酒店订单前缀
-        if (Strings.equals(SysEnum.ROOM_ORDER_PREFIX.code(), prefix)){
-           return roomBookingMapper.findMerchantIdByOrderId(orderId);
+        if (Strings.equals(SysEnum.ROOM_ORDER_PREFIX.code(), prefix)) {
+            return roomBookingMapper.findMerchantIdByOrderId(orderId);
         }
-        
+
         return "";
     }
 
@@ -380,6 +385,26 @@ public class HotelAdminHandler implements HotelAdminService {
         chatMessage.setMessage(messageContent);
         chatMessage.setReadState(Status.MESSAGE_UNREAD.code());
         chatMessageMapper.insert(chatMessage);
+    }
+
+    @Override
+    public Response getHistoryLiving() {
+        // 根据时间倒序查询
+        String userId = StpUtil.getLoginIdAsString();
+        List<RoomOrderBaseInfo> roomOrderBaseInfoList = orderAPIService.findOrderBaseInfoListByUserId(userId);
+        return success(roomOrderBaseInfoList);
+    }
+
+    @Override
+    public String findMerchantNameByMerchantId(String merchantId) {
+        // 截取前4位
+        String prefix = merchantId.substring(0, 4);
+        if (Strings.equals(SysEnum.MERCHANT_HOTEL_PREFIX.code(), prefix)){
+            Hotel hotel = hotelMapper.selectOne(new QueryWrapper<Hotel>()
+                    .eq("merchant_id", merchantId));
+            return hotel.getHotelName();
+        }
+        return "";
     }
 
 

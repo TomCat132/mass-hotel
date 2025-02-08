@@ -19,6 +19,7 @@ import cn.finetool.common.threadpool.DynamicThreadPool;
 import cn.finetool.common.util.MqUtils;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.util.SnowflakeIdWorker;
+import cn.finetool.common.util.Strings;
 import cn.finetool.common.util.TimeUtil;
 import cn.finetool.common.vo.CheckRoomInfoVO;
 import cn.finetool.hotel.handler.impl.HotelAdminHandler;
@@ -38,7 +39,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -48,11 +48,12 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static cn.finetool.common.util.Response.success;
 import static cn.finetool.hotel.HotelApplication.ID_WORKER;
 
 @Service
 public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomBooking> implements RoomBookingService {
-    
+
     private static final Logger LOGGER = LoggerFactory.getLogger(RoomBookingServiceImpl.class);
     @Resource
     private DynamicThreadPool dynamicThreadPool;
@@ -88,15 +89,15 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
         if (roomBookingList.isEmpty()) {
             return Response.error("未查询到订单信息");
         }
-        return Response.success(roomBookingList);
+        return success(roomBookingList);
     }
 
     @Override
     public Response startHandleCheckIn(Integer id) {
-       
+
         RoomBooking roomBooking = roomBookingMapper.selectOne(new QueryWrapper<RoomBooking>()
                 .eq("id", id));
-        if (Objects.isNull(roomBooking)){
+        if (Objects.isNull(roomBooking)) {
 
         }
         // 删除 超时提醒标记
@@ -106,7 +107,7 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
 
 
         // TODO: 开始办理入住
-        return Response.success("开始办理入住");
+        return success("开始办理入住");
     }
 
     @Override
@@ -122,7 +123,7 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
         checkRoomInfoVO.setRoom(room);
         checkRoomInfoVO.setRoomInfo(roomInfo);
         checkRoomInfoVO.setStatus(roomInfo.getStatus());
-        return Response.success(checkRoomInfoVO);
+        return success(checkRoomInfoVO);
     }
 
     @Override
@@ -130,7 +131,7 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
         roomBookingMapper.update(new UpdateWrapper<RoomBooking>()
                 .eq("id", id)
                 .set("security_deposit", true));
-        return Response.success("已确认缴纳押金");
+        return success("已确认缴纳押金");
     }
 
     @Override
@@ -186,18 +187,18 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
                             return message;
                         });
                 LOGGER.info("完成入住办理, 离店消息提醒倒计时: {}ms", delayUpTime);
-                
+
                 // 更新入住总次数
                 hotelMapper.update(new UpdateWrapper<Hotel>()
                         .setSql("live_count = live_count + 1")
                         .eq("merchant_id", merchantId));
-                        
+
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         });
         // TODO: 通知用户可以进行入住了
-        return Response.success("已完成入住办理");
+        return success("已完成入住办理");
     }
 
     @Override
@@ -206,7 +207,7 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
         roomBookingMapper.update(new UpdateWrapper<RoomBooking>()
                 .set("door_key", doorKey)
                 .eq("id", id));
-        return Response.success("门禁卡绑定成功");
+        return success("门禁卡绑定成功");
     }
 
     @Override
@@ -216,7 +217,7 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
                 .set("door_key", "")
                 .eq("id", id));
 
-        return Response.success("已解除门禁卡绑定");
+        return success("已解除门禁卡绑定");
     }
 
     @Override
@@ -224,7 +225,7 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
         RoomBooking roomBooking = roomBookingMapper.selectById(id);
         // status : 退房待确认 -》 已退房
         roomBookingMapper.changeStatus(id, Status.ROOMBOOKING_CHECK_OUT.code());
-        dynamicThreadPool.submitTask(()->{
+        dynamicThreadPool.submitTask(() -> {
             // 生成待评价数据
             LOGGER.info("开始生成待评价数据");
             Evaluation evaluation = new Evaluation();
@@ -236,12 +237,42 @@ public class RoomBookingServiceImpl extends ServiceImpl<RoomBookingMapper, RoomB
             RoomDate roomDate = roomDateMapper.selectOne(new QueryWrapper<RoomDate>()
                     .eq("id", roomBooking.getRoomDateId()));
             RoomInfo roomInfo = roomInfoMapper.selectById(roomDate.getRiId());
-            if (Objects.nonNull(roomInfo)){
+            if (Objects.nonNull(roomInfo)) {
                 evaluation.setRelationId(roomInfo.getRoomId());
             }
             accountAPIService.saveEvaluation(evaluation);
         });
-        return Response.success("已完成退房确认，请通知相关人员清洁房间");
+        return success("已完成退房确认，请通知相关人员清洁房间");
+    }
+
+    @Override
+    public Response cancelRoomBooking(Integer id) {
+        // 检查 状态是否是 办理中/已预订，如果不是就走其他逻辑，如果是就直接取消，并且更新订单状态
+        RoomBooking roomBooking = roomBookingMapper.selectById(id);
+        if (Strings.equals(Status.ROOMBOOKING_RESERVED.code(), roomBooking.getStatus())
+                || Strings.equals(Status.ROOMBOOKING_DOING.code(), roomBooking.getStatus())) {
+            // 更新预定信息状态   
+            roomBookingMapper.update(new UpdateWrapper<RoomBooking>()
+                    .set("status", Status.ROOMBOOKING_CANCEL.code())
+                    .eq("id", id));
+            // 处理预定房间相关订单
+            orderAPIService.handleOrder(roomBooking.getOrderId(), Status.ORDER_CANCEL.code());
+            // 取消房间锁定(已预定-》可预定)
+            roomDateMapper.update(new UpdateWrapper<RoomDate>()
+                    .set("status", Status.ROOM_DATE_CAN_USE.code()));
+            // TODO: 消息通知
+            return success("已取消预定");
+        }
+        // 暂不处理其他情况
+        return success("暂不处理");
+    }
+
+    @Override
+    public Response startHandleCheckInOnline(Integer id) {
+        roomBookingMapper.update(new UpdateWrapper<RoomBooking>()
+                .set("sub_state", Status.ROOMBOOKING_SUB_STATUS_ONLINE.code())
+                .eq("id", id));
+        return success("已选择");
     }
 
 }

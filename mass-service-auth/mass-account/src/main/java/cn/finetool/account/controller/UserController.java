@@ -74,8 +74,9 @@ public class UserController {
 
     @GetMapping("/orderlist")
     @ApiOperation(value = "获取所有类型的订单列表", notes = "获取所有类型的订单列表")
-    public Response getOrderList() {
-        return userService.getOrderList();
+    public Response getOrderList(@RequestParam("page") Integer page,
+                                 @RequestParam("size") Integer size) {
+        return userService.getOrderList(page, size);
     }
 
     @PutMapping("/deleteOrderById/{orderId}")

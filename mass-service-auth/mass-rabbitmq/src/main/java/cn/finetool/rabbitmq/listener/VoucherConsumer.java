@@ -6,6 +6,7 @@ import cn.finetool.api.service.ActivityAPIService;
 import cn.finetool.common.constant.MqQueue;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.enums.VoucherType;
+import cn.finetool.common.util.JsonUtil;
 import cn.finetool.common.util.Strings;
 import com.rabbitmq.client.Channel;
 import jakarta.annotation.Resource;
@@ -33,7 +34,8 @@ public class VoucherConsumer {
     private AccountAPIService accountAPIService;
 
     @RabbitListener(queues = MqQueue.VOUCHER_UP_QUEUE)
-    public void VoucherUpConsumer(Map<String, Object> message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
+    public void VoucherUpConsumer(String messageBody, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
+        Map message = JsonUtil.fromJsonString(messageBody, Map.class);
         String voucherId = (String) message.get("voucherId");
         Integer voucherType = (Integer) message.get("voucherType");
         String merchantId = (String) message.get("merchantId");
@@ -53,7 +55,8 @@ public class VoucherConsumer {
     }
 
     @RabbitListener(queues = MqQueue.VOUCHER_DOWN_QUEUE)
-    public void VoucherDownConsumer(Map<String, Object> message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
+    public void VoucherDownConsumer(String messageBody, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
+        Map message = JsonUtil.fromJsonString(messageBody, Map.class);
         String voucherId = (String) message.get("voucherId");
         Integer voucherType = (Integer) message.get("voucherType");
         // 根据类型执行不同的业务逻辑

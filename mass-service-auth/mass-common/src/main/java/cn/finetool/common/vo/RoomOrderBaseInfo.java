@@ -6,6 +6,7 @@ import cn.finetool.common.po.Room;
 import cn.finetool.common.po.RoomBooking;
 import cn.finetool.common.po.RoomInfo;
 import cn.finetool.common.po.RoomOrder;
+import java.util.HashMap;
 import java.util.Map;
 import lombok.Data;
 

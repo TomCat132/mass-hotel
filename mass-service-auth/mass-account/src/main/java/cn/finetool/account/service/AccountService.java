@@ -3,11 +3,12 @@ package cn.finetool.account.service;
 import cn.finetool.common.dto.EvaluationDto;
 import cn.finetool.common.dto.UserDto;
 import cn.finetool.common.po.Evaluation;
+import cn.finetool.common.po.Role;
 import cn.finetool.common.po.User;
 import cn.finetool.common.util.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface AccountService {
@@ -52,4 +53,26 @@ public interface AccountService {
     User findUserInfoUserId(String userId);
     /**====== 通知用户(客户响应呼叫) =====*/
     void noticeUser(String chatId, String requestId, String customerId, String conductorId) throws JsonProcessingException;
+    /**====== AP: 账号管理-查询用户信息列表 =====*/
+    Response getUserInfoList(Integer page, Integer size, String keyword);
+    /**====== AP: 获取权限列表 =====*/
+    Response getPolicyList();
+    /**====== AP: 新增权限 =====*/
+    Response addPolicy(Role role);
+    /**====== AP: 权限设置 =====*/
+    Response policySetting(String userId, Integer roleId);
+    /**====== AP: 删除权限 =====*/
+    Response deletePolicy(Integer roleId);
+    /**====== AP: 冻结/解冻用户 =====*/
+    void changeAccountBalance(String userId, BigDecimal userPayAmount, boolean isAdd);
+    /**====== PMS: 用户评价数据列表 =====*/
+    Response getEvaluationList(String merchantId, String time, Integer status, String keyword);
+    /**====== 发放消费券 =====*/
+    void grantConsumeVoucher(String userId, Integer consumeCount);
+    /**====== 赠送积分 =====*/
+    void grantPoints(String userId, Integer rewardPoints);
+    /**====== 查询账号升级相关信息 =====*/
+    Response getAccountInfo();
+    /**====== C端：获取便捷入口信息" =====*/
+    Response getConvenientInfo();
 }

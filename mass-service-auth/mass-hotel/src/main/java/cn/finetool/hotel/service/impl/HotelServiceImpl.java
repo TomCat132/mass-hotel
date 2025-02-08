@@ -6,13 +6,17 @@ import cn.finetool.api.service.OssAPIService;
 import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.dto.OrderPayDto;
 import cn.finetool.common.dto.QueryRoomTypeDto;
+import cn.finetool.common.enums.Status;
+import cn.finetool.common.enums.SysEnum;
 import cn.finetool.common.po.FileUrl;
 import cn.finetool.common.po.Hotel;
 import cn.finetool.common.po.Room;
 import cn.finetool.common.po.RoomBooking;
 import cn.finetool.common.po.RoomDate;
 import cn.finetool.common.po.RoomInfo;
+import cn.finetool.common.util.IpUtil;
 import cn.finetool.common.util.Response;
+import cn.finetool.common.util.TimeUtil;
 import cn.finetool.common.vo.HotelVO;
 import cn.finetool.common.vo.RoomInfoVo;
 import cn.finetool.common.vo.RoomOrderBaseInfo;
@@ -26,6 +30,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import java.util.Collections;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -39,6 +44,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static cn.finetool.common.util.Response.error;
+import static cn.finetool.common.util.Response.success;
 
 
 @Service
@@ -67,8 +75,10 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
     @Override
     public Response addHotelInfo(Hotel hotel) {
         // TODO: 代优化 （简单添加数据);
+        // 默认 待审核
+        hotel.setStatus(Status.HOTEL_CHECK.code());
         save(hotel);
-        return Response.success("添加成功");
+        return success("添加成功");
     }
 
     @Override
@@ -100,8 +110,8 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
                 continue; // 忽略无法计算距离的酒店
             }
             // 根据id 获取酒店详细地址 、 最低价格 、 距离
-            // 判断是否是临时用户位置 酒店id：自增主键 用户ID: 1010
-            if (hotelIdStr.startsWith("1010")) {
+            // 判断是否是临时用户位置
+            if (hotelIdStr.startsWith(SysEnum.USER_PREFIX.code())) {
                 continue;
             }
             HotelVO hotelVo = hotelMapper.queryHotelInfo(Integer.parseInt(hotelIdStr));
@@ -132,7 +142,7 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
         }
         // 删除临时存储的用户位置
         redisTemplate.opsForGeo().remove(RedisCache.HOTEL_LOCATION_LIST, userKey);
-        return Response.success(hotelVoList);
+        return success(hotelVoList);
     }
 
     @Override
@@ -156,7 +166,7 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
                         break;
                     }
                 });
-        return Response.success(roomInfoVoList);
+        return success(roomInfoVoList);
     }
 
     @Override
@@ -186,5 +196,75 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
     @Override
     public BigDecimal caculatePayAmount(OrderPayDto orderPayDto) {
         return null;
+    }
+
+    @Override
+    public Response getHotelRoomList(String keyword) {
+        // 1. 查询符合条件的酒店
+        List<Hotel> hotels = hotelMapper.selectList(new QueryWrapper<Hotel>()
+                .eq("status", Status.HOTEL_RUNNING.code())
+                .like("hotelName", keyword)
+                .or()
+                .like("address", keyword)
+                .or()
+                .like("city", keyword)
+                .or()
+                .like("hotelType", keyword));
+        
+        // 2. 获取每个酒店的详细信息
+        List<HotelVO> hotelVoList = new ArrayList<>();
+//        for (Hotel hotel : hotels) {
+//            HotelVO hotelVo = new HotelVO();
+//            hotelVo.setHotelId(hotel.getHotelId());
+//            hotelVo.setHotelName(hotel.getHotelName());
+//            hotelVo.setHotelLng(hotel.getHotelLng());
+//            hotelVo.setHotelLat(hotel.getHotelLat());
+//
+//            // 随机返回一张图片
+//            List<String> roomIds = roomMapper.selectList(new QueryWrapper<Room>()
+//                            .eq("hotel_id", hotel.getHotelId()))
+//                    .stream()
+//                    .map(Room::getRoomId)
+//                    .collect(Collectors.toList());
+//            if (!roomIds.isEmpty()) {
+//                List<FileUrl> imageListByUniqueIds = ossAPIService.findImageListByUniqueIds(Collections.singletonList(roomIds.get(0)));
+//                List<String> collect = imageListByUniqueIds.stream()
+//                        .map(FileUrl::getUrlImage)
+//                        .collect(Collectors.toList());
+//                if (!collect.isEmpty()) {
+//                    hotelVo.setAvatar(collect.getFirst());
+//                }
+//            }
+//
+//            // 获取最低价格
+//            BigDecimal minPrice = roomDateMapper.queryHotelMinPrice(hotel.getHotelId(), TimeUtil.currentDate());
+//            if (minPrice != null) {
+//                hotelVo.setMinPrice(minPrice);
+//            }
+//        }
+
+        // 计算距离
+        Map<String, String> latAndLon = IpUtil.getLatAndLon();
+        // 用户当前位置经纬度
+        double lat = Double.parseDouble(latAndLon.get("lat"));
+        double lon = Double.parseDouble(latAndLon.get("lon"));
+        // 用户临时key
+        String userKey = StpUtil.getLoginIdAsString();
+        Point userPoint = new Point(lon, lat);
+        redisTemplate.opsForGeo().add(RedisCache.HOTEL_LOCATION_LIST, new RedisGeoCommands.GeoLocation<>(userKey, userPoint));
+        // 查询范围无限 <=> 查询所有酒店
+        Circle circle = new Circle(userPoint, Double.MAX_VALUE);
+        GeoResults<RedisGeoCommands.GeoLocation<Object>> nearbyHotels = redisTemplate.opsForGeo().radius(RedisCache.HOTEL_LOCATION_LIST, circle);
+        if (Objects.isNull(nearbyHotels) || nearbyHotels.getContent().isEmpty()){
+            // 无结果
+            return error("附近没有入驻的酒店哦~");
+        }
+        // 3. 计算用户到每个酒店的距离
+        for (GeoResult<RedisGeoCommands.GeoLocation<Object>> result : nearbyHotels){
+            String hotelIdStr = (String) result.getContent().getName();
+            
+        }
+        // 3. 返回结果
+        return success(hotelVoList);
     }
 }

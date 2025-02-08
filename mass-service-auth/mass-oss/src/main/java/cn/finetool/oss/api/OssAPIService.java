@@ -51,5 +51,11 @@ public class OssAPIService {
                           @RequestParam("uniqueId") String uniqueId){
         ossService.batchUploadImage(avatarList, uniqueId);
     }
+
+    /**======== 根据uniqueId查询图片数据（一张） ========= **/
+    @GetMapping(value = "findImageByUniqueId")
+    String findImageByUniqueId(@RequestParam("uniqueId") String uniqueId){
+        return ossService.findImageByUniqueId(uniqueId);
+    }
     
 }

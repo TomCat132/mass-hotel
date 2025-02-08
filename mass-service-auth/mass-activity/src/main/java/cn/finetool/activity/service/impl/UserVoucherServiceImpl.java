@@ -13,7 +13,10 @@ import cn.finetool.common.util.Response;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
+import java.util.Objects;
 import org.springframework.stereotype.Service;
+
+import static cn.finetool.common.util.Response.success;
 
 @Service
 public class UserVoucherServiceImpl extends ServiceImpl<UserVoucherMapper, UserVoucher> implements UserVoucherService {
@@ -32,8 +35,8 @@ public class UserVoucherServiceImpl extends ServiceImpl<UserVoucherMapper, UserV
             // 接口幂等性校验
             UserVoucher voucher = userVoucherService.getOne(new LambdaQueryWrapper<UserVoucher>()
                     .eq(UserVoucher::getVoucherId, voucherId));
-            if (voucher != null){
-                throw new BusinessRuntimeException("每个人限领一次");
+            if (Objects.nonNull(voucher)){
+                return success("只能领取一次哦~");
             }
             Voucher voucherInfo = voucherService.getOne(new LambdaQueryWrapper<Voucher>()
                     .eq(Voucher::getVoucherId, voucherId));
@@ -46,7 +49,7 @@ public class UserVoucherServiceImpl extends ServiceImpl<UserVoucherMapper, UserV
             userVoucher.setStatus(Status.VOUCHER_CAN_USE.code());
             save(userVoucher);
 
-            return Response.success("领取成功");
+            return success("领取成功");
         }
 
 }

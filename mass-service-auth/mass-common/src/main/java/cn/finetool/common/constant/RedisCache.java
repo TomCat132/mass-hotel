@@ -1,6 +1,9 @@
 package cn.finetool.common.constant;
 
 public class RedisCache {
+    
+    /** =========== 用户信息缓存标记 ========== */
+    public static final String USER_INFO = "user_info_userId:";
 
     /** =========== 用户签到表缓存标记 ========== */
     public static final String USER_SIGN_TABLE = "||user_sign_table_userId:";

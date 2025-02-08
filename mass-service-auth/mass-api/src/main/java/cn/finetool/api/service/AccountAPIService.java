@@ -3,6 +3,7 @@ package cn.finetool.api.service;
 import cn.finetool.common.configuration.MultipartSupportConfig;
 import cn.finetool.common.po.Evaluation;
 import cn.finetool.common.po.User;
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,4 +44,22 @@ public interface AccountAPIService {
                     @RequestParam("requestId")String requestId,
                     @RequestParam("customerId") String customerId,
                     @RequestParam("conductorId") String conductorId);
+
+    /**====== 返回用户账号金额 =====*/
+    @PostMapping("/returnAccountBalance")
+    void returnAccountBalance(@RequestParam("userId") String userId,
+                              @RequestParam("userPayAmount") BigDecimal userPayAmount,
+                              @RequestParam("isAdd") boolean isAdd);
+    
+    /**====== 发放消费券 =====*/
+    @PostMapping("/grantConsumeVoucher")
+    void grantConsumeVoucher(@RequestParam("userId") String userId,
+                             @RequestParam("consumeCount") Integer consumeCount);
+
+    /**====== 赠送积分 =====*/
+    @PostMapping("/grantPoints")
+    void grantPoints(@RequestParam("userId") String userId,
+                     @RequestParam("rewardPoints") Integer rewardPoints);
+
+
 }

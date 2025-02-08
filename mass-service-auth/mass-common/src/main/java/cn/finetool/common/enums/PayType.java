@@ -17,4 +17,8 @@ public enum PayType {
         this.code = code;
         this.msg = msg;
     }
+    
+    public int code(){
+        return this.code;
+    }
 }

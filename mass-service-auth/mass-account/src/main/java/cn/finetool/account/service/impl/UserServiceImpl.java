@@ -140,14 +140,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         StpUtil.getTokenSession().set(SaSession.ROLE_LIST, roleList);
         //登录成功，记录登录日志
         AppContext.getApplicationContext().publishEvent(
-                new LoginLogEvent(this, userId,IpUtil.getClientIp(), SystemUtil.getOperatingSystem()));
+                new LoginLogEvent(this, userId, IpUtil.getClientIp(), SystemUtil.getOperatingSystem()));
         ImmutableMap<String, Object> resultMap = ImmutableMap.of("userId", DBUser.getUserId()
                 , "userRole", roleList
                 , "websocketUrl", "ws://localhost" + ":8081" + "/admin" + "/" + DBUser.getUserId());
         return success(resultMap);
     }
-
-
 
 
     @Override
@@ -227,22 +225,42 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public Response getOrderList() {
+    public Response getOrderList(Integer page, Integer size) {
+        // 默认值设置
+        if (page == null || page <= 0) {
+            page = 1;
+        }
+        if (size == null || size <= 0) {
+            size = 10; // 默认每页大小为10
+        }
         List<OrderVO> orderList = new ArrayList<>();
-
-        //查询充值订单
+        // 查询充值订单
         List<OrderVO> rechargeOrderList = orderAPIService.getRechargeOrderList(StpUtil.getLoginIdAsString());
         if (Objects.nonNull(rechargeOrderList)) {
-            orderList.addAll(rechargeOrderList.stream().peek(orderVo -> orderVo.setOrderType(SysEnum.RECHARGE_ORDER_PREFIX.getCode())).toList());
+            orderList.addAll(rechargeOrderList.stream()
+                    .peek(orderVo -> orderVo.setOrderType(SysEnum.RECHARGE_ORDER_PREFIX.getCode()))
+                    .toList());
         }
-        //查询房间预定订单
+        // 查询房间预定订单
         List<OrderVO> roomOrderList = orderAPIService.getRoomOrderList(StpUtil.getLoginIdAsString());
         if (Objects.nonNull(roomOrderList)) {
-            orderList.addAll(roomOrderList.stream().peek(orderVo -> orderVo.setOrderType(SysEnum.ROOM_ORDER_PREFIX.code())).toList());
+            orderList.addAll(roomOrderList.stream()
+                    .peek(orderVo -> orderVo.setOrderType(SysEnum.ROOM_ORDER_PREFIX.getCode()))
+                    .toList());
         }
         // 根据订单状态、订单时间排序，优先级：0：未支付 再按时间 降序
-        orderList.sort(Comparator.comparing(OrderVO::getOrderStatus).reversed().thenComparing(OrderVO::getCreateTime).reversed());
-        return success(orderList);
+        orderList.sort(Comparator
+                .comparing(OrderVO::getCreateTime)
+                .thenComparing(OrderVO::getOrderStatus).reversed());
+        // 计算分页参数
+        int total = orderList.size();
+        int fromIndex = Math.max(0, (page - 1) * size);
+        int toIndex = Math.min(fromIndex + size, total);
+
+        // 分页截取结果
+        List<OrderVO> paginatedOrderList = orderList.subList(fromIndex, toIndex);
+
+        return success(paginatedOrderList);
     }
 
     @Override

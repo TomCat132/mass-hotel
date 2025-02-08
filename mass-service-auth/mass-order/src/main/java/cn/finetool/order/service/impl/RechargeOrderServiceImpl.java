@@ -90,7 +90,7 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
         MqUtils.sendMessage(rabbitTemplate,
                 MqExchange.ORDER_EXCHANGE,
                 MqRoutingKey.ORDER_ROUTING_KEY,
-                messageBody,
+                JsonUtil.toJsonString(messageBody),
                 message -> {
                     message.getMessageProperties().setContentType("application/json;charset=UTF-8");
                     message.getMessageProperties().getHeaders().put("x-delay", MqTTL.FIVE_MINUTES);

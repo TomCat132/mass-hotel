@@ -13,7 +13,6 @@ import cn.finetool.common.po.RoomOrder;
 import cn.finetool.common.util.JsonUtil;
 import cn.finetool.common.util.Strings;
 import com.rabbitmq.client.Channel;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -46,15 +45,7 @@ public class RoomOrderConsumer {
     private MessageHandler messageHandler;
     @Autowired
     private AccountAPIService accountAPIService;
-
-    @PostConstruct
-    public void init() {
-        Object o = redisTemplate.opsForValue().get(RedisCache.ROOM_RESERVED_ORDER_IS_TIMEOUT + "10141325968225481027584");
-        if (Objects.isNull(o)){
-            System.out.println("订单存在:true");
-        }
-        System.out.println("订单不存在:false");
-    }
+    
     /**
      * 房间预定订单超时未支付，取消订单
      *
@@ -76,9 +67,8 @@ public class RoomOrderConsumer {
         Integer roomDateId = (Integer) message.get("roomDateId");
 
         Object orderTag = redisTemplate.opsForValue().get(RedisCache.ROOM_RESERVED_ORDER_IS_TIMEOUT + orderId);
-        if (Objects.nonNull(orderTag)) {
+        if (Objects.isNull(orderTag)) {
             LOGGER.info("订单：{} 未超时", orderId);
-            Thread.sleep(10000);
             channel.basicAck(tag, false);
         } else {
             LOGGER.info("订单：{} 超时未支付，取消订单", orderId);
@@ -124,7 +114,7 @@ public class RoomOrderConsumer {
         String merchantId = (String) message.get("merchantId");
         String acceptId = (String) message.get("acceptId");
         Object obj = redisTemplate.opsForValue().get(RedisCache.ROOM_BOOKING_TIMEOUT_REMIND + orderId);
-        if (Objects.isNull(obj)) {
+        if (Objects.nonNull(obj)) {
             LOGGER.info("房间预定订单:{} ,已完成入住办理", orderId);
             channel.basicAck(tag, false);
         } else {

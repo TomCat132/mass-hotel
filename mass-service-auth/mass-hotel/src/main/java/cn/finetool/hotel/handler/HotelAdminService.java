@@ -53,4 +53,8 @@ public interface HotelAdminService {
     String findMerchantIdByOrderId(String orderId);
     /** ========= 保存WebSocket消息 ========= */
     void saveWebSocketMessage(String message, String receiverId);
+    /** ========= 获取历史住宿信息========= */
+    Response getHistoryLiving();
+    /**======== 根据商户ID查询商户名称 ======== **/
+    String findMerchantNameByMerchantId(String merchantId);
 }

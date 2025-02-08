@@ -11,4 +11,6 @@ import org.apache.ibatis.annotations.Param;
 public interface VoucherMapper extends BaseMapper<Voucher> {
     
     List<VoucherVO> findMerchantVoucherListById(@Param("merchantId") String merchantId);
+
+    List<Voucher> findValidVoucherList();
 }

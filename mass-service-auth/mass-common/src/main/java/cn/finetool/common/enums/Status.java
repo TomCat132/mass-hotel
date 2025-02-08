@@ -6,6 +6,21 @@ import lombok.Getter;
 public enum Status {
 
     /**
+     * 旅店状态
+     */
+    HOTEL_RUNNING(0, "营业中"),
+    HOTEL_CERTIFICATION(1, "已通过"),
+    HOTEL_REJECT(2, "不合格"),
+    HOTEL_CHECK(3, "待审核"),
+    HOTEL_CLOSE(4, "已关闭"),
+    HOTEL_RECTIFICATION(5, "整顿中"),
+    /**
+     * 旅店类型:hotel_type
+     * */
+    TYPE_HOTEL(0, "酒店"),
+    TYPE_APARTMENT(1, "公寓"),
+    TYPE_HOSTEL(3, "民宿"),
+    /**
      * 充值计划 状态
      */
     RECHARGE_PLAN_UP(0, "上架中"),
@@ -41,7 +56,7 @@ public enum Status {
     VOUCHER_INVALID(5, "无效"),
     VOUCHER_COLD(6, "已冻结"),
     /**
-     * 房间入住表  状态：0：已预定 1：办理中 2：入住中 3：已取消 4：已退房 5:已更换
+     * 房间入住表  状态：0：已预定 1：办理中 2：入住中 3：已取消 4：已退房 5:已更换 6:异常(超时) 7:异常(未归还门禁卡) 8:退房待确认 
      */
     ROOMBOOKING_RESERVED(0, "已预定"),
     ROOMBOOKING_DOING(1, "办理中"),
@@ -52,6 +67,14 @@ public enum Status {
     ROOMBOOKING_TIMEOUT(6, "异常(超时)"),
     ROOMBOOKING_CHECK_OUT_WAIT_CONFIRM(7, "异常(未归还门禁卡)"),
     ROOMBOOKING_CHECK_OUT_WAIT_CHECK(8, "退房待确认"),
+    ROOMBOOKING_OFFLINE_RESERVED(9, "已预定（线下办理入住）"),
+
+    /**
+     * 预定信息子状态  0: 未使用 1: 线上办理 2：线下办理
+     */
+    ROOMBOOKING_SUB_STATUS_NOT_USE(0, "未使用"),
+    ROOMBOOKING_SUB_STATUS_ONLINE(1, "线上办理"),
+    ROOMBOOKING_SUB_STATUS_OFFLINE(2, "线下办理"),
     /**
      * 查询方式
      */
@@ -99,6 +122,20 @@ public enum Status {
     REQUEST_DOING(1, "处理中"),
     REQUEST_DONE(2, "已处理"),
     REQUEST_FAIL(3, "已超期"),
+    REQUEST_CANT_DO(4, "无法处理"),
+    /**
+     * 会员等级
+     */
+    MEMBER_BRONZE(0, "青铜会员"),
+    MEMBER_SILVER(1, "白银会员"),
+    MEMBER_GOLD(2, "黄金会员"),
+    MEMBER_PLATINUM(3, "铂金会员"),
+    MEMBER_DIAMOND(4, "钻石会员"),
+
+    /**
+     * 活动类型
+     */
+    ACTIVITY_VOUCHER(0, "活动券")
     ;
 
     private final int code;

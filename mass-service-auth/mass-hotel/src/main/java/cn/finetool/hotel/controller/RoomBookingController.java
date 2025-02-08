@@ -28,14 +28,14 @@ public class RoomBookingController {
 
     @SaCheckRole(value = {"admin", "super_admin"}, mode = SaMode.OR)
     @PostMapping("/startHandleCheckIn")
-    @ApiOperation(value = "开始办理入住", notes = "根据预定号开始处理入住")
+    @ApiOperation(value = "开始办理入住", notes = "PMS: 根据预定号开始处理入住")
     public Response startHandleCheckIn(@RequestParam("id") Integer id) {
         return roomBookingService.startHandleCheckIn(id);
     }
 
     @SaCheckRole(value = {"admin", "super_admin"}, mode = SaMode.OR)
     @GetMapping("/checkRoomDateInfo/{id}")
-    @ApiOperation(value = "检查当日房间情况", notes = "酒店前台: 根据房间ID检查当日房间情况")
+    @ApiOperation(value = "检查当日房间情况", notes = "PMS: 根据房间ID检查当日房间情况")
     public Response checkRoomDateInfo(@PathVariable("id") Integer id) {
         return roomBookingService.checkRoomDateInfo(id);
     }
@@ -76,5 +76,17 @@ public class RoomBookingController {
     @ApiOperation(value = "结束入住", notes = "结束入住")
     public Response endCheckInRoomOrder(@RequestParam("id") Integer id){
         return roomBookingService.endCheckInRoomOrder(id);
+    }
+    
+    @PostMapping(value = "/cancelRoomBooking")
+    @ApiOperation(value = "取消房间预定", notes = "PMS、C端共用: 取消房间预定")
+    public Response cancelRoomBooking(@RequestParam("id") Integer id){
+        return roomBookingService.cancelRoomBooking(id);
+    }
+    
+    @PostMapping(value = "/startHandleCheckInOnline")
+    @ApiOperation(value = "用户选择线上入住", notes = "C端: 用户选择线上办理入住")
+    public Response startHandleCheckInOnline(@RequestParam("id") Integer id){
+        return roomBookingService.startHandleCheckInOnline(id);
     }
 }

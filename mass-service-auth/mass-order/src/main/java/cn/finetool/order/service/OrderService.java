@@ -23,4 +23,10 @@ public interface OrderService {
     void updateEvaluateStatus(String orderId, Integer isEvaluate);
     /**======== 根据订单号查询订单信息 ======= */
     OrderVO findOrderInfoByOrderId(String orderId);
+    /**======== 处理订单 ======= */
+    void handleOrder(String orderId, Integer status);
+    /**======== 根据用户id查询订单基本信息 ======= */
+    RoomOrderBaseInfo findOrderBaseInfoByUserId(String userId);
+    /**======== 根据用户id查询订单基本信息列表 ======= */
+    List<RoomOrderBaseInfo> findOrderBaseInfoListByUserId(String userId);
 }

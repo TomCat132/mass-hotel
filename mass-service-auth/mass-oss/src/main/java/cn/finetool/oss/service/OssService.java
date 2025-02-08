@@ -21,4 +21,6 @@ public interface OssService {
     void batchUploadImage(List<MultipartFile> avatarList, String uniqueId);
     /**======== 根据uniqueId查询图片数据列表 ========= **/
     Response findImageListByUniqueId(String uniqueId);
+    /**======== 根据uniqueId查询图片数据（一张） ========= **/
+    String findImageByUniqueId(String uniqueId);
 }

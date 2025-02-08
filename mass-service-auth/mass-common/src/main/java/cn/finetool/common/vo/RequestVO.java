@@ -27,6 +27,10 @@ public class RequestVO extends UserRequest implements java.io.Serializable {
      */
     private String conductorId;
     /**
+     * 处理人姓名
+     */
+    private String conductorName;
+    /**
      * 请求内容
      */
     private String content;

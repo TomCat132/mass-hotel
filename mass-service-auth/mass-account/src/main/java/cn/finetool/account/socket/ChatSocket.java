@@ -102,8 +102,12 @@ public class ChatSocket {
      */
     @OnClose
     public void onClose() {
-        OnlineCount++;
         Clients.remove(userId);
+        OnlineCount--;
+        //更改用户状态
+        userMapper.update(new UpdateWrapper<User>()
+                .set("status", Status.ACCOUNT_OFFLINE.code())
+                .eq("user_id", userId));
         LOGGER.info("账号:{} 已下线", userId);
     }
 
@@ -170,5 +174,15 @@ public class ChatSocket {
                 break;
             }
         }
+    }
+
+    // TODO: 待实现
+    /**
+     * 可视化页面数据分析推送
+     * @param message
+     * @param receiverId
+     */
+    public static void dataAnaylsis(String message, String receiverId){
+        
     }
 }

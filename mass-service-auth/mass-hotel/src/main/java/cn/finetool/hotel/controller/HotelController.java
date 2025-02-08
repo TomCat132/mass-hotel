@@ -45,5 +45,10 @@ public class HotelController {
         return hotelService.getHotelRoomTypeList(queryRoomTypeDto);
     }
 
+    @GetMapping("/getHotelRoomList")
+    @ApiOperation(value = "根据关键字搜索酒店信息", notes = "根据关键字搜索酒店信息")
+    public Response getHotelRoomList(@RequestParam("keyword") String keyword){
+        return hotelService.getHotelRoomList(keyword);
+    }
 
 }

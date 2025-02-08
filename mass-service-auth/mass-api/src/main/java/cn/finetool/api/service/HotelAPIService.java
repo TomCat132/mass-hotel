@@ -60,4 +60,8 @@ public interface HotelAPIService {
     @PostMapping("/saveWebSocketMessage")
     void saveWebSocketMessage(@RequestParam("message") String message,
                               @RequestParam("receiverId") String receiverId);
+    
+    /**======== 根据商户ID查询商户名称 ======== **/
+    @GetMapping("/findMerchantNameByMerchantId")
+    String findMerchantNameByMerchantId(@RequestParam("merchantId") String merchantId);
 }

@@ -25,7 +25,7 @@ public interface UserService extends IService<User> {
 
     void updateUserInfo(String userId, BigDecimal totalAmount);
 
-    Response getOrderList();
+    Response getOrderList(Integer page, Integer size);
 
     Response adminLogin(User user);
 

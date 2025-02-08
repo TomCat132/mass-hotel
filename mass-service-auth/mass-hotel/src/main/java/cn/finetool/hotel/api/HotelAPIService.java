@@ -80,5 +80,10 @@ public class HotelAPIService {
                               @RequestParam("receiverId") String receiverId){
         hotelAdminService.saveWebSocketMessage(message, receiverId);
     }
-    
+
+    /**======== 根据商户ID查询商户名称 ======== **/
+    @GetMapping("/findMerchantNameByMerchantId")
+    String findMerchantNameByMerchantId(@RequestParam("merchantId") String merchantId){
+        return hotelAdminService.findMerchantNameByMerchantId(merchantId);
+    }
 }

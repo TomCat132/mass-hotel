@@ -6,6 +6,7 @@ import cn.finetool.common.dto.CreateOrderDto;
 import cn.finetool.common.po.OrderStatus;
 import cn.finetool.common.po.RoomOrder;
 import cn.finetool.common.vo.OrderVO;
+import cn.finetool.common.vo.RoomOrderBaseInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,4 +63,17 @@ public interface OrderAPIService {
     /**======== 根据订单号查询商户id ======= */
     @GetMapping("/getAppRechargeOrderList")
     String findMerchantIdByOrderId(@RequestParam("orderId") String orderId);
+
+    /**======== 处理订单 ======= */
+    @PostMapping("/handleOrder")
+    void handleOrder(@RequestParam("orderId") String orderId,
+                     @RequestParam("status") Integer status);
+
+    /**======== 根据用户id查询订单基本信息 ======= */
+    @GetMapping("/findOrderBaseInfoByUserId")
+    RoomOrderBaseInfo findOrderBaseInfoByUserId(@RequestParam("userId") String userId);
+
+    /**======== 根据用户id查询订单基本信息列表 ======= */
+    @GetMapping("/findOrderBaseInfoListByUserId")
+    List<RoomOrderBaseInfo> findOrderBaseInfoListByUserId(@RequestParam("userId") String userId);
 }

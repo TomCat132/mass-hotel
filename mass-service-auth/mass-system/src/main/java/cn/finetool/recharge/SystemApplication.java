@@ -16,9 +16,9 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableFeignClients(basePackages = "cn.finetool")
 @ComponentScan(basePackages = {"cn.finetool"})
 @MapperScan(basePackages = {"cn.finetool.recharge.mapper", "cn.finetool.api.mapper"})
-public class RechargePlanApplication {
+public class SystemApplication {
     public static void main(String[] args) {
-        SpringApplication.run(RechargePlanApplication.class, args);
+        SpringApplication.run(SystemApplication.class, args);
         log.info("RechargePlanApplication started successfully.");
     }
 

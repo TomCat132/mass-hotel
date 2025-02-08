@@ -143,4 +143,13 @@ public class HotelAdminWebResource {
                                               @RequestParam("queryDate") String queryDate){
         return hotelAdminHandler.getCleaningRoomByDate(merchantId, queryDate);
     }
+
+    @GetMapping("/get-history-living")
+    @ApiOperation(value = "获取历史住宿信息", notes = "C端: 获取历史住宿信息")
+    public Response getHistoryLiving(){
+        return hotelAdminHandler.getHistoryLiving();
+    }
+    
+    
+    
 }
