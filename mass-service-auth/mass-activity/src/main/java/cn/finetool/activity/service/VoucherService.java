@@ -1,11 +1,15 @@
 package cn.finetool.activity.service;
 
+import cn.finetool.activity.bo.PointExchangeBO;
 import cn.finetool.common.dto.VoucherDto;
+import cn.finetool.common.po.PointExchange;
 import cn.finetool.common.po.SignReward;
 import cn.finetool.common.po.Voucher;
 import cn.finetool.common.util.Response;
+import cn.finetool.common.vo.PointProDuctVO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.List;
 
 public interface VoucherService extends IService<Voucher> {
 
@@ -89,4 +93,24 @@ public interface VoucherService extends IService<Voucher> {
      * @return
      */
     Response getPlatFormVoucherList();
+
+    /**
+     * AP: 添加积分兑换商品
+     * @param pointExchange
+     * @return
+     */
+    String addPointsMallProduct(PointExchange pointExchange);
+
+    /**
+     * AP: 用户兑换商品
+     * @param pointExchangeBO
+     * @return
+     */
+    String userRedeemProduct(PointExchangeBO pointExchangeBO);
+
+    /**
+     * AP: 获取积分商城商品列表
+     * @return
+     */
+    List<PointProDuctVO> getPointMallProductList();
 }

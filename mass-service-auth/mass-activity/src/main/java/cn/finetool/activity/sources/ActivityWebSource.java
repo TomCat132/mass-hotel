@@ -2,12 +2,17 @@ package cn.finetool.activity.sources;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
+import cn.finetool.activity.bo.PointExchangeBO;
 import cn.finetool.activity.service.VoucherService;
+import cn.finetool.common.po.PointExchange;
 import cn.finetool.common.po.SignReward;
 import cn.finetool.common.util.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,12 +22,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import static cn.finetool.common.util.Response.error;
+import static cn.finetool.common.util.Response.success;
+
 
 @RestController
 @RequestMapping("/activity")
 @Api(value = "活动Web资源接口")
 public class ActivityWebSource {
 
+    private static final Logger logger = LoggerFactory.getLogger(ActivityWebSource.class);
     @Resource
     private VoucherService voucherService;
 
@@ -92,5 +101,36 @@ public class ActivityWebSource {
         return voucherService.isReceivedVoucher(activityId);
     }
     
-   
+    @PostMapping("/exchange-points")
+    @ApiOperation(value = "添加积分商城商品", notes = "AP/PMS: 添加积分商城商品")
+    public Response addPointsMallProduct(@RequestBody PointExchange pointExchange){
+        try {
+            return success(voucherService.addPointsMallProduct(pointExchange));
+        } catch (Exception e) {
+            logger.error("添加积分商城商品失败", e);
+            return error(e.getMessage());
+        }
+    }
+    
+    @PostMapping(value = "/user/exchange-points")
+    @ApiOperation(value = "用户兑换商品", notes = "C端: 用户兑换商品")
+    public Response userRedeemProduct(@RequestBody PointExchangeBO pointExchangeBO){
+        try {
+            return success(voucherService.userRedeemProduct(pointExchangeBO));
+        } catch (Exception e) {
+            logger.error("用户兑换商品失败", e);
+            return error(e.getMessage());
+        }
+    }
+    
+    @GetMapping("/point-mall-product-list")
+    @ApiOperation(value = "获取积分商城商品列表", notes = "AP/PMS: 获取积分商城商品列表")
+    public Response getPointMallProductList(){
+        try {
+            return success(voucherService.getPointMallProductList());
+        } catch (Exception e){
+            logger.error("获取积分商城商品列表失败", e);
+            return error(e.getMessage());
+        }
+    }
 }

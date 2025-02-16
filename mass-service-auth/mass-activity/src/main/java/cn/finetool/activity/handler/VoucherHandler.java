@@ -1,6 +1,7 @@
 package cn.finetool.activity.handler;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.finetool.activity.bo.PointExchangeBO;
 import cn.finetool.activity.mapper.CouponMapper;
 import cn.finetool.activity.mapper.SignRewardMapper;
 import cn.finetool.activity.mapper.UserVoucherMapper;
@@ -14,6 +15,7 @@ import cn.finetool.common.enums.SysEnum;
 import cn.finetool.common.enums.Status;
 import cn.finetool.common.enums.VoucherType;
 import cn.finetool.common.exception.BusinessRuntimeException;
+import cn.finetool.common.po.PointExchange;
 import cn.finetool.common.po.SignReward;
 import cn.finetool.common.po.UserVoucher;
 import cn.finetool.common.po.Voucher;
@@ -23,6 +25,7 @@ import cn.finetool.common.util.SnowflakeIdWorker;
 import cn.finetool.common.util.Strings;
 import cn.finetool.common.util.TimeUtil;
 import cn.finetool.common.vo.ActivityVO;
+import cn.finetool.common.vo.PointProDuctVO;
 import cn.finetool.common.vo.VoucherVO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -32,13 +35,12 @@ import jakarta.annotation.Resource;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -108,7 +110,22 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
         voucherList = voucherList.stream().sorted((o1, o2) -> o2.getCreateTime().compareTo(o1.getCreateTime())).toList();
         return success(voucherList);
     }
-    
+
+    @Override
+    public String addPointsMallProduct(PointExchange pointExchange) {
+        return "";
+    }
+
+    @Override
+    public String userRedeemProduct(PointExchangeBO pointExchangeBO) {
+        return "";
+    }
+
+    @Override
+    public List<PointProDuctVO> getPointMallProductList() {
+        return Collections.emptyList();
+    }
+
 
     @Override
     public void updateVoucherStatus(Integer voucherType, String voucherId, Integer status) {
