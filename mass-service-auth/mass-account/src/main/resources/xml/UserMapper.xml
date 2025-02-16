@@ -39,6 +39,12 @@
         SET use_points = use_points + #{rewardPoints}
         WHERE user_id = #{userId}
     </update>
+    
+    <update id="usePoints">
+        UPDATE tb_user
+        SET use_points = use_points - #{usePoints}
+        WHERE user_id = #{userId}
+    </update>
 
     <select id="getUserAccount" resultType="java.math.BigDecimal">
         SELECT account

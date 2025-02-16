@@ -75,4 +75,6 @@ public interface AccountService {
     Response getAccountInfo();
     /**====== C端：获取便捷入口信息" =====*/
     Response getConvenientInfo();
+    /**====== C端：用户使用积分 =====*/
+    void usePoints(String userId, Integer needPoints);
 }

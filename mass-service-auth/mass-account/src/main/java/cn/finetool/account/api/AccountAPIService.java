@@ -88,5 +88,9 @@ public class AccountAPIService {
         accountService.grantPoints(userId, rewardPoints);
     }
 
-
+    /**====== 使用积分 =====*/
+    @PostMapping("/usePoints")
+    void usePoints(@RequestParam("userId") String userId,@RequestParam("usePoints") Integer needPoints){
+        accountService.usePoints(userId, needPoints);
+    }
 }

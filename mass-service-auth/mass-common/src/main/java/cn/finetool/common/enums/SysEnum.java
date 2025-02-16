@@ -13,6 +13,8 @@ public enum SysEnum {
     CHAT_RECORD_PREFIX("1004", "聊天记录前缀标志"),
     CHAT_MESSAGE_PREFIX("1005", "聊天消息前缀标志"),
     SIGN_REWARD_PREFIX("1006", "签到奖励前缀标志"),
+    POINT_EXCHANGE_PREFIX("1007", "积分兑换物前缀标志"),
+    POINT_USAGE_RECORD_PREFIX("1008", "积分使用记录前缀标志"),
     USER_PREFIX("1010", "用户前缀标志"),
     ROOM_PREFIX("1011", "房间类型前缀标志"),
     VOUCHER_PREFIX("1012", "活动优惠券前缀标志"),

@@ -61,5 +61,7 @@ public interface AccountAPIService {
     void grantPoints(@RequestParam("userId") String userId,
                      @RequestParam("rewardPoints") Integer rewardPoints);
 
-
+    /**====== 使用积分 =====*/
+    @PostMapping("/usePoints")
+    void usePoints(@RequestParam("userId") String userId,@RequestParam("usePoints") Integer needPoints);
 }

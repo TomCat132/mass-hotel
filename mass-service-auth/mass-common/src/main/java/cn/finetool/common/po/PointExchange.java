@@ -49,7 +49,7 @@ public class PointExchange implements Serializable {
     private LocalDateTime endTime;
 
     /**
-     * 状态
+     * 状态 0 待上架，1 可兑换，2 已售罄 3.已结束
      */
     @TableField(value = "status")
     private Integer status;
@@ -66,6 +66,18 @@ public class PointExchange implements Serializable {
     @TableField(value = "count")
     private Integer count;
 
+    /**
+     * 库存
+     */
+    @TableField(value = "stock")
+    private Integer stock;
+
+    /**
+     * 兑换积分
+     */
+    @TableField(value = "need_points")
+    private Integer needPoints;
+    
     /**
      * 是否删除：0 未删除，1 已删除
      */

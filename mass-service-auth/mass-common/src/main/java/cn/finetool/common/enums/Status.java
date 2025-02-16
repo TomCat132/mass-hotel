@@ -137,7 +137,20 @@ public enum Status {
     /**
      * 活动类型
      */
-    ACTIVITY_VOUCHER(0, "活动券")
+    ACTIVITY_VOUCHER(0, "活动券"),
+
+    /**
+     * 状态 0 待上架，1 可兑换，2 已售罄 3.已结束
+     */
+    POINT_EXCHANGE_WAIT(0, "待上架"),
+    POINT_EXCHANGE_CAN_EXCHANGE(1, "可兑换"),
+    POINT_EXCHANGE_SOLD_OUT(2, "已售罄"),
+    POINT_EXCHANGE_END(3, "已结束"),
+    
+    POINT_USAGE_EXCHANGED(0, "待使用"),
+    POINT_USAGE_USED(1, "已使用"),
+    POINT_USAGE_EXPIRED(2, "已过期"),
+    POINT_USAGE_CANT_USE(3, "不可用"),
     ;
 
     private final int code;

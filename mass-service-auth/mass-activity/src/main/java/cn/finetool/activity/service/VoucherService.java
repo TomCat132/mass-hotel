@@ -3,10 +3,12 @@ package cn.finetool.activity.service;
 import cn.finetool.activity.bo.PointExchangeBO;
 import cn.finetool.common.dto.VoucherDto;
 import cn.finetool.common.po.PointExchange;
+import cn.finetool.common.po.PointUsageRecord;
 import cn.finetool.common.po.SignReward;
 import cn.finetool.common.po.Voucher;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.vo.PointProDuctVO;
+import cn.finetool.common.vo.PointUsageRecordVO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
@@ -113,4 +115,10 @@ public interface VoucherService extends IService<Voucher> {
      * @return
      */
     List<PointProDuctVO> getPointMallProductList();
+
+    /**
+     * C端：
+     * @return
+     */
+    List<PointUsageRecordVO> pointExchangeRecordList();
 }

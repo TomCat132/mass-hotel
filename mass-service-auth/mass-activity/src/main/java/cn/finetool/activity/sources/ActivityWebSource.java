@@ -133,4 +133,15 @@ public class ActivityWebSource {
             return error(e.getMessage());
         }
     }
+    
+    @GetMapping("/point-exchange-record-list")
+    @ApiOperation(value = "用户获取积分兑换记录列表", notes = "C端:用户 获取积分兑换记录列表")
+    public Response pointExchangeRecordList(){
+        try {
+            return success(voucherService.pointExchangeRecordList());
+        } catch (Exception e){
+            logger.error("用户获取积分兑换记录列表失败", e);
+            return error(e.getMessage());
+        }
+    }
 }

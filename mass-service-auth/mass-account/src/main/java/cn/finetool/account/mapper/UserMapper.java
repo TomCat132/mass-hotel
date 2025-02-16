@@ -29,5 +29,12 @@ public interface UserMapper extends BaseMapper<User> {
 
     void grantPoints(@Param("userId") String userId,
                      @Param("rewardPoints") Integer rewardPoints);
+
+    /**
+     * 减少积分
+     * @param userId: 用户编号
+     * @param needPoints: 需要扣减的积分
+     */
+    void usePoints(@Param("userId") String userId,@Param("needPoints") Integer needPoints);
 }
 

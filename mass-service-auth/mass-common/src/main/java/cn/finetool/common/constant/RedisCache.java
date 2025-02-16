@@ -46,4 +46,7 @@ public class RedisCache {
     
     /** =========== 用户请求处理分布式锁========== */
     public static final String REQUEST_LOCK = "request_lock_requestId";
+    
+    /** =========== 积分兑换商品锁 ========== */
+    public static final String POINT_EXCHANGE_LOCK = "point_exchange_lock_id";
 }

@@ -540,6 +540,10 @@ public class AccountHandler implements AccountService {
         return success(roomOrderBaseInfo);
     }
 
+    @Override
+    public void usePoints(String userId, Integer needPoints) {
+        userMapper.usePoints(userId, needPoints);
+    }
 
 
     private UpGradeVO findUpGradeInfo(String userId) {
