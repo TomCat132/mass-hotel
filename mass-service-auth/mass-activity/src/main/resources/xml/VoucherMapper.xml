@@ -4,24 +4,35 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="cn.finetool.activity.mapper.VoucherMapper">
-    
+
     <select id="findMerchantVoucherListById" resultType="cn.finetool.common.vo.VoucherVO">
         SELECT v1.voucher_id, v1.voucher_type, v1.create_time, v1.user_id,
-               v2.voucher_title, v2.voucher_sub_title, v2.status,v2.count,v2.begin_time,v2.end_time
+        v2.voucher_title, v2.voucher_sub_title, v2.status,v2.count,v2.begin_time,v2.end_time
         FROM tb_voucher AS v1
         INNER JOIN tb_voucher_coupon AS v2 ON v1.voucher_id = v2.voucher_id
-        WHERE v1.merchant_id = #{merchantId}
+        <where>
+            <if test="merchantId != null">
+                v1.merchant_id = #{merchantId}
+            </if>
+        </where>
     </select>
-    
+
     <select id="findValidVoucherList" resultType="cn.finetool.common.po.Voucher">
         SELECT *
         FROM tb_voucher AS voucher
         <choose>
             <when test="voucher_type = 0">
                 INNER JOIN tb_voucher_coupon AS coupon ON voucher.voucher_id = coupon.voucher_id
-                WHERE coupon.status = 1 
+                WHERE coupon.status = 1
             </when>
-        </choose> 
+        </choose>
     </select>
-    
+    <select id="findPVoucherSystemList" resultType="cn.finetool.common.vo.VoucherVO">
+        SELECT v1.voucher_id, v1.voucher_type, v1.create_time, v1.user_id,
+               v2.voucher_title, v2.voucher_sub_title, v2.status,v2.count,v2.begin_time,v2.end_time
+        FROM tb_voucher AS v1
+        INNER JOIN tb_voucher_system AS v2 ON v1.voucher_id = v2.voucher_id
+        WHERE v1.merchant_id is null
+    </select>
+
 </mapper>

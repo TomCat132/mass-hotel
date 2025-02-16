@@ -15,6 +15,7 @@ import cn.finetool.common.po.VoucherCoupon;
 import cn.finetool.common.util.JsonUtil;
 import cn.finetool.common.util.MqUtils;
 import cn.finetool.common.util.Strings;
+import cn.finetool.common.util.TimeUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.PostConstruct;
@@ -63,7 +64,7 @@ public class CouponStrategy extends SaveVoucherStrategy {
         voucherDto.getVoucherCoupon().setVoucherId(voucherDto.getVoucherId());
         VoucherCoupon voucherCoupon = voucherDto.getVoucherCoupon();
         // 优惠券有效开始时间不能早于当前时间
-        LocalDateTime nowTime = LocalDateTime.now();
+        LocalDateTime nowTime = TimeUtil.now();
         if (voucherCoupon.getBeginTime().isBefore(nowTime)) {
             throw new BusinessRuntimeException("优惠券有效开始时间不能早于当前时间");
         }

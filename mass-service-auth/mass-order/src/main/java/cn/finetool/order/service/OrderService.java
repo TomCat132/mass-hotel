@@ -29,4 +29,6 @@ public interface OrderService {
     RoomOrderBaseInfo findOrderBaseInfoByUserId(String userId);
     /**======== 根据用户id查询订单基本信息列表 ======= */
     List<RoomOrderBaseInfo> findOrderBaseInfoListByUserId(String userId);
+    /**======== 导出交易订单 ======= */
+    void exportTransactionOrder(String merchantId);
 }

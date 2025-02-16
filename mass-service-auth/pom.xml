@@ -40,6 +40,7 @@
         <alipay-sdk.version>4.34.8.ALL</alipay-sdk.version>
         <redisson.version>3.16.6</redisson.version>
         <org.apache.commons>4.4</org.apache.commons>
+        <fastexcel.version>1.0.0</fastexcel.version>
     </properties>
 
     <parent>

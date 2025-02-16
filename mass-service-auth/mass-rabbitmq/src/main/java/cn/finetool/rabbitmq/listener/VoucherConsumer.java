@@ -40,16 +40,21 @@ public class VoucherConsumer {
         Integer voucherType = (Integer) message.get("voucherType");
         String merchantId = (String) message.get("merchantId");
         String voucherTitle = (String) message.get("voucherTitle");
-        // 根据类型执行不同的业务逻辑
-        // 修改状态为 UP 状态
         activityAPIService.updateVoucherStatus(voucherType, voucherId, Status.VOUCHER_UP.code());
         LOGGER.info("活动券:{}, 状态修改为:{}", voucherId, Status.VOUCHER_UP.desc());
-        // 系统消息提醒: 商户
-        String messageContent = "本店活动券 【" + voucherTitle + "】已上架，" + "&活动券类型: ";
-        messageContent += "【" + VoucherType.toDesc(voucherType) + "】";
-        messageContent += "&优惠券编号:【" + voucherId + "】";
-        List<String> acceptIds = accountAPIService.findMerchantEmployee(merchantId);
-        messageHandler.sendMessage(acceptIds, messageContent, voucherId);
+        // 商户发放的消费券,提醒商户
+        if (Strings.isNotBlank(merchantId)){
+            // 根据类型执行不同的业务逻辑
+            // 修改状态为 UP 状态
+            // 系统消息提醒: 商户
+            String messageContent = "本店活动券 【" + voucherTitle + "】已上架，" + "&活动券类型: ";
+            messageContent += "【" + VoucherType.toDesc(voucherType) + "】";
+            messageContent += "&优惠券编号:【" + voucherId + "】";
+            List<String> acceptIds = accountAPIService.findMerchantEmployee(merchantId);
+            messageHandler.sendMessage(acceptIds, messageContent, voucherId);
+        } else {
+            //TODO 平台发放的系统券, 提醒所有用户 
+        }
         // TODO:系统消息提醒：所有用户（广告，需花钱） 
         channel.basicAck(tag, false);
     }

@@ -19,7 +19,6 @@ public class VoucherController {
     @Resource
     private VoucherService voucherService;
 
-    @SaCheckRole(value = {"admin", "super_admin"}, mode = SaMode.OR)
     @PostMapping("/admin/add")
     @ApiOperation(value = "添加活动券", notes = "添加活动券")
     public Response addVoucher(@RequestBody VoucherDto voucherDto) throws JsonProcessingException {

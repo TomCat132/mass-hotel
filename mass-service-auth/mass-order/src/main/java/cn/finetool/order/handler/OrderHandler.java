@@ -3,6 +3,8 @@ package cn.finetool.order.handler;
 import cn.finetool.api.service.AccountAPIService;
 import cn.finetool.api.service.HotelAPIService;
 import cn.finetool.api.service.OssAPIService;
+import cn.finetool.common.configuration.AppContext;
+import cn.finetool.common.constant.Constant;
 import cn.finetool.common.enums.PayType;
 import cn.finetool.common.enums.SysEnum;
 import cn.finetool.common.enums.Status;
@@ -10,6 +12,7 @@ import cn.finetool.common.exception.BusinessRuntimeException;
 import cn.finetool.common.po.OrderStatus;
 import cn.finetool.common.po.RechargeOrder;
 import cn.finetool.common.po.RoomOrder;
+import cn.finetool.common.util.ExcelUtil;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.util.Strings;
 import cn.finetool.common.util.TimeUtil;
@@ -22,6 +25,10 @@ import cn.finetool.order.mapper.RoomOrderMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -220,6 +227,29 @@ public class OrderHandler implements OrderService {
                 .filter(orderBaseInfo -> Strings.equals(Status.NOT_DELETED.code(), orderBaseInfo.getRoomOrder().getIsDeleted()))
                 .collect(Collectors.toList());
         return roomOrderBaseInfoList;
+    }
+
+    @Override
+    public void exportTransactionOrder(String merchantId) {
+        List<OrderVO> merchantOrderList = getMerchantOrderList(merchantId);
+        HttpServletResponse res = AppContext.getRawResponse();
+        res.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        res.setCharacterEncoding("UTF-8");
+        String encodedFileName = URLEncoder.encode(Constant.ORDER_TRANSACTION_LIST, StandardCharsets.UTF_8).replace("+", "%20");
+        String contentDisposition = String.format("attachment; filename=\"%s.xlsx\"; filename*=UTF-8''%s.xlsx", Constant.ORDER_TRANSACTION_LIST, encodedFileName);
+        res.setHeader("Content-Disposition", contentDisposition);
+        // 导出数据
+        try {
+            merchantOrderList.forEach(orderVO -> {
+                if (Strings.equals(ROOM_ORDER_PREFIX.code(), orderVO.getOrderType())){
+                    orderVO.setOrderType(Constant.ORDER_TYPE_LIVE);
+                }
+                orderVO.setOrderStatusValue(Status.OrderToDesc(orderVO.getOrderStatus()));
+            });
+            ExcelUtil.exportExcel(res, Constant.ORDER_TRANSACTION_LIST, OrderVO.class, merchantOrderList);
+        } catch (IOException e) {
+            throw new BusinessRuntimeException(e.getMessage());
+        }
     }
 
     private List<OrderVO> queryMerchantRoomOrderList(String merchantId) {

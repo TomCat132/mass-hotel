@@ -21,6 +21,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17">
+      <module name="mass-recharge-plan" target="21" />
       <module name="mass-user" target="21" />
     </bytecodeTargetLevel>
   </component>
@@ -37,6 +38,7 @@
       <module name="mass-oss" options="-parameters" />
       <module name="mass-pay" options="-parameters" />
       <module name="mass-rabbitmq" options="-parameters" />
+      <module name="mass-recharge-plan" options="-parameters" />
       <module name="mass-system" options="-parameters" />
       <module name="mass-user" options="-parameters" />
     </option>

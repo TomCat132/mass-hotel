@@ -13,4 +13,12 @@ public interface VoucherMapper extends BaseMapper<Voucher> {
     List<VoucherVO> findMerchantVoucherListById(@Param("merchantId") String merchantId);
 
     List<Voucher> findValidVoucherList();
+
+    /**
+     * 查询平台发放的系统券
+     * @return
+     */
+    List<VoucherVO> findPVoucherSystemList();
+
+
 }

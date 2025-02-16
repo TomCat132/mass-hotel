@@ -40,4 +40,10 @@ public class OrderWebSource {
     public Response getOrderInfoByOrderId(@RequestParam("orderId") String orderId){
         return Response.success(orderHandler.findOrderInfoByOrderId(orderId));
     }
+    
+    @GetMapping("/findMerchantIdByOrderId")
+    @ApiOperation(value = "导出交易订单", notes = "PMS: 导出交易订单")
+    public void exportTransactionOrder(@RequestParam("merchantId") String merchantId){
+         orderHandler.exportTransactionOrder(merchantId);
+    }
 }

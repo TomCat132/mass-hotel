@@ -28,11 +28,18 @@ public class ActivityWebSource {
 
     @SaCheckRole(value = {"admin", "super_admin"}, mode = SaMode.OR)
     @GetMapping("/categoryVoucherList")
-    @ApiOperation(value = "获取所有类型的活动券列表", notes = "PMS: 获取所有分类的优惠券列表")
-    public Response getAllCategoryVoucherList(@RequestParam("merchantId") String merchantId) {
+    @ApiOperation(value = "获取所有类型的活动券列表", notes = "AP: 获取所有分类的优惠券列表")
+    public Response getAllCategoryVoucherList(@RequestParam(value = "merchantId", required = false) String merchantId) {
         return voucherService.getAllCategoryVoucherList(merchantId);
     }
     
+    @GetMapping("/platformVoucherList")
+    @ApiOperation(value = "获取所有平台的活动券列表", notes = "AP: 获取所有平台的活动券列表")
+    public Response getPlatFormVoucherList(){
+        return voucherService.getPlatFormVoucherList();
+    }
+    
+
     @GetMapping("/voucher-list")
     @ApiOperation(value = "获取有效的所有活动券列表", notes = "PMS: 获取有效的所有活动券列表")
     public Response getValidVoucherList(){
@@ -84,4 +91,6 @@ public class ActivityWebSource {
     public Response isReceivedVoucher(@RequestParam("activityId") String activityId){
         return voucherService.isReceivedVoucher(activityId);
     }
+    
+   
 }

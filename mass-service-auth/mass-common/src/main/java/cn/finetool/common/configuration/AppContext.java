@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ public final class AppContext implements ApplicationContextAware {
     private static final Logger LOGGER = LoggerFactory.getLogger(AppContext.class);
     private static ApplicationContext applicationContext = null;
 
-    private static final ThreadLocal userCtx = new ThreadLocal();
+    private static final ThreadLocal<Map<String, Object>> userCtx = ThreadLocal.withInitial(HashMap::new);
 
     public static <T> T getBean(Class<T> clz) throws BeansException {
         return applicationContext.getBean(clz);
@@ -82,5 +83,17 @@ public final class AppContext implements ApplicationContextAware {
      */
     public static HttpServletResponse getRawResponse() {
         return (HttpServletResponse) getThreadContext(GlobalNames.THREAD_CONTEXT_RESPONSE_KEY);
+    }
+
+    public static void setRawRequest(HttpServletRequest request) {
+        userCtx.get().put(GlobalNames.THREAD_CONTEXT_REQUEST_KEY, request);
+    }
+
+    public static void setRawResponse(HttpServletResponse response) {
+        userCtx.get().put(GlobalNames.THREAD_CONTEXT_RESPONSE_KEY, response);
+    }
+
+    public static void clear() {
+        userCtx.remove();
     }
 }

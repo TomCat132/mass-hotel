@@ -69,33 +69,23 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
     @Override
     @Transactional
     public Response addVoucher(VoucherDto voucherDto) throws JsonProcessingException {
-
-
         String voucherId = SysEnum.VOUCHER_PREFIX.code() + ID_WORKER.nextId();
         voucherDto.setVoucherId(voucherId);
         LocalDateTime nowTime = TimeUtil.now();
-
         String userId = StpUtil.getLoginIdAsString();
         String merchantId = accountAPIService.queryMerchantOfUser(userId);
-        voucherDto.setMerchantId(merchantId);
-        if (Strings.isBlank(merchantId)) {
-            throw new BusinessRuntimeException("用户未关联商户");
-        }
-
-        voucherOperationContext.saveVoucher(voucherDto);
-
         Voucher voucher = new Voucher();
         voucher.setVoucherId(voucherId);
         voucher.setCreateTime(nowTime);
         voucher.setVoucherType(voucherDto.getVoucherType());
-
-
         voucher.setUserId(userId);
-        voucher.setMerchantId(merchantId);
-        save(voucher);
+        if (Strings.isNotBlank(merchantId)) {
+            voucher.setMerchantId(merchantId);
+        }
         // 根据不同的活动券类型加入不同的表中
-
-
+        voucherOperationContext.saveVoucher(voucherDto);
+        save(voucher);
+        
         return success("操作成功");
     }
 
@@ -103,10 +93,22 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
     @Override
     public Response getAllCategoryVoucherList(String merchantId) {
         // 查询商户的优惠券
-        List<VoucherVO> voucherList = voucherMapper.findMerchantVoucherListById(merchantId);
+        List<VoucherVO> voucherList = new ArrayList<>();
+        voucherList = voucherMapper.findMerchantVoucherListById(merchantId);
+
         voucherList = voucherList.stream().sorted((o1, o2) -> o2.getCreateTime().compareTo(o1.getCreateTime())).toList();
         return success(voucherList);
     }
+    @Override
+    public Response getPlatFormVoucherList() {
+        List<VoucherVO> voucherList = new ArrayList<>();
+        // 查询平台发放的系统券
+        List<VoucherVO> voucherSystemList = voucherMapper.findPVoucherSystemList();
+        voucherList.addAll(voucherSystemList);
+        voucherList = voucherList.stream().sorted((o1, o2) -> o2.getCreateTime().compareTo(o1.getCreateTime())).toList();
+        return success(voucherList);
+    }
+    
 
     @Override
     public void updateVoucherStatus(Integer voucherType, String voucherId, Integer status) {
@@ -325,4 +327,6 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
         activityVO.setActivityId(activityId);
         return success(activityVO);
     }
+
+
 }

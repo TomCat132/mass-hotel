@@ -83,4 +83,10 @@ public interface VoucherService extends IService<Voucher> {
      * @param activityId: 活动编号
      */
     Response getActivityInfo(String activityId);
+
+    /**
+     * AP：获取平台活动券列表
+     * @return
+     */
+    Response getPlatFormVoucherList();
 }

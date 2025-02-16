@@ -32,6 +32,7 @@
                                               AND room_date.date = #{date}
         WHERE room.room_id = #{roomId}
         GROUP BY room.id,room.room_id,room.room_name,room.room_desc,room.room_type,room.basic_price,room_date.price
+        HAVING COUNT(room_date.ri_id) = 1
     </select>
     <select id="getRoomNameList" resultType="cn.finetool.common.vo.RoomInfoVo">
         SELECT room.room_id,room.room_name

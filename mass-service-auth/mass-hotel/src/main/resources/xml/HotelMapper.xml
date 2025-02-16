@@ -48,6 +48,7 @@
 
     <select id="queryHotelRoomTypeList" resultType="cn.finetool.common.vo.RoomInfoVo">
         SELECT room.room_id,room.room_name,room.room_type,room.basic_price AS old_price,
+               room_info.id 
                MIN(room_date.price) AS todayPrice,
                IFNULL(COUNT(DISTINCT room_date.ri_id), 0) room_count
         FROM tb_room room

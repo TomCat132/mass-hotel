@@ -1,5 +1,7 @@
 package cn.finetool.common.enums;
 
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 
 @Getter
@@ -154,4 +156,27 @@ public enum Status {
         return this.desc;
     }
 
+    /**
+     * 订单状态 code -> desc
+     * @param code
+     * @return
+     */
+    public static String OrderToDesc(int code){
+        Map<Integer, String> map = new HashMap<>();
+        // 填充订单状态枚举（固定值）
+        map.put(0, "待支付");
+        map.put(1, "支付成功");
+        map.put(2, "支付失败");
+        map.put(3, "已取消");
+        map.put(4, "退款中");
+        map.put(5, "退款成功");
+        map.put(6, "退款失败");
+        map.put(7, "订单失效");
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+            if (entry.getKey() == code) {
+                return entry.getValue();
+            }
+        }
+        return "未知状态";
+    }
 }
