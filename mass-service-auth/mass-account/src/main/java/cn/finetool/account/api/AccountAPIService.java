@@ -87,10 +87,10 @@ public class AccountAPIService {
                      @RequestParam("rewardPoints") Integer rewardPoints){
         accountService.grantPoints(userId, rewardPoints);
     }
-
+    
     /**====== 使用积分 =====*/
     @PostMapping("/usePoints")
-    void usePoints(@RequestParam("userId") String userId,@RequestParam("usePoints") Integer needPoints){
+    void usePoints(@RequestParam("userId") String userId,@RequestParam("needPoints") Integer needPoints){
         accountService.usePoints(userId, needPoints);
     }
 }

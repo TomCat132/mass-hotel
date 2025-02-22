@@ -3,12 +3,12 @@ package cn.finetool.activity.service;
 import cn.finetool.activity.bo.PointExchangeBO;
 import cn.finetool.common.dto.VoucherDto;
 import cn.finetool.common.po.PointExchange;
-import cn.finetool.common.po.PointUsageRecord;
 import cn.finetool.common.po.SignReward;
 import cn.finetool.common.po.Voucher;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.vo.PointProDuctVO;
 import cn.finetool.common.vo.PointUsageRecordVO;
+import cn.finetool.common.vo.VoucherVO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
@@ -34,7 +34,7 @@ public interface VoucherService extends IService<Voucher> {
     /**
      * 获取有效的活动券列表
      */
-    Response getValidVoucherList();
+    List<VoucherVO> getValidVoucherList();
 
     /**
      * 根据活动券编号获取活动券基本信息
@@ -117,8 +117,14 @@ public interface VoucherService extends IService<Voucher> {
     List<PointProDuctVO> getPointMallProductList();
 
     /**
-     * C端：
+     * C端:用户 获取积分兑换记录列表
+     */
+    List<PointUsageRecordVO> pointExchangeRecordList(String userId);
+
+    /**
+     * C端: 根据条件获取活动券列表
+     * @param userId：用户编号
      * @return
      */
-    List<PointUsageRecordVO> pointExchangeRecordList();
+    List<VoucherVO> getVoucherListByUserId(String userId);
 }

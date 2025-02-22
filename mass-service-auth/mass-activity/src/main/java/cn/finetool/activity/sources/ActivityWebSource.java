@@ -52,7 +52,23 @@ public class ActivityWebSource {
     @GetMapping("/voucher-list")
     @ApiOperation(value = "获取有效的所有活动券列表", notes = "PMS: 获取有效的所有活动券列表")
     public Response getValidVoucherList(){
-        return voucherService.getValidVoucherList();
+        try {
+            return success(voucherService.getValidVoucherList());
+        } catch (Exception e) {
+            logger.error("获取有效的所有活动券列表失败", e);
+            return error(e.getMessage());
+        }
+    }
+    
+    @GetMapping("/voucher-list-condition")
+    @ApiOperation(value = "根据条件获取活动券列表", notes = "C端: 根据条件获取活动券列表")
+    public Response getVoucherListByUserId(@RequestParam("userId") String userId){
+        try {
+            return success(voucherService.getVoucherListByUserId(userId));
+        } catch (Exception e) {
+            logger.error("获取用户的活动券列表失败", e);
+            return error(e.getMessage());
+        }
     }
 
     /**
@@ -136,9 +152,9 @@ public class ActivityWebSource {
     
     @GetMapping("/point-exchange-record-list")
     @ApiOperation(value = "用户获取积分兑换记录列表", notes = "C端:用户 获取积分兑换记录列表")
-    public Response pointExchangeRecordList(){
+    public Response pointExchangeRecordList(@RequestParam("userId") String userId){
         try {
-            return success(voucherService.pointExchangeRecordList());
+            return success(voucherService.pointExchangeRecordList(userId));
         } catch (Exception e){
             logger.error("用户获取积分兑换记录列表失败", e);
             return error(e.getMessage());

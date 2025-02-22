@@ -42,7 +42,7 @@
     
     <update id="usePoints">
         UPDATE tb_user
-        SET use_points = use_points - #{usePoints}
+        SET use_points = use_points - #{needPoints}
         WHERE user_id = #{userId}
     </update>
 

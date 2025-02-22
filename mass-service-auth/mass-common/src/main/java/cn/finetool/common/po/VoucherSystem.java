@@ -39,7 +39,7 @@ public class VoucherSystem implements Serializable {
     /**
      * 优惠券规则
      */
-    private String voucherRule;
+    private BigDecimal voucherRule;
 
     /**
      * 优惠金额

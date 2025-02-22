@@ -46,6 +46,7 @@
         WHERE hotel_id = #{hotelId}
     </select>
 
+<!--    //TODO: 需修改优化-->
     <select id="queryHotelRoomTypeList" resultType="cn.finetool.common.vo.RoomInfoVo">
         SELECT room.room_id,room.room_name,room.room_type,room.basic_price AS old_price,
                room_info.id 

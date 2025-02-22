@@ -54,7 +54,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -109,7 +108,7 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
         // 根据不同的活动券类型加入不同的表中
         voucherOperationContext.saveVoucher(voucherDto);
         save(voucher);
-        
+
         return success("操作成功");
     }
 
@@ -123,6 +122,7 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
         voucherList = voucherList.stream().sorted((o1, o2) -> o2.getCreateTime().compareTo(o1.getCreateTime())).toList();
         return success(voucherList);
     }
+
     @Override
     public Response getPlatFormVoucherList() {
         List<VoucherVO> voucherList = new ArrayList<>();
@@ -138,7 +138,7 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
         // 判断是否重复
         PointExchange product = pointExchangeMapper.selectOne(new QueryWrapper<PointExchange>()
                 .eq("cdk", pointExchange.getCdk()));
-        if (Objects.nonNull(product)){
+        if (Objects.nonNull(product)) {
             throw new BusinessRuntimeException("该商品已添加，请勿重复添加");
         }
         // 保存商品信息
@@ -146,6 +146,13 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
         pointExchange.setCreateTime(TimeUtil.now());
         pointExchange.setIsDelete(Status.NOT_DELETED.code());
         pointExchange.setStatus(Status.POINT_EXCHANGE_WAIT.code());
+        // 根据 cdk 获取商品类型
+        String cdk = pointExchange.getCdk();
+        // 截取 cdk 前4位
+        String prefix = cdk.substring(0, 4);
+        if (Strings.equals(SysEnum.VOUCHER_PREFIX.code(), prefix)) {
+            pointExchange.setExchangeType(PointExchangeType.VOUCHER.code());
+        }
         pointExchangeMapper.insert(pointExchange);
         return "已成功添加商品";
     }
@@ -204,7 +211,7 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
         pointUsageRecord.setIsDelete(Status.NOT_DELETED.code());
         pointUsageRecordMapper.insert(pointUsageRecord);
         // 根据兑换类型进行物品发放
-        if (Strings.equals(product.getExchangeType(), PointExchangeType.VOUCHER.code())){
+        if (Strings.equals(product.getExchangeType(), PointExchangeType.VOUCHER.code())) {
             // 发放活动券
             UserVoucher userVoucher = new UserVoucher();
             userVoucher.setUserId(userId);
@@ -222,7 +229,7 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
                 .orderByDesc("create_time"));
         // 按照商品类型进行分组处理
         Map<Integer, List<PointExchange>> productsMap = FunUtil.groupBy(pointExchanges, PointExchange::getExchangeType);
-        if (Objects.nonNull(productsMap.get(0))){
+        if (Objects.nonNull(productsMap.get(0))) {
             // 活动券 tb_voucher
             List<PointExchange> voucherPointExchange = productsMap.get(0);
             return voucherPointExchange.stream()
@@ -230,7 +237,7 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
                         PointProDuctVO pointProDuctVO = new PointProDuctVO();
                         Voucher voucher = voucherMapper.selectOne(new QueryWrapper<Voucher>()
                                 .eq("voucher_id", pointExchange.getCdk()));
-                        if (Strings.equals(voucher.getVoucherType(), VoucherType.COUPON.code())){
+                        if (Strings.equals(voucher.getVoucherType(), VoucherType.COUPON.code())) {
                             // 优惠券
                             VoucherCoupon coupon = couponMapper.selectOne(new QueryWrapper<VoucherCoupon>()
                                     .eq("voucher_id", voucher.getVoucherId()));
@@ -257,9 +264,54 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
     }
 
     @Override
-    public List<PointUsageRecordVO> pointExchangeRecordList() {
-        //TODO: 待实现
-        return Collections.emptyList();
+    public List<PointUsageRecordVO> pointExchangeRecordList(String userId) {
+        List<PointUsageRecord> pointUsageRecords = pointUsageRecordMapper.selectList(new QueryWrapper<PointUsageRecord>()
+                .eq("user_id", userId)
+                .eq("is_delete", Status.NOT_DELETED.code())
+                .orderByDesc("create_time"));
+        if (CollectionUtils.isEmpty(pointUsageRecords)) {
+            return Collections.emptyList();
+        }
+        return pointUsageRecords.stream()
+                .map(pointUsageRecord -> {
+                    PointUsageRecordVO pointUsageRecordVO = new PointUsageRecordVO();
+                    pointUsageRecordVO.setId(pointUsageRecord.getId());
+                    pointUsageRecordVO.setPeId(pointUsageRecord.getPeId());
+                    pointUsageRecordVO.setStatus(pointUsageRecord.getStatus());
+                    PointExchange pointExchange = pointExchangeMapper.selectById(pointUsageRecord.getPeId());
+                    if (Objects.isNull(pointExchange)) {
+                        return null;
+                    }
+                    pointUsageRecordVO.setNeedPoints(pointExchange.getNeedPoints());
+                    pointUsageRecordVO.setExchangeType(pointExchange.getExchangeType());
+                    pointUsageRecordVO.setCount(pointExchange.getCount());
+                    pointUsageRecordVO.setStock(pointExchange.getStock());
+                    pointUsageRecordVO.setBeginTime(pointExchange.getBeginTime());
+                    pointUsageRecordVO.setEndTime(pointExchange.getEndTime());
+                    pointUsageRecordVO.setCreateTime(pointUsageRecord.getCreateTime());
+
+                    Voucher voucher = voucherMapper.selectOne(new QueryWrapper<Voucher>()
+                            .eq("voucher_id", pointExchange.getCdk()));
+                    if (Strings.equals(voucher.getVoucherType(), VoucherType.COUPON.code())) {
+                        // 优惠券
+                        VoucherCoupon coupon = couponMapper.selectOne(new QueryWrapper<VoucherCoupon>()
+                                .eq("voucher_id", voucher.getVoucherId()));
+                        pointUsageRecordVO.setProductName(coupon.getVoucherTitle());
+                    } else if (Strings.equals(voucher.getVoucherType(), VoucherType.SYSTEM.code())) {
+                        // 系统券
+                        VoucherSystem system = voucherSystemMapper.selectOne(new QueryWrapper<VoucherSystem>()
+                                .eq("voucher_id", voucher.getVoucherId()));
+                        pointUsageRecordVO.setProductName(system.getVoucherTitle());
+                    }
+                    return pointUsageRecordVO;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<VoucherVO> getVoucherListByUserId(String userId) {
+        return List.of();
     }
 
 
@@ -269,14 +321,14 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
     }
 
     @Override
-    public Response getValidVoucherList() {
+    public List<VoucherVO> getValidVoucherList() {
         List<VoucherVO> validVoucherList = new ArrayList<>();
         List<UserVoucher> userVoucherList = userVoucherMapper.selectList(new QueryWrapper<UserVoucher>()
                 .eq("user_id", StpUtil.getLoginIdAsString())
                 .eq("status", Status.VOUCHER_CAN_USE.code()));
         List<String> voucherIds = userVoucherList.stream().map(UserVoucher::getVoucherId).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(voucherIds)) {
-            return success(validVoucherList);
+            return validVoucherList;
         }
         List<Voucher> voucherList = voucherMapper.selectList(new QueryWrapper<Voucher>()
                 .in("voucher_id", voucherIds));
@@ -284,7 +336,6 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
         Map<Integer, List<Voucher>> collect = voucherList.stream()
                 .collect(Collectors.groupingBy(Voucher::getVoucherType));
         for (Map.Entry<Integer, List<Voucher>> entry : collect.entrySet()) {
-            // TODO: 目前只有优惠券
             if (Strings.equals(entry.getKey(), VoucherType.COUPON.code())) {
                 List<String> couponList = entry.getValue().stream()
                         .map(Voucher::getVoucherId)
@@ -299,9 +350,24 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
                     return voucherVO;
                 }).collect(Collectors.toList());
                 validVoucherList.addAll(voucherVOList);
+            } // 系统券
+            else if (Strings.equals(entry.getKey(), VoucherType.SYSTEM.code())) {
+                List<String> systemList = entry.getValue().stream()
+                        .map(Voucher::getVoucherId)
+                        .collect(Collectors.toList());
+                List<VoucherSystem> systemVoucherList = voucherSystemMapper.selectList(new QueryWrapper<VoucherSystem>()
+                        .in("voucher_id", systemList));
+                List<VoucherVO> voucherVOList = systemVoucherList.stream().map(system -> {
+                    VoucherVO voucherVO = new VoucherVO();
+                    voucherVO.setVoucherId(system.getVoucherId());
+                    voucherVO.setVoucherTitle(system.getVoucherTitle());
+                    voucherVO.setVoucherRule(system.getVoucherRule());
+                    return voucherVO;
+                }).collect(Collectors.toList());
+                validVoucherList.addAll(voucherVOList);
             }
         }
-        return success(validVoucherList);
+        return validVoucherList;
     }
 
     @Override
@@ -396,14 +462,14 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
                 .stream()
                 .map(voucher -> {
                     ActivityVO activityVO = new ActivityVO();
-                    
-                    if (Strings.equals(SysEnum.MERCHANT_PLATFORM_PREFIX.code(), voucher.getMerchantId())){
+                    if (Objects.isNull(voucher.getMerchantId())) {
                         activityVO.setMerchantName("平台活动");
                     } else {
                         activityVO.setMerchantName(hotelAPIService.findMerchantNameByMerchantId(voucher.getMerchantId()));
                     }
                     activityVO.setActivityId(voucher.getVoucherId());
                     activityVO.setActivityType(Status.ACTIVITY_VOUCHER.code());
+                    // 优惠券
                     if (Strings.equals(voucher.getVoucherType(), VoucherType.COUPON.code())) {
                         VoucherCoupon coupon = couponMapper.selectOne(new QueryWrapper<VoucherCoupon>()
                                 .eq("voucher_id", voucher.getVoucherId())
@@ -419,13 +485,26 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
                             return null;
                         }
                     }
+                    // 系统券
+                    else if (Strings.equals(VoucherType.SYSTEM.code(), voucher.getVoucherType())) {
+                        VoucherSystem system = voucherSystemMapper.selectOne(new QueryWrapper<VoucherSystem>()
+                                .eq("voucher_id", voucher.getVoucherId()));
+                        if (Objects.nonNull(system)) {
+                            activityVO.setActivityTitle(system.getVoucherTitle());
+                            activityVO.setActivitySubTitle(system.getVoucherSubTitle());
+                            activityVO.setStatus(system.getStatus());
+                            activityVO.setBeginTime(system.getBeginTime());
+                            activityVO.setEndTime(system.getEndTime());
+                            activityVO.setCount(system.getCount());
+                        } else {
+                            return null;
+                        }
+                    }
                     return activityVO;
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         activityVOList.addAll(voucherActivities);
-        // 按结束时间降序排列
-        activityVOList.sort( (o1, o2) -> o2.getEndTime().compareTo(o1.getEndTime()));
         return success(activityVOList);
     }
 
@@ -436,13 +515,22 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
                 .eq("voucher_id", activityId));
 
         String userId = StpUtil.getLoginIdAsString();
-        if (Objects.nonNull(voucher)){
+        if (Objects.nonNull(voucher)) {
             // 优惠券
-            if (Strings.equals(VoucherType.COUPON.code(), voucher.getVoucherType())){
+            if (Strings.equals(VoucherType.COUPON.code(), voucher.getVoucherType())) {
                 UserVoucher userVoucher = userVoucherMapper.selectOne(new QueryWrapper<UserVoucher>()
                         .eq("user_id", userId)
                         .eq("voucher_id", voucher.getVoucherId()));
-                if (Objects.isNull(userVoucher)){
+                if (Objects.isNull(userVoucher)) {
+                    return success(false);
+                } else {
+                    return success(true);
+                } // 系统券
+            } else if (Strings.equals(VoucherType.SYSTEM.code(), voucher.getVoucherType())) {
+                UserVoucher userVoucher = userVoucherMapper.selectOne(new QueryWrapper<UserVoucher>()
+                        .eq("user_id", userId)
+                        .eq("voucher_id", voucher.getVoucherId()));
+                if (Objects.isNull(userVoucher)) {
                     return success(false);
                 } else {
                     return success(true);
@@ -457,14 +545,19 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
         ActivityVO activityVO = new ActivityVO();
         //截取前4位
         String prefix = activityId.substring(0, 4);
-        if (Strings.equals(SysEnum.VOUCHER_PREFIX.code(), prefix)){
+        if (Strings.equals(SysEnum.VOUCHER_PREFIX.code(), prefix)) {
             activityVO.setActivityType(Status.ACTIVITY_VOUCHER.code());
             // 活动券
             Voucher voucher = voucherMapper.selectOne(new QueryWrapper<Voucher>()
                     .eq("voucher_id", activityId));
             activityVO.setVoucherType(voucher.getVoucherType());
-            activityVO.setMerchantName(hotelAPIService.findMerchantNameByMerchantId(voucher.getMerchantId()));
-            if (Strings.equals(VoucherType.COUPON.code(), voucher.getVoucherType())){
+            if (Objects.isNull(voucher.getMerchantId())) {
+                activityVO.setMerchantName("平台活动");
+            } else {
+                activityVO.setMerchantName(hotelAPIService.findMerchantNameByMerchantId(voucher.getMerchantId()));
+            }
+
+            if (Strings.equals(VoucherType.COUPON.code(), voucher.getVoucherType())) {
                 // 活动券-优惠券
                 VoucherCoupon coupon = couponMapper.selectOne(new QueryWrapper<VoucherCoupon>()
                         .eq("voucher_id", activityId));
@@ -475,6 +568,16 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
                 activityVO.setEndTime(coupon.getEndTime());
                 activityVO.setStatus(coupon.getStatus());
                 activityVO.setCount(coupon.getCount());
+            } else if (Strings.equals(VoucherType.SYSTEM.code(), voucher.getVoucherType())) {
+                // 活动券-系统券
+                VoucherSystem system = voucherSystemMapper.selectOne(new QueryWrapper<VoucherSystem>()
+                        .eq("voucher_id", activityId));
+                activityVO.setActivityTitle(system.getVoucherTitle());
+                activityVO.setActivitySubTitle(system.getVoucherSubTitle());
+                activityVO.setStatus(system.getStatus());
+                activityVO.setBeginTime(system.getBeginTime());
+                activityVO.setEndTime(system.getEndTime());
+                activityVO.setCount(system.getCount());
             }
         }
         activityVO.setActivityId(activityId);

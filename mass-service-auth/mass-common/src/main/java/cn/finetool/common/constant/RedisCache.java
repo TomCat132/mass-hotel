@@ -44,6 +44,9 @@ public class RedisCache {
     /** =========== 优惠券分布式所 ========== */
     public static final String COUPON_LOCK = "coupon_lock_voucherId";
     
+    /** =========== 系统券分布式锁 ========== */
+    public static final String SYSTEM_LOCK = "system_lock_voucherId";
+    
     /** =========== 用户请求处理分布式锁========== */
     public static final String REQUEST_LOCK = "request_lock_requestId";
     

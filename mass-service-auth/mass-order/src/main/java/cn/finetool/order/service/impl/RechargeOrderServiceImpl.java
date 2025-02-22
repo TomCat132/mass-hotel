@@ -41,15 +41,12 @@ public class RechargeOrderServiceImpl extends ServiceImpl<RechargeOrderMapper, R
 
     @Resource
     private RechargeOrderService rechargeOrderService;
-
     @Resource
     private RechargeOrderMapper rechargeOrderMapper;
-
     @Resource
     private OrderStatusService orderStatusService;
     @Resource
     private RabbitTemplate rabbitTemplate;
-
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
