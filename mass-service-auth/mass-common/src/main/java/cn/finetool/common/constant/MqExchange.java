@@ -18,4 +18,6 @@ public class MqExchange {
     public static final String ROOM_BOOKING_TIMEOUT_EXCHANGE = "room_booking_timeout_exchange";
     /** ========= 房间订单即将结束提醒  交换机 =========== */
     public static final String ROOM_ORDER_ENDING_REMIND_EXCHANGE = "room_order_ending_remind_exchange";
+    /** ========= 积分商城产品上架/下架交换机 =========== */
+    public static final String POINT_MALL_PRODUCT_EXCHANGE = "point_mall_product_exchange";
 }

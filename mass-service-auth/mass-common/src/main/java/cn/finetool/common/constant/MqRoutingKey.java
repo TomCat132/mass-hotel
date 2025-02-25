@@ -27,4 +27,6 @@ public class MqRoutingKey {
     /** ========== 房间订单结束提醒 队列 路由 ========== */
     public static final String ROOM_ORDER_ENDING_REMIND_ROUTING_KEY  = "room_order_ending_remind_routing_key";
 
+    /** ========== 积分商城商品 队列 路由 ========== */
+    public static final String POINT_MALL_PRODUCT_ROUTING_KEY = "point_mall_product_routing_key";
 }

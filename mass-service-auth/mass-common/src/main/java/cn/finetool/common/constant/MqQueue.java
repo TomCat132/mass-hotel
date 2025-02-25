@@ -24,4 +24,7 @@ public class MqQueue {
     public static final String ROOM_BOOKING_TIMEOUT_QUEUE = "room_booking_timeout_queue";
     
     public static final String ROOM_ORDER_ENDING_REMIND_QUEUE = "room_order_ending_remind_queue";
+    
+    /** ======== 积分商城商品延时队列 ======== */
+    public static final String POINT_MALL_PRODUCT_QUEUE = "point_mall_product_queue";
 }

@@ -49,4 +49,7 @@ public interface ActivityAPIService {
     @PutMapping("/usedVoucher")
     void usedVoucher(@RequestParam("voucherId") String voucherId,
                      @RequestParam("status") Integer status);
+
+    @PostMapping("/update-status")
+    void updateStatusById(@RequestParam("id") String id, @RequestParam("status") Integer status);
 }

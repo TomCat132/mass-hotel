@@ -52,4 +52,10 @@ public class RedisCache {
     
     /** =========== 积分兑换商品锁 ========== */
     public static final String POINT_EXCHANGE_LOCK = "point_exchange_lock_id";
+    
+    /** =========== 积分商品上架标志 ========== */
+    public static final String POINT_PRODUCT_UP_SIGN = "point_product_up_sign_id";
+    
+    /** =========== 积分商品下架标志 ========== */
+    public static final String POINT_PRODUCT_DOWN_SIGN = "point_product_down_sign_id";
 }

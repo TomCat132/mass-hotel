@@ -127,4 +127,24 @@ public interface VoucherService extends IService<Voucher> {
      * @return
      */
     List<VoucherVO> getVoucherListByUserId(String userId);
+
+    /**
+     * AP/PMS: 获取商户的积分商城商品列表
+     * @param merchantId: 商户编号
+     */
+    List<PointProDuctVO> getMerchantPointProductList(String merchantId);
+
+    /**
+     * AP/PMS: 删除积分商城商品
+     * @param id : 主键
+     * @return
+     */
+    Object deletePointMallProduct(String id);
+
+    /**
+     * 根据 id 更新状态
+     * @param id：主键
+     * @param status: 更新指定状态值
+     */
+    void updateStatusById(String id, Integer status);
 }

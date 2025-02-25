@@ -24,7 +24,24 @@ public class RabbitMqConfig implements CommandLineRunner {
 
     @Resource
     private AmqpAdmin amqpAdmin;
+    
+    @Bean
+    public Binding pointMallProductBinding(){
+        return BindingBuilder.bind(RoomOrderEndingRemindQueue())
+                .to(roomOrderEndingRemindExchange())
+                .with(MqRoutingKey.POINT_MALL_PRODUCT_ROUTING_KEY).noargs();
+    }
+    
+    @Bean
+    public CustomExchange pointMallProductExchange(){
+        return new CustomExchange(MqExchange.POINT_MALL_PRODUCT_EXCHANGE,"x-delayed-message",
+                true,false, Collections.singletonMap("x-delayed-type", "direct"));
+    }
 
+    @Bean
+    public Queue pointMallProductQueue(){
+        return new Queue(MqQueue.POINT_MALL_PRODUCT_QUEUE, true, false, false);
+    }
     
     /** ============ 房间订单即将结束（1小时）提醒 路由绑定 ========== */
     @Bean

@@ -1,5 +1,6 @@
 package cn.finetool.common.util;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -110,5 +111,15 @@ public class TimeUtil {
         for (LocalDate date : dateList) {
             System.out.println(date);
         }
+    }
+
+    /**
+     * 计算两个LocalDateTime之间的时间差，单位：毫秒
+     * @param time1
+     * @param time2
+     * @return
+     */
+    public static long betweenToMillis(LocalDateTime time1, LocalDateTime time2) {
+        return Duration.between(time1, time2).toMillis();
     }
 }

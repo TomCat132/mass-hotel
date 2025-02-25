@@ -13,6 +13,8 @@ import cn.finetool.activity.service.VoucherService;
 import cn.finetool.activity.strategy.VoucherOperationContext;
 import cn.finetool.api.service.AccountAPIService;
 import cn.finetool.api.service.HotelAPIService;
+import cn.finetool.common.constant.MqExchange;
+import cn.finetool.common.constant.MqRoutingKey;
 import cn.finetool.common.constant.RedisCache;
 import cn.finetool.common.dto.VoucherDto;
 import cn.finetool.common.enums.PointExchangeType;
@@ -29,6 +31,7 @@ import cn.finetool.common.po.Voucher;
 import cn.finetool.common.po.VoucherCoupon;
 import cn.finetool.common.po.VoucherSystem;
 import cn.finetool.common.util.FunUtil;
+import cn.finetool.common.util.MqUtils;
 import cn.finetool.common.util.Response;
 import cn.finetool.common.util.SnowflakeIdWorker;
 import cn.finetool.common.util.Strings;
@@ -41,7 +44,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.ImmutableMap;
 import jakarta.annotation.Resource;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -54,6 +59,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -65,7 +74,7 @@ import static cn.finetool.common.util.Response.success;
 public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implements VoucherService {
 
     private static final SnowflakeIdWorker ID_WORKER = new SnowflakeIdWorker(2, 0);
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(VoucherHandler.class);
     @Resource
     private VoucherOperationContext voucherOperationContext;
     @Resource
@@ -88,6 +97,10 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
     private VoucherSystemMapper voucherSystemMapper;
     @Resource
     private RedissonClient redissonClient;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Override
     @Transactional
@@ -135,6 +148,17 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
 
     @Override
     public String addPointsMallProduct(PointExchange pointExchange) {
+        // 参数校验
+        LocalDateTime beginTime = pointExchange.getBeginTime();
+        LocalDateTime endTime = pointExchange.getEndTime();
+        if (beginTime.isAfter(endTime)) {
+            throw new BusinessRuntimeException("开始时间不能大于结束时间");
+        }
+        if (!Strings.equals(pointExchange.getCount(), -1) && Strings.equals(pointExchange.getStock(), -1)) {
+            if (pointExchange.getCount() > pointExchange.getStock()) {
+                throw new BusinessRuntimeException("兑换数量不能大于库存数量");
+            }
+        }
         // 判断是否重复
         PointExchange product = pointExchangeMapper.selectOne(new QueryWrapper<PointExchange>()
                 .eq("cdk", pointExchange.getCdk()));
@@ -142,7 +166,8 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
             throw new BusinessRuntimeException("该商品已添加，请勿重复添加");
         }
         // 保存商品信息
-        pointExchange.setId(SysEnum.POINT_EXCHANGE_PREFIX.code() + ID_WORKER.nextId());
+        String id = SysEnum.POINT_EXCHANGE_PREFIX.code() + ID_WORKER.nextId();
+        pointExchange.setId(id);
         pointExchange.setCreateTime(TimeUtil.now());
         pointExchange.setIsDelete(Status.NOT_DELETED.code());
         pointExchange.setStatus(Status.POINT_EXCHANGE_WAIT.code());
@@ -154,6 +179,36 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
             pointExchange.setExchangeType(PointExchangeType.VOUCHER.code());
         }
         pointExchangeMapper.insert(pointExchange);
+        // TODO:发送消息
+        
+        // 计算延迟时间
+        LocalDateTime nowTime = TimeUtil.now();
+        // 开始时间-当前时间
+        long delayUpTime =  TimeUtil.betweenToMillis(beginTime, endTime);
+        long delayDownTime = TimeUtil.betweenToMillis(nowTime, endTime);
+        
+        try {
+            MqUtils.sendMessage(rabbitTemplate, MqExchange.POINT_MALL_PRODUCT_EXCHANGE,
+                    MqRoutingKey.POINT_MALL_PRODUCT_ROUTING_KEY, ImmutableMap.of("id", id, "type", "up"),
+                    message -> {
+                        message.getMessageProperties().getHeaders().put("x-delay", delayUpTime);
+                        return message;
+                    });
+            redisTemplate.opsForValue().set(RedisCache.POINT_PRODUCT_UP_SIGN + id, "");
+            LOGGER.info("商品:{} 在 {} ms后上架", id, delayUpTime);
+            MqUtils.sendMessage(rabbitTemplate, MqExchange.POINT_MALL_PRODUCT_EXCHANGE,
+                    MqRoutingKey.POINT_MALL_PRODUCT_ROUTING_KEY, ImmutableMap.of("id", id, "type", "down"),
+                    message -> {
+                        message.getMessageProperties().getHeaders().put("x-delay", delayDownTime);
+                        return message;
+                    });
+            redisTemplate.opsForValue().set(RedisCache.POINT_PRODUCT_DOWN_SIGN + id, "");
+            LOGGER.info("商品:{} 在 {} ms后下架", id, delayDownTime);
+        } catch (Exception e) {
+            LOGGER.error("RabbitMQ 发送消息失败", e);
+            throw new RuntimeException(e);
+        }
+
         return "已成功添加商品";
     }
 
@@ -311,7 +366,70 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
 
     @Override
     public List<VoucherVO> getVoucherListByUserId(String userId) {
+        // TODO: 待实现
         return List.of();
+    }
+
+    @Override
+    public List<PointProDuctVO> getMerchantPointProductList(String merchantId) {
+        List<PointExchange> pointExchanges = pointExchangeMapper.selectList(new QueryWrapper<PointExchange>()
+                .eq("merchant_id", merchantId)
+                .eq("is_delete", Status.NOT_DELETED.code())
+                .orderByDesc("create_time"));
+        return pointExchanges.stream().map(pointExchange -> {
+                    PointProDuctVO pointProDuctVO = new PointProDuctVO();
+                    pointProDuctVO.setId(pointExchange.getId());
+                    pointProDuctVO.setStock(pointExchange.getStock());
+                    pointProDuctVO.setCount(pointExchange.getCount());
+                    pointProDuctVO.setNeedPoints(pointExchange.getNeedPoints());
+                    pointProDuctVO.setExchangeType(pointExchange.getExchangeType());
+                    pointProDuctVO.setBeginTime(pointExchange.getBeginTime());
+                    pointProDuctVO.setEndTime(pointExchange.getEndTime());
+                    pointProDuctVO.setStatus(pointExchange.getStatus());
+                    // 根据 cdk 获取商品名称
+                    String cdk = pointExchange.getCdk();
+                    if (Strings.equals(SysEnum.VOUCHER_PREFIX.code(), cdk.substring(0, 4))) {
+                        // 活动券
+                        Voucher voucher = voucherMapper.selectOne(new QueryWrapper<Voucher>()
+                                .eq("voucher_id", cdk));
+                        if (Strings.equals(voucher.getVoucherType(), VoucherType.COUPON.code())) {
+                            // 优惠券
+                            VoucherCoupon coupon = couponMapper.selectOne(new QueryWrapper<VoucherCoupon>()
+                                    .eq("voucher_id", voucher.getVoucherId()));
+                            pointProDuctVO.setProductName(coupon.getVoucherTitle());
+                        } else if (Strings.equals(voucher.getVoucherType(), VoucherType.SYSTEM.code())) {
+                            // 系统券
+                            VoucherSystem system = voucherSystemMapper.selectOne(new QueryWrapper<VoucherSystem>()
+                                    .eq("voucher_id", voucher.getVoucherId()));
+                            pointProDuctVO.setProductName(system.getVoucherTitle());
+                        }
+                    }
+                    return pointProDuctVO;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Object deletePointMallProduct(String id) {
+        PointExchange pointExchange = pointExchangeMapper.selectById(id);
+        if (Objects.isNull(pointExchange)) {
+            throw new BusinessRuntimeException("商品不存在");
+        }
+        if (Strings.equals(pointExchange.getStatus(), Status.POINT_EXCHANGE_CAN_EXCHANGE.code())
+                || Strings.equals(pointExchange.getStatus(), Status.POINT_EXCHANGE_SOLD_OUT.code())) {
+            throw new BusinessRuntimeException("只能删除下架状态或已过期的商品");
+        }
+        pointExchangeMapper.update(new UpdateWrapper<PointExchange>()
+                .set("is_delete", Status.IS_DELETED.code())
+                .eq("id", id));
+        return "删除成功";
+    }
+
+    @Override
+    public void updateStatusById(String id, Integer status) {
+        pointExchangeMapper.update(new UpdateWrapper<PointExchange>()
+                .set("status", status)
+                .eq("id", id));
     }
 
 

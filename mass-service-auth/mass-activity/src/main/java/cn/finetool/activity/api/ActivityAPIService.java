@@ -61,5 +61,14 @@ public class ActivityAPIService {
                      @RequestParam("status") Integer status){
          voucherService.usedVoucher(voucherId, status);
     }
-    
+
+    /**
+     * 根据 id 更新状态
+     * @param id：主键
+     * @param status: 更新指定状态值
+     */
+    @PostMapping("/update-status")
+    void updateStatusById(@RequestParam("id") String id, @RequestParam("status") Integer status){
+        voucherService.updateStatusById(id, status);
+    }
 }
