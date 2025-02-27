@@ -102,29 +102,28 @@ public class AccountHandler implements AccountService {
     }
 
     @Override
-    public Response getUserMessageBoxList() {
+    public List<MessageBox> getUserMessageBoxList() {
         List<MessageBox> messageBoxList = messageBoxMapper.selectList(new QueryWrapper<MessageBox>()
                 .eq("accept_id", StpUtil.getLoginIdAsString())
                 .orderByDesc("sender_time"));
         if (CollectionUtils.isNotEmpty(messageBoxList)) {
-            return success(messageBoxList);
+            return messageBoxList;
         }
-        return success(Collections.emptyList());
+        return Collections.emptyList();
     }
 
     @Override
-    public Response getUnreadMessageCount() {
-        return success(messageBoxMapper.selectList(new QueryWrapper<MessageBox>()
+    public int getUnreadMessageCount() {
+        return messageBoxMapper.selectList(new QueryWrapper<MessageBox>()
                 .eq("accept_id", StpUtil.getLoginIdAsString())
-                .eq("status", Status.MESSAGE_UNREAD.code())).size());
+                .eq("status", Status.MESSAGE_UNREAD.code())).size();
     }
 
     @Override
-    public Response tagAllMessageRead() {
+    public void tagAllMessageRead() {
         messageBoxMapper.update(new UpdateWrapper<MessageBox>()
                 .set("status", Status.MESSAGE_READ.code())
                 .eq("accept_id", StpUtil.getLoginIdAsString()));
-        return success("所有消息已被标记为已读");
     }
 
     @Override
@@ -134,9 +133,8 @@ public class AccountHandler implements AccountService {
     }
 
     @Override
-    public Response getUserLocationInfo() {
-        Map<String, String> locationInfo = IpUtil.getLocationInfo();
-        return success(locationInfo);
+    public Map<String, String> getUserLocationInfo() {
+        return IpUtil.getLocationInfo();
     }
 
     @Override
@@ -147,7 +145,7 @@ public class AccountHandler implements AccountService {
     }
 
     @Override
-    public Response getMerchantEmployeeList(String merchantId) {
+    public List<UserVO> getMerchantEmployeeList(String merchantId) {
         List<UserMerchant> employeeList = userMerchantMapper.selectList(new QueryWrapper<UserMerchant>()
                 .eq("merchant_id", merchantId));
         List<String> userIds = employeeList.stream().map(UserMerchant::getUserId).toList();
@@ -167,7 +165,7 @@ public class AccountHandler implements AccountService {
                 .stream()
                 .collect(Collectors.toMap(User::getUserId, User -> User));
 
-        List<UserVO> userVOList = employeeList.stream()
+        return employeeList.stream()
                 .map(employee -> {
                     UserVO userVO = new UserVO();
                     userVO.setUserId(employee.getUserId());
@@ -183,11 +181,10 @@ public class AccountHandler implements AccountService {
                     return userVO;
                 })
                 .collect(Collectors.toList());
-        return success(userVOList);
     }
 
     @Override
-    public Response accountCold(String userId) {
+    public void accountCold(String userId) {
         // 冻结账号
         userMerchantMapper.update(new UpdateWrapper<UserMerchant>()
                 .set("status", Status.ACCOUNT_CLOD.code())
@@ -202,21 +199,19 @@ public class AccountHandler implements AccountService {
                     .eq("user_id", userId));
         }
         // TODO:记录日志
-        return success("账号已冻结");
     }
 
     @Override
-    public Response accountUnCold(String userId) {
+    public void accountUnCold(String userId) {
         // 解冻账号
         userMerchantMapper.update(new UpdateWrapper<UserMerchant>()
                 .set("status", Status.ACCOUNT_NORMAL.code())
                 .eq("user_id", userId));
         // TODO:记录日志
-        return success("账号已解冻");
     }
 
     @Override
-    public Response setPermission(String userId, String permission) {
+    public void setPermission(String userId, String permission) {
         // 查询权限id
         Role roleKey = roleMapper.selectOne(new QueryWrapper<Role>()
                 .eq("role_key", permission));
@@ -224,11 +219,10 @@ public class AccountHandler implements AccountService {
                 .set("role_id", roleKey.getRoleId())
                 .eq("user_id", userId));
         // TODO:记录日志
-        return success("权限已变更");
     }
 
     @Override
-    public Response deleteResignedEmployee(String userId) {
+    public void deleteResignedEmployee(String userId) {
         // 校验是否为离职员工
         User user = userMapper.selectOne(new QueryWrapper<User>()
                 .eq("user_id", userId));
@@ -248,11 +242,10 @@ public class AccountHandler implements AccountService {
         userRolesMapper.delete(new QueryWrapper<UserRoles>()
                 .eq("user_id", userId));
         // TODO:记录日志
-        return success("员工账号已删除");
     }
 
     @Override
-    public Response newEmployeeInfo(UserDto userDto) {
+    public void newEmployeeInfo(UserDto userDto) {
         // 手机号唯一
         String phone = userDto.getPhone();
         User user = userMapper.selectOne(new QueryWrapper<User>()
@@ -262,7 +255,6 @@ public class AccountHandler implements AccountService {
         }
         // 发放账号
         generateAccount(userDto);
-        return success("账号已发放");
     }
 
     @Override
@@ -271,7 +263,7 @@ public class AccountHandler implements AccountService {
     }
 
     @Override
-    public Response evaluateAfterEnd(EvaluationDto evaluationDto, List<MultipartFile> avatarList) {
+    public void evaluateAfterEnd(EvaluationDto evaluationDto, List<MultipartFile> avatarList) {
         // 评级、内容、时间
         UpdateWrapper<Evaluation> updateWrapper = new UpdateWrapper<>();
         updateWrapper.set("content", evaluationDto.getContent())
@@ -289,18 +281,16 @@ public class AccountHandler implements AccountService {
         if (CollectionUtils.isNotEmpty(avatarList)) {
             ossAPIService.batchUploadImage(avatarList, evaluationDto.getEvaluationId());
         }
-        return success("感谢您的评价，我们会努力提供更好的服务");
     }
 
     @Override
-    public Response getEvaluateByOrderId(String orderId) {
-        Evaluation evaluation = evaluationMapper.selectOne(new QueryWrapper<Evaluation>()
+    public Evaluation getEvaluateByOrderId(String orderId) {
+        return evaluationMapper.selectOne(new QueryWrapper<Evaluation>()
                 .eq("order_id", orderId));
-        return success(evaluation);
     }
 
     @Override
-    public Response getEvaluateListByRelationId(String relationId) {
+    public List<EvaluationVO> getEvaluateListByRelationId(String relationId) {
         List<Evaluation> relationList = evaluationMapper.selectList(new QueryWrapper<Evaluation>()
                 .eq("relation_id", relationId));
         //批量查图片再进行分组避免循环内查DB
@@ -337,7 +327,7 @@ public class AccountHandler implements AccountService {
                     return evaluationVO;
                 })
                 .collect(Collectors.toList());
-        return CollectionUtils.isEmpty(evaluationVOList) ? success(Collections.emptyList()) : success(evaluationVOList);
+        return CollectionUtils.isEmpty(evaluationVOList) ? Collections.emptyList() : evaluationVOList;
     }
 
     @Override
@@ -358,7 +348,7 @@ public class AccountHandler implements AccountService {
     }
 
     @Override
-    public Response getUserInfoList(Integer page, Integer size, String keyword) {
+    public List<UserVO> getUserInfoList(Integer page, Integer size, String keyword) {
         if (page == null || page < 1) page = 1;
         if (size == null || size < 1) size = 10;
         List<UserVO> userVOList = new ArrayList<>();
@@ -397,11 +387,11 @@ public class AccountHandler implements AccountService {
             userVO.setRegisterTime(user.getRegistrationTime());
             userVOList.add(userVO);
         }
-        return success(userVOList);
+        return userVOList;
     }
 
     @Override
-    public Response getPolicyList() {
+    public List<RoleVO> getPolicyList() {
         List<Role> userRoleList = roleMapper.selectList(null);
         if (CollectionUtils.isNotEmpty(userRoleList)) {
 
@@ -415,14 +405,14 @@ public class AccountHandler implements AccountService {
                 roleVO.setRoleCount(count);
                 return roleVO;
             }).collect(Collectors.toList());
-            return success(roleVoList);
+            return roleVoList;
         }
 
-        return success(Collections.emptyList());
+        return Collections.emptyList();
     }
 
     @Override
-    public Response addPolicy(Role role) {
+    public void addPolicy(Role role) {
         Role roleInfo = roleMapper.selectOne(new QueryWrapper<Role>()
                 .eq("role_key", role.getRoleKey())
                 .or()
@@ -431,11 +421,10 @@ public class AccountHandler implements AccountService {
             throw new BusinessRuntimeException("权限名称或权限标识已存在,请修改后保存");
         }
         roleMapper.insert(role);
-        return success("权限添加成功");
     }
 
     @Override
-    public Response policySetting(String userId, Integer roleId) {
+    public void policySetting(String userId, Integer roleId) {
         UserRoles userRoles = userRolesMapper.selectOne(new QueryWrapper<UserRoles>()
                 .eq("user_id", userId)
                 .eq("role_id", roleId));
@@ -445,18 +434,17 @@ public class AccountHandler implements AccountService {
         userRolesMapper.update(new UpdateWrapper<UserRoles>()
                 .set("role_id", roleId)
                 .eq("user_id", userId));
-        return success("权限设置成功");
+
     }
 
     @Override
-    public Response deletePolicy(Integer roleId) {
+    public void deletePolicy(Integer roleId) {
         List<UserRoles> userRolesList = userRolesMapper.selectList(new QueryWrapper<UserRoles>()
                 .eq("role_id", roleId));
         if (CollectionUtils.isNotEmpty(userRolesList)){
             throw new BusinessRuntimeException("删除该角色时请确保已无用户设置改角色");
         }
         roleMapper.deleteById(roleId);
-        return success("删除成功");
     }
 
     @Override
@@ -469,7 +457,7 @@ public class AccountHandler implements AccountService {
     }
 
     @Override
-    public Response getEvaluationList(String merchantId, String time, Integer status, String keyword) {
+    public List<EvaluationVO> getEvaluationList(String merchantId, String time, Integer status, String keyword) {
         List<Integer> statusOrder = Arrays.asList(Status.EVALUATION_NO.code(),
                 Status.EVALUATION_YES.code());
         // 创建查询包装器并添加查询条件
@@ -510,7 +498,7 @@ public class AccountHandler implements AccountService {
                     .filter(evaluationVO -> statusOrder.contains(evaluationVO.getStatus()))
                     .collect(Collectors.toList());
         }
-        return success(evaluationVOList);
+        return evaluationVOList;
     }
 
     @Override
@@ -524,20 +512,20 @@ public class AccountHandler implements AccountService {
     }
 
     @Override
-    public Response getAccountInfo() {
+    public UpGradeVO getAccountInfo() {
         // 获取账号信息
         String userId = StpUtil.getLoginIdAsString();
-        return success(findUpGradeInfo(userId));
+        return findUpGradeInfo(userId);
     }
 
     @Override
-    public Response getConvenientInfo() {
+    public RoomOrderBaseInfo getConvenientInfo() {
         // 查询最新的服务订单
         String userId = StpUtil.getLoginIdAsString();
         // 查询入住订单及其关联订单数据
         RoomOrderBaseInfo roomOrderBaseInfo = orderAPIService.findOrderBaseInfoByUserId(userId);
         // TODO:如果是已完成的订单，要查询评论数据
-        return success(roomOrderBaseInfo);
+        return roomOrderBaseInfo;
     }
 
     @Override

@@ -22,7 +22,7 @@ public interface VoucherService extends IService<Voucher> {
      *
      * @param merchantId 商户编号
      */
-    Response getAllCategoryVoucherList(String merchantId);
+    List<VoucherVO> getAllCategoryVoucherList(String merchantId);
 
     /**
      * @param voucherType 类型
@@ -51,21 +51,22 @@ public interface VoucherService extends IService<Voucher> {
 
     /**
      * 活动券编号
+     *
      * @param voucherId 活动券编号
      */
-    Response deleteVoucherByVoucherId(String voucherId);
+    void deleteVoucherByVoucherId(String voucherId);
 
     /**
      * AP: 设置签到奖励
      * @param signReward: 签到奖励 PO
      */
-    Response signRewardSetting(SignReward signReward);
+    void signRewardSetting(SignReward signReward);
 
     /**
      * AP: 修改奖励内容
      * @param rewardId: 奖励编号
      */
-    Response changeRewardContent(String rewardId, String content);
+    void changeRewardContent(String rewardId, String content);
 
     /**
      * AP: 按月获取奖励内容列表
@@ -92,9 +93,10 @@ public interface VoucherService extends IService<Voucher> {
 
     /**
      * AP：获取平台活动券列表
+     *
      * @return
      */
-    Response getPlatFormVoucherList();
+    List<VoucherVO> getPlatFormVoucherList();
 
     /**
      * AP: 添加积分兑换商品

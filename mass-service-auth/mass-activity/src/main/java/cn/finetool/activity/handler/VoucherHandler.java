@@ -46,7 +46,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
 import jakarta.annotation.Resource;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -127,23 +126,23 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
 
 
     @Override
-    public Response getAllCategoryVoucherList(String merchantId) {
+    public List<VoucherVO> getAllCategoryVoucherList(String merchantId) {
         // 查询商户的优惠券
         List<VoucherVO> voucherList = new ArrayList<>();
         voucherList = voucherMapper.findMerchantVoucherListById(merchantId);
 
         voucherList = voucherList.stream().sorted((o1, o2) -> o2.getCreateTime().compareTo(o1.getCreateTime())).toList();
-        return success(voucherList);
+        return voucherList;
     }
 
     @Override
-    public Response getPlatFormVoucherList() {
+    public List<VoucherVO> getPlatFormVoucherList() {
         List<VoucherVO> voucherList = new ArrayList<>();
         // 查询平台发放的系统券
         List<VoucherVO> voucherSystemList = voucherMapper.findPVoucherSystemList();
         voucherList.addAll(voucherSystemList);
         voucherList = voucherList.stream().sorted((o1, o2) -> o2.getCreateTime().compareTo(o1.getCreateTime())).toList();
-        return success(voucherList);
+        return voucherList;
     }
 
     @Override
@@ -180,13 +179,13 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
         }
         pointExchangeMapper.insert(pointExchange);
         // TODO:发送消息
-        
+
         // 计算延迟时间
         LocalDateTime nowTime = TimeUtil.now();
         // 开始时间-当前时间
-        long delayUpTime =  TimeUtil.betweenToMillis(beginTime, endTime);
+        long delayUpTime = TimeUtil.betweenToMillis(beginTime, endTime);
         long delayDownTime = TimeUtil.betweenToMillis(nowTime, endTime);
-        
+
         try {
             MqUtils.sendMessage(rabbitTemplate, MqExchange.POINT_MALL_PRODUCT_EXCHANGE,
                     MqRoutingKey.POINT_MALL_PRODUCT_ROUTING_KEY, ImmutableMap.of("id", id, "type", "up"),
@@ -519,16 +518,15 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
     }
 
     @Override
-    public Response deleteVoucherByVoucherId(String voucherId) {
+    public void deleteVoucherByVoucherId(String voucherId) {
         // 查询优惠券类型
         Voucher voucher = voucherMapper.selectOne(new QueryWrapper<Voucher>()
                 .eq("voucher_id", voucherId));
         voucherOperationContext.deleteVoucher(voucherId, voucher.getVoucherType());
-        return Response.success("删除成功");
     }
 
     @Override
-    public Response signRewardSetting(SignReward signReward) {
+    public void signRewardSetting(SignReward signReward) {
 
         LocalDate rewardDate = signReward.getRewardDate();
         LocalDate today = TimeUtil.currentDate();
@@ -544,16 +542,15 @@ public class VoucherHandler extends ServiceImpl<VoucherMapper, Voucher> implemen
         signReward.setRewardId(SysEnum.SIGN_REWARD_PREFIX.code() + ID_WORKER.nextId());
         // TODO:校验参数
         signRewardMapper.insert(signReward);
-        return success("设置成功");
+
     }
 
 
     @Override
-    public Response changeRewardContent(String rewardId, String content) {
+    public void changeRewardContent(String rewardId, String content) {
         signRewardMapper.update(new UpdateWrapper<SignReward>()
                 .set("reward_content", content)
                 .eq("reward_id", rewardId));
-        return success("修改成功");
     }
 
     @Override

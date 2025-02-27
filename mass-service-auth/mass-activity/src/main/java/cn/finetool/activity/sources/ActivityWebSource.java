@@ -10,10 +10,8 @@ import cn.finetool.common.util.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
-import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,13 +38,23 @@ public class ActivityWebSource {
     @GetMapping("/categoryVoucherList")
     @ApiOperation(value = "获取所有类型的活动券列表", notes = "AP: 获取所有分类的优惠券列表")
     public Response getAllCategoryVoucherList(@RequestParam(value = "merchantId", required = false) String merchantId) {
-        return voucherService.getAllCategoryVoucherList(merchantId);
+        try {
+            return success(voucherService.getAllCategoryVoucherList(merchantId));
+        } catch (Exception e) {
+            logger.error("/activity/categoryVoucherList \n{}", e);
+            return error(e.getMessage());
+        }
     }
 
     @GetMapping("/platformVoucherList")
     @ApiOperation(value = "获取所有平台的活动券列表", notes = "AP: 获取所有平台的活动券列表")
     public Response getPlatFormVoucherList() {
-        return voucherService.getPlatFormVoucherList();
+        try {
+            return success(voucherService.getPlatFormVoucherList());
+        } catch (Exception e) {
+            logger.error("/activity/platformVoucherList \n{}", e);
+            return error(e.getMessage());
+        }
     }
 
 
@@ -56,7 +64,7 @@ public class ActivityWebSource {
         try {
             return success(voucherService.getValidVoucherList());
         } catch (Exception e) {
-            logger.error("获取有效的所有活动券列表失败", e);
+            logger.error("/activity/voucher-list \n{}", e);
             return error(e.getMessage());
         }
     }
@@ -67,7 +75,7 @@ public class ActivityWebSource {
         try {
             return success(voucherService.getVoucherListByUserId(userId));
         } catch (Exception e) {
-            logger.error("获取用户的活动券列表失败", e);
+            logger.error("/activity/voucher-list-condition \n{}", e);
             return error(e.getMessage());
         }
     }
@@ -78,20 +86,38 @@ public class ActivityWebSource {
     @DeleteMapping("/voucher")
     @ApiOperation(value = "删除活动券", notes = "PMS: 删除活动券")
     public Response deleteVoucherByVoucherId(@RequestParam("voucherId") String voucherId) {
-        return voucherService.deleteVoucherByVoucherId(voucherId);
+        try {
+            voucherService.deleteVoucherByVoucherId(voucherId);
+            return success("删除成功");
+        } catch (Exception e) {
+            logger.error("/activity/voucher \n{}", e);
+            return error(e.getMessage());
+        }
     }
 
     @PostMapping("/sign-reward")
     @ApiOperation(value = "设置签到奖励", notes = "AP: 设置签到奖励")
     public Response signRewardSetting(@RequestBody SignReward signReward) {
-        return voucherService.signRewardSetting(signReward);
+        try {
+            voucherService.signRewardSetting(signReward);
+            return success("设置成功");
+        } catch (Exception e) {
+            logger.error("/activity/sign-reward \n{}", e);
+            return error(e.getMessage());
+        }
     }
 
     @PostMapping("/change-reward-content")
     @ApiOperation(value = "根据ID更改奖励内容", notes = "AP: 根据ID更改奖励内容")
     public Response changeRewardContent(@RequestParam("rewardId") String rewardId,
                                         @RequestParam("content") String content) {
-        return voucherService.changeRewardContent(rewardId, content);
+        try {
+            voucherService.changeRewardContent(rewardId, content);
+            return success("修改成功");
+        }catch (Exception e) {
+            logger.error("/activity/change-reward-content \n{}", e);
+            return error(e.getMessage());
+        }
     }
 
     @GetMapping("/reward-content-list")
@@ -124,7 +150,7 @@ public class ActivityWebSource {
         try {
             return success(voucherService.addPointsMallProduct(pointExchange));
         } catch (Exception e) {
-            logger.error("添加积分商城商品失败", e);
+            logger.error("/activity/exchange-points \n{}", e);
             return error(e.getMessage());
         }
     }
@@ -135,7 +161,7 @@ public class ActivityWebSource {
         try {
             return success(voucherService.userRedeemProduct(pointExchangeBO));
         } catch (Exception e) {
-            logger.error("用户兑换商品失败", e);
+            logger.error("/activity/user/exchange-points \n{}", e);
             return error(e.getMessage());
         }
     }
@@ -146,7 +172,7 @@ public class ActivityWebSource {
         try {
             return success(voucherService.getPointMallProductList());
         } catch (Exception e) {
-            logger.error("获取积分商城商品列表失败", e);
+            logger.error("/activity/point-mall-product-list \n{}", e);
             return error(e.getMessage());
         }
     }
@@ -157,7 +183,7 @@ public class ActivityWebSource {
         try {
             return success(voucherService.getMerchantPointProductList(merchantId));
         } catch (Exception e) {
-            logger.error("获取商户的积分商城商品列表失败", e);
+            logger.error("/activity/merchant-point-product-list \n{}", e);
             return error(e.getMessage());
         }
     }
@@ -168,7 +194,7 @@ public class ActivityWebSource {
         try {
             return success(voucherService.pointExchangeRecordList(userId));
         } catch (Exception e) {
-            logger.error("用户获取积分兑换记录列表失败", e);
+            logger.error("/activity/point-exchange-record-list \n{}", e);
             return error(e.getMessage());
         }
     }
@@ -179,9 +205,9 @@ public class ActivityWebSource {
         try {
             return success(voucherService.deletePointMallProduct(id));
         } catch (Exception e) {
-            logger.error("删除积分商城商品失败", e);
+            logger.error("/activity/delete-point-mall-product/{} \n{}", e);
             return error(e.getMessage());
         }
     }
-    
+
 }
